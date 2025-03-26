@@ -6,6 +6,5 @@ I already made a similar project in plain C, but I want to make it better and ho
 
 ## Features:
 - User defined callback to completely abstract the library.
-- Tool inside the library to generate the bitmap.
 - RLE encoding to keep it lightweight.
 - Some others but I'm lazy right now.
