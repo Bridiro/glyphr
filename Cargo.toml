@@ -1,0 +1,10 @@
+[package]
+name = "glyphr"
+version = "0.1.0"
+edition = "2024"
+authors = ["Alessandro Bridi"]
+description = "A no_sdt, lightweight and simple font rasterizing library"
+license = "Apache-2.0"
+repository = "https://github.com/Bridiro/glyphr"
+
+[dependencies]
