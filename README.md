@@ -8,3 +8,5 @@ I already made a similar project in plain C, but I want to make it better and ho
 - User defined callback to completely abstract the library.
 - RLE encoding to keep it lightweight.
 - Some others but I'm lazy right now.
+
+## Just a placeholder to keep name mine
