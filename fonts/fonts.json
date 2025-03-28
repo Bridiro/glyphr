@@ -1,0 +1,8 @@
+[
+    {
+        "name": "Konexy",
+        "path": "fonts/KonexyFont.ttf",
+        "size": 120,
+        "char_range": [33, 126]
+    }
+]
