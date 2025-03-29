@@ -13,7 +13,7 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 ## Roadmap
 - [x] Loading fonts.json from project root
 - [x] Generating what's specified in fonts.json
-- [ ] Saving the bitmaps somewhere
+- [x] Saving the bitmaps somewhere
 - [ ] Generating the file(s) that the library will use
 - [ ] Main functionalities, like rasterization...
 - [ ] Clear and useful APIs
