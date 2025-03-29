@@ -6,11 +6,11 @@ authors = ["Alessandro Bridi"]
 description = "A no_sdt, lightweight and simple font rasterizing library"
 license = "Apache-2.0"
 repository = "https://github.com/Bridiro/glyphr"
-build = "build.rs"
+build = "build/main.rs"
 
 [build-dependencies]
-easy-signed-distance-field = { version = "0.1.1", features = ["font"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+ttf-parser = "0.25"
 
 [dependencies]
