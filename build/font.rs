@@ -1,7 +1,11 @@
+use std::{collections::HashMap, ops::Deref};
 use ttf_parser::{Face, FaceParsingError, name_id::FULL_NAME};
-use std::{ops::Deref, collections::HashMap};
 
-use super::{font_geometry::{FontGeometry, OutlineBounds}, line::Line, sdf_generation::{SdfRaster, sdf_generate}};
+use super::{
+    font_geometry::{FontGeometry, OutlineBounds},
+    line::Line,
+    sdf_generation::{SdfRaster, sdf_generate},
+};
 
 #[derive(Copy, Clone, Debug)]
 pub struct FontSettings {
@@ -10,7 +14,9 @@ pub struct FontSettings {
 
 impl Default for FontSettings {
     fn default() -> Self {
-        FontSettings { collection_index: 0 }
+        FontSettings {
+            collection_index: 0,
+        }
     }
 }
 
@@ -34,16 +40,15 @@ impl LineMetrics {
     }
 }
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Debug, Default)]
 pub struct Metrics {
     pub xmin: i32,
     pub ymin: i32,
     pub width: i32,
     pub height: i32,
     pub advance_width: f32,
-    pub bounds: OutlineBounds
+    pub bounds: OutlineBounds,
 }
-
 
 #[derive(Default)]
 pub(crate) struct Glyph {
@@ -62,7 +67,10 @@ pub struct Font {
 }
 
 impl Font {
-    pub fn from_bytes<D: Deref<Target = [u8]>>(data: D, settings: FontSettings) -> Result<Self, FaceParsingError> {
+    pub fn from_bytes<D: Deref<Target = [u8]>>(
+        data: D,
+        settings: FontSettings,
+    ) -> Result<Self, FaceParsingError> {
         let face = Face::parse(&data, settings.collection_index)?;
         let name = convert_name(&face);
         let units_per_em = face.units_per_em() as f32;
@@ -78,13 +86,12 @@ impl Font {
                 })
             }
         }
-        
 
         let mut glyphs = HashMap::with_capacity(glyph_id_mapping.len());
         for (codepoint, glyph_id) in glyph_id_mapping {
             let char = match char::from_u32(codepoint) {
                 Some(c) => c,
-                None => continue
+                None => continue,
             };
 
             let mut glyph = Glyph::default();
@@ -98,15 +105,16 @@ impl Font {
             glyph.bounds = geometry.bounds;
 
             glyphs.insert(char, glyph);
-        } 
+        }
 
-        let horizontal_line_metrics = LineMetrics::new(face.ascender(), face.descender(), face.line_gap());
+        let horizontal_line_metrics =
+            LineMetrics::new(face.ascender(), face.descender(), face.line_gap());
 
         let font = Font {
             name,
             glyphs,
             units_per_em,
-            horizontal_line_metrics
+            horizontal_line_metrics,
         };
 
         Ok(font)
@@ -130,19 +138,33 @@ impl Font {
         Some(metrics)
     }
 
-    pub fn sdf_generate(&self, px: f32, padding: i32, spread: f32, c: char) -> Option<(Metrics, SdfRaster)> {
+    pub fn sdf_generate(
+        &self,
+        px: f32,
+        padding: i32,
+        spread: f32,
+        c: char,
+    ) -> Option<(Metrics, SdfRaster)> {
         if px < 1.0 {
             panic!("Sdf render size cannot be smaller than 1.0 (got {:?})", px);
         }
 
         let glyph = match self.glyphs.get(&c) {
             Some(g) => g,
-            None => { return None; }
+            None => {
+                return None;
+            }
         };
 
         let metrics = self.metrics(c, px).unwrap(); // Cannot return `None` if glyph is some
 
-        let sdf = sdf_generate(metrics.width as u32, metrics.height as u32, padding, spread, &glyph.lines);
+        let sdf = sdf_generate(
+            metrics.width as u32,
+            metrics.height as u32,
+            padding,
+            spread,
+            &glyph.lines,
+        );
 
         Some((metrics, sdf))
     }
@@ -150,9 +172,7 @@ impl Font {
     fn scale_factor(&self, px: f32) -> f32 {
         px / self.units_per_em
     }
-
 }
-
 
 fn convert_name(face: &Face) -> Option<String> {
     for name in face.names() {

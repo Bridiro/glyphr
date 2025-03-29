@@ -9,8 +9,8 @@ use serde_json;
 use std::env;
 use std::error::Error;
 use std::fs;
-use std::path::Path;
 use std::io::prelude::*;
+use std::path::Path;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct FontDescriptor {
@@ -42,17 +42,85 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn generate_and_write_font_to_file(font: &font::Font, loaded_font: &FontDescriptor, file: &mut fs::File) -> Result<(), Box<dyn Error>> {
+#[derive(Debug)]
+#[allow(dead_code)]
+struct GlyphEntry {
+    pub metrics: font::Metrics,
+    pub sdf_offset: u32,
+}
+
+fn generate_and_write_font_to_file(
+    font: &font::Font,
+    loaded_font: &FontDescriptor,
+    file: &mut fs::File,
+) -> Result<(), Box<dyn Error>> {
     let mut bitmaps: Vec<u8> = vec![];
+    let mut entries: Vec<GlyphEntry> = vec![];
 
     for c in loaded_font.char_range[0]..=loaded_font.char_range[1] {
-        if let Some((_metrics, glyph_sdf)) = font.sdf_generate(loaded_font.px, loaded_font.padding, loaded_font.spread, c as char) {
+        if let Some((metrics, glyph_sdf)) = font.sdf_generate(
+            loaded_font.px,
+            loaded_font.padding,
+            loaded_font.spread,
+            c as char,
+        ) {
             let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
+            entries.push(GlyphEntry {
+                metrics,
+                sdf_offset: bitmaps.len() as u32,
+            });
             bitmaps.extend(rle_encode(bitmap_sdf.buffer));
         }
     }
 
-    file.write_all(format!("const FONT_{}: [u8, {}] = [", loaded_font.name, bitmaps.len()).as_bytes())?;
+    file.write_all(
+        b"pub struct OutlineBounds {
+    pub xmin: f32,
+    pub ymin: f32,
+    pub width: f32,
+    pub height: f32
+}\n\n",
+    )?;
+
+    file.write_all(
+        b"pub struct Metrics {
+    pub xmin: i32,
+    pub ymin: i32,
+    pub width: i32,
+    pub height: i32,
+    pub advance_width: i32,
+    pub bounds: OutlineBounds,
+}\n\n",
+    )?;
+
+    file.write_all(
+        b"pub struct GlyphEntry {
+    pub metrics: Metrics,
+    pub sdf_offset: u32,
+}\n\n",
+    )?;
+
+    file.write_all(
+        format!(
+            "pub static FONT_{}_ENTRIES: [GlyphEntry, {}] = [\n",
+            loaded_font.name.to_uppercase(),
+            entries.len()
+        )
+        .as_bytes(),
+    )?;
+    for entry in entries {
+        file.write_all(format!("    {:#?},\n", entry).as_bytes())?;
+    }
+    file.write_all(b"];\n\n")?;
+
+    file.write_all(
+        format!(
+            "pub static FONT_{}: [u8, {}] = [",
+            loaded_font.name.to_uppercase(),
+            bitmaps.len()
+        )
+        .as_bytes(),
+    )?;
     for (i, byte) in bitmaps.iter().enumerate() {
         if i % 16 == 0 {
             writeln!(file)?;

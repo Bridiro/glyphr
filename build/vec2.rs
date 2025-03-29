@@ -1,10 +1,11 @@
 /// Simple vec library to not bloat the project with a huge math dependency
-
 use std::ops::*;
 
 #[repr(transparent)]
 #[derive(Default, Copy, Clone, Debug, PartialEq)]
-pub struct Vec2 { v: [f32; 2] }
+pub struct Vec2 {
+    v: [f32; 2],
+}
 pub type Point = Vec2;
 
 #[inline]
@@ -22,7 +23,7 @@ impl Vec2 {
     pub fn length(&self) -> f32 {
         let x = self[0];
         let y = self[1];
-        ((x*x)+(y*y)).sqrt()
+        ((x * x) + (y * y)).sqrt()
     }
 
     #[inline(always)]
@@ -57,7 +58,6 @@ impl Vec2 {
     pub fn powf(&self, other: Self) -> Self {
         vec2(self[0].powf(other[0]), self[1].powf(other[1]))
     }
-
 }
 
 impl Add for Vec2 {
@@ -80,7 +80,6 @@ impl Sub<f32> for Vec2 {
         vec2(self[0] - other, self[1] - other)
     }
 }
-
 
 impl Mul for Vec2 {
     type Output = Self;
@@ -115,8 +114,8 @@ impl Index<usize> for Vec2 {
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         match index {
-            0 | 1  => &self.v[index],
-            _ => panic!("Vec2 index value must be 0 or 1")
+            0 | 1 => &self.v[index],
+            _ => panic!("Vec2 index value must be 0 or 1"),
         }
     }
 }
@@ -126,24 +125,26 @@ impl IndexMut<usize> for Vec2 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         match index {
             0 | 1 => &mut self.v[index],
-            _ => panic!("Vec2 index value must be 0 or 1")
+            _ => panic!("Vec2 index value must be 0 or 1"),
         }
     }
 }
 
-
 #[repr(transparent)]
 #[derive(Default, Copy, Clone, Debug, PartialEq)]
-pub(crate) struct Vec3 { v: [f32; 3] }
-
-impl Vec3 {
-
-    pub fn clamp(&self, min: f32, max: f32) -> Self {
-        vec3(self[0].clamp(min, max), self[1].clamp(min, max), self[2].clamp(min, max))
-    }
-
+pub(crate) struct Vec3 {
+    v: [f32; 3],
 }
 
+impl Vec3 {
+    pub fn clamp(&self, min: f32, max: f32) -> Self {
+        vec3(
+            self[0].clamp(min, max),
+            self[1].clamp(min, max),
+            self[2].clamp(min, max),
+        )
+    }
+}
 
 pub(crate) fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
     Vec3 { v: [x, y, z] }
@@ -169,7 +170,7 @@ impl Index<usize> for Vec3 {
     fn index(&self, index: usize) -> &Self::Output {
         match index {
             0 | 1 | 2 => &self.v[index],
-            _ => panic!("Vec2 index value must be 0, 1, or 2")
+            _ => panic!("Vec2 index value must be 0, 1, or 2"),
         }
     }
 }
