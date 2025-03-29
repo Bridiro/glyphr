@@ -14,3 +14,4 @@ serde_json = "1.0"
 ttf-parser = "0.25"
 
 [dependencies]
+minifb = "0.28"
