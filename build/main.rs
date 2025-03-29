@@ -88,7 +88,7 @@ fn generate_and_write_font_to_file(
     pub ymin: i32,
     pub width: i32,
     pub height: i32,
-    pub advance_width: i32,
+    pub advance_width: f32,
     pub bounds: OutlineBounds,
 }\n\n",
     )?;
@@ -102,7 +102,7 @@ fn generate_and_write_font_to_file(
 
     file.write_all(
         format!(
-            "pub static FONT_{}_ENTRIES: [GlyphEntry, {}] = [\n",
+            "pub static FONT_{}_ENTRIES: [GlyphEntry; {}] = [\n",
             loaded_font.name.to_uppercase(),
             entries.len()
         )
@@ -115,7 +115,7 @@ fn generate_and_write_font_to_file(
 
     file.write_all(
         format!(
-            "pub static FONT_{}: [u8, {}] = [",
+            "pub static FONT_{}: [u8; {}] = [",
             loaded_font.name.to_uppercase(),
             bitmaps.len()
         )
