@@ -31,15 +31,30 @@ impl<'a> Glyphr<'a> {
     pub fn render(
         &mut self,
         phrase: &str,
-        x: u32,
+        mut x: u32,
         y: u32,
         scale: f32,
         mid_value: f32,
         smoothing: f32,
         color: u32,
     ) {
-        for c in phrase.chars() {
-            render_glyph(x, y, scale, mid_value, smoothing, color, c, self);
+        let mut heights: [i32; 100] = [0; 100];
+        let mut max_height = i32::MIN;
+        for (i, c) in phrase.chars().enumerate() {
+            if c != ' ' {
+                let metrics = get_metrics(self, c);
+                let h = ((metrics.height + metrics.ymin) as f32 * scale) as i32;
+                max_height = max_height.max(h);
+                heights[i] = h;
+            } else {
+                heights[i] = 0;
+            }
+        }
+        for (i, c) in phrase.chars().enumerate() {
+            if c != ' ' {
+                render_glyph(x, y + (max_height - heights[i]) as u32, scale, mid_value, smoothing, color, c, self);
+            }
+            x += (advance(self, c) as f32 * scale) as u32;
         }
     }
 
@@ -79,17 +94,34 @@ fn render_glyph(
 
     for x_1 in 0..width {
         for y_1 in 0..height {
-            let sample_x = ((x_1 as f32) + 0.5) / width_f;
-            let sample_y = ((y_1 as f32) + 0.5) / height_f;
+            if x_1 + x < state.buffer.width && y_1 + y < state.buffer.height {
+                let sample_x = ((x_1 as f32) + 0.5) / width_f;
+                let sample_y = ((y_1 as f32) + 0.5) / height_f;
 
-            let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
-            let alpha = distance_to_pixel(sampled_distance);
-            if alpha > 0 {
-                let blended_color = blend_pixel(color, state.buffer.buffer[((y_1+y)*state.buffer.width+x_1+x) as usize], alpha);
-                (state.pixel_callback)(x_1 + x, y_1 + y, blended_color, state.buffer.buffer);
+                let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
+                let alpha = distance_to_pixel(sampled_distance);
+                if alpha > 0 {
+                    let blended_color = blend_pixel(color, state.buffer.buffer[((y_1+y)*state.buffer.width+x_1+x) as usize], alpha);
+                    (state.pixel_callback)(x_1 + x, y_1 + y, blended_color, state.buffer.buffer);
+                }
             }
         }
     }
+}
+
+fn advance(state: &Glyphr, c: char) -> u32 {
+    if c != ' ' {
+        let sdf = &state.current_font[c as u8 as usize - 33];
+        sdf.metrics.advance_width as u32
+    } else {
+        let sdf = &state.current_font['t' as u8 as usize - 33];
+        sdf.metrics.advance_width as u32
+    }
+}
+
+fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a fonts::Metrics {
+    let sdf = &state.current_font[c as u8 as usize - 33];
+    &sdf.metrics
 }
 
 fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
@@ -157,5 +189,5 @@ fn blend_pixel(fg: u32, bg: u32, alpha: u8) -> u32 {
     let blended_g = ((fg_g as f32 * alpha_f) + (bg_g as f32 * (1.0 - alpha_f))) as u8;
     let blended_b = ((fg_b as f32 * alpha_f) + (bg_b as f32 * (1.0 - alpha_f))) as u8;
 
-    (255 << 24) | ((blended_r as u32) << 16) | ((blended_g as u32) << 8) | (blended_b as u32)
+    (255 << 24) | ((blended_r as u32) << 17) | ((blended_g as u32) << 8) | (blended_b as u32)
 }
