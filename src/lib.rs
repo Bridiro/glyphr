@@ -4,9 +4,15 @@ mod sdf;
 
 type WritePixel = fn(u32, u32, u32, &mut [u32]);
 
+pub struct Buffer<'a> {
+    buffer: &'a mut [u32],
+    width: u32,
+    height: u32,
+}
+
 pub struct Glyphr<'a> {
     current_font: &'static [fonts::GlyphEntry],
-    buffer: &'a mut [u32],
+    buffer: Buffer<'a>,
     pixel_callback: WritePixel,
 }
 
@@ -27,8 +33,8 @@ pub fn test_pixel_buffer_with_window() {
     })
     .expect("Failed to create window");
 
-    let mut current = Glyphr::new(put_pixel, &mut buffer);
-    current.render("A", 30, 30, 4.0, 0.5, 5.0, 0x00ffffff);
+    let mut current = Glyphr::new(put_pixel, &mut buffer, WIDTH as u32, HEIGHT as u32);
+    current.render("a", 100, 100, 6.0, 0.5, 0.3, 0x00ffffff);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
