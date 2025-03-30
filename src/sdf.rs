@@ -1,6 +1,7 @@
 use super::{ fonts, Glyphr };
 
 pub trait ExtFloor {
+    #[allow(unused)]
     fn floor(self) -> f32;
 }
 
@@ -17,15 +18,15 @@ impl ExtFloor for f32 {
 impl<'a> Glyphr<'a> {
     pub fn new(pixel_callback: super::WritePixel, buffer: &'a mut [u32]) -> Self {
         Glyphr {
-            current_font: &fonts::FONT_KONEXY,
+            current_font: &fonts::FONT_POPPINS_ENTRIES,
             buffer,
             pixel_callback,
         }
     }
 
-    pub fn render(&mut self, phrase: &str, scale: f32, mid_value: f32, smoothing: f32, color: u32) {
+    pub fn render(&mut self, phrase: &str, x: u32, y: u32, scale: f32, mid_value: f32, smoothing: f32, color: u32) {
         for c in phrase.chars() {
-            render_glyph(scale, mid_value, smoothing, color, c, self);
+            render_glyph(x, y, scale, mid_value, smoothing, color, c, self);
         }
     }
 
@@ -35,6 +36,8 @@ impl<'a> Glyphr<'a> {
 }
 
 fn render_glyph(
+    x: u32,
+    y: u32,
     scale: f32,
     mid_value: f32,
     smoothing: f32,
@@ -42,7 +45,7 @@ fn render_glyph(
     value: char,
     state: &mut Glyphr,
 ) {
-    let sdf = &fonts::FONT_KONEXY_ENTRIES[value as u8 as usize - 64];
+    let sdf = &state.current_font[value as u8 as usize - 33];
     let width = (sdf.metrics.width as f32 * scale) as u32;
     let height = (sdf.metrics.height as f32 * scale) as u32;
     if width <= 0 || height <= 0 {
@@ -59,15 +62,16 @@ fn render_glyph(
         }
     };
 
-    for x in 0..width {
-        for y in 0..height {
+    for x_1 in x..width+x {
+        for y_1 in y..height+y {
             let sample_x = ((x as f32) + 0.5) / width_f;
             let sample_y = ((y as f32) + 0.5) / height_f;
 
-            let sampled_distance = sdf_sample(&state, &sdf, sample_x, sample_y);
-            let pixel_value = distance_to_pixel(sampled_distance);
-            let color = ((pixel_value as u32) << 24) & color;
-            (state.pixel_callback)(x, y, color, state.buffer);
+            let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
+            println!("dist: {}", sampled_distance);
+            let pixel_value = distance_to_pixel(sampled_distance) as u32;
+            let blended_color = (pixel_value << 24) | color;
+            (state.pixel_callback)(x_1, y_1, blended_color, state.buffer);
         }
     }
 }
@@ -87,7 +91,7 @@ fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
     0
 }
 
-fn sdf_sample(state: &Glyphr, sdf: &fonts::GlyphEntry, x: f32, y: f32) -> f32 {
+fn sdf_sample(sdf: &fonts::GlyphEntry, x: f32, y: f32) -> f32 {
     let gx = (x * (sdf.metrics.width as f32) - 0.5).max(0.0);
     let gy = (y * (sdf.metrics.height as f32) - 0.5).max(0.0);
     let left = gx.floor() as usize;
@@ -99,7 +103,7 @@ fn sdf_sample(state: &Glyphr, sdf: &fonts::GlyphEntry, x: f32, y: f32) -> f32 {
     let bottom = (top + 1).min((sdf.metrics.height - 1) as usize);
 
     let row_size = sdf.metrics.width as usize;
-    let get_pixel = |x, y| rle_decode_at(state.current_font, (row_size * y) + x + sdf.sdf_offset as usize);
+    let get_pixel = |x_1, y_1| rle_decode_at(sdf.glyph, (row_size * y_1) + x_1 as usize);
 
     let p00 = get_pixel(left, top);
     let p10 = get_pixel(right, top);

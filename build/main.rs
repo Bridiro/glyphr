@@ -45,8 +45,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 #[derive(Debug)]
 #[allow(dead_code)]
 struct GlyphEntry {
+    pub name: String,
     pub metrics: font::Metrics,
-    pub sdf_offset: u32,
 }
 
 fn generate_and_write_font_to_file(
@@ -54,7 +54,7 @@ fn generate_and_write_font_to_file(
     loaded_font: &FontDescriptor,
     file: &mut fs::File,
 ) -> Result<(), Box<dyn Error>> {
-    let mut bitmaps: Vec<u8> = vec![];
+    let mut bitmaps: Vec<Vec<u8>> = vec![];
     let mut entries: Vec<GlyphEntry> = vec![];
 
     for c in loaded_font.char_range[0]..=loaded_font.char_range[1] {
@@ -66,10 +66,10 @@ fn generate_and_write_font_to_file(
         ) {
             let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
             entries.push(GlyphEntry {
+                name: format!("GLYPH_{}_{}", loaded_font.name.to_uppercase(), c as u8),
                 metrics,
-                sdf_offset: bitmaps.len() as u32,
             });
-            bitmaps.extend(rle_encode(bitmap_sdf.buffer));
+            bitmaps.push(rle_encode(bitmap_sdf.buffer));
         }
     }
 
@@ -95,8 +95,8 @@ fn generate_and_write_font_to_file(
 
     file.write_all(
         b"pub struct GlyphEntry {
+    pub glyph: &'static [u8],
     pub metrics: Metrics,
-    pub sdf_offset: u32,
 }\n\n",
     )?;
 
@@ -109,25 +109,36 @@ fn generate_and_write_font_to_file(
         .as_bytes(),
     )?;
     for entry in entries {
-        file.write_all(format!("    {:#?},\n", entry).as_bytes())?;
+        file.write_all(
+            format!(
+                "GlyphEntry {{
+    glyph: &{},
+    metrics: {:#?},\n}},\n",
+                entry.name, entry.metrics
+            )
+            .as_bytes(),
+        )?;
     }
     file.write_all(b"];\n\n")?;
 
-    file.write_all(
-        format!(
-            "pub static FONT_{}: [u8; {}] = [",
-            loaded_font.name.to_uppercase(),
-            bitmaps.len()
-        )
-        .as_bytes(),
-    )?;
-    for (i, byte) in bitmaps.iter().enumerate() {
-        if i % 16 == 0 {
-            writeln!(file)?;
+    for (i, bitmap) in bitmaps.iter().enumerate() {
+        file.write_all(
+            format!(
+                "pub static GLYPH_{}_{}: [u8; {}] = [",
+                loaded_font.name.to_uppercase(),
+                i as u8 + loaded_font.char_range[0],
+                bitmap.len()
+            )
+            .as_bytes(),
+        )?;
+        for (j, byte) in bitmap.iter().enumerate() {
+            if j % 16 == 0 {
+                writeln!(file)?;
+            }
+            write!(file, "{}, ", byte)?;
         }
-        write!(file, "{}, ", byte)?;
+        writeln!(file, "\n];\n\n")?;
     }
-    writeln!(file, "\n];")?;
 
     Ok(())
 }
