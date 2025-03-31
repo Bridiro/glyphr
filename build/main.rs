@@ -10,7 +10,7 @@ use std::env;
 use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct FontDescriptor {
@@ -23,16 +23,36 @@ struct FontDescriptor {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let fonts_json_path = fs::read_to_string(Path::new(&manifest_dir).join("fonts/fonts.json"))?;
-    println!("cargo::rerun-if-changed={}", Path::new(&manifest_dir).join("fonts/fonts.json").to_str().unwrap());
+    let config_path = if let Ok(path) = env::var("MY_LIB_CONFIG_FILE") {
+        PathBuf::from(path)
+    } else {
+        let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+        let mut current_dir = out_dir;
+
+        loop {
+            if current_dir.join("Cargo.toml").exists() {
+                break current_dir.join("fonts");
+            }
+            if !current_dir.pop() {
+                panic!("Failed to locate project root containing Cargo.toml");
+            }
+        }
+    };
+
+    // Verify the configuration file exists
+    if !config_path.exists() {
+        panic!("Configuration file not found at {}", config_path.display());
+    }
+    println!("cargo::rerun-if-changed={}", config_path.join("fonts.json").display());
+
+    let fonts_json_path = fs::read_to_string(Path::new(&config_path).join("fonts.json"))?;
     let loaded_fonts: Vec<FontDescriptor> = serde_json::from_str(&fonts_json_path)?;
 
-    let mut file = fs::File::create(Path::new(&manifest_dir).join("src/fonts.rs"))?;
+    let mut file = fs::File::create(Path::new(&env!("CARGO_MANIFEST_DIR")).join("src/fonts.rs"))?;
 
     for loaded_font in loaded_fonts {
         let font_file =
-            fs::read(Path::new(&manifest_dir).join(&loaded_font.path)).expect("Can't read file");
+            fs::read(Path::new(&config_path).join(&loaded_font.path)).expect("Can't read file");
         let font = font::Font::from_bytes(font_file.as_slice(), Default::default())
             .expect("Failed to parse font file");
 
