@@ -23,7 +23,7 @@ impl<'a> Glyphr<'a> {
         height: u32,
     ) -> Self {
         Glyphr {
-            current_font: &fonts::FONT_POPPINS_ENTRIES,
+            current_font: &fonts::FONT_ENTRIES,
             buffer: Buffer {
                 buffer,
                 width,

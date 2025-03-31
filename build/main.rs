@@ -85,7 +85,7 @@ fn generate_and_write_font_to_file(
         ) {
             let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
             entries.push(GlyphEntry {
-                name: format!("GLYPH_{}_{}", loaded_font.name.to_uppercase(), c as u8),
+                name: format!("GLYPH_{}",  c as u8),
                 metrics,
             });
             bitmaps.push(rle_encode(bitmap_sdf.buffer));
@@ -126,8 +126,7 @@ pub struct GlyphEntry {
 
     file.write_all(
         format!(
-            "pub static FONT_{}_ENTRIES: [GlyphEntry; {}] = [\n",
-            loaded_font.name.to_uppercase(),
+            "pub static FONT_ENTRIES: [GlyphEntry; {}] = [\n",
             entries.len()
         )
         .as_bytes(),
@@ -148,8 +147,7 @@ pub struct GlyphEntry {
     for (i, bitmap) in bitmaps.iter().enumerate() {
         file.write_all(
             format!(
-                "pub static GLYPH_{}_{}: [u8; {}] = [",
-                loaded_font.name.to_uppercase(),
+                "pub static GLYPH_{}: [u8; {}] = [",
                 i as u8 + loaded_font.char_range[0],
                 bitmap.len()
             )

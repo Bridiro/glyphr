@@ -4,7 +4,6 @@ This is the successor (only spiritually) of [libraster-sw](https://github.com/ea
 and had too much features that I did not use. I just wanted it to be as fast as possible, while possibly maintaining an easy use.
 
 ## Features
-- As many fonts as you want
 - Completely intuitive
 - You decide how pixel are written on the screen
 - No heap allocation
@@ -14,8 +13,8 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 - [x] Loading fonts.json from project root
 - [x] Generating what's specified in fonts.json
 - [x] Saving the bitmaps somewhere
-- [ ] Generating the file(s) that the library will use
-- [ ] Main functionalities, like rasterization...
+- [x] Generating the file(s) that the library will use
+- [x] Main functionalities, like rasterization...
 - [ ] Clear and useful APIs
 - [ ] General optimization and refactor (I already know I'll need it)
 
@@ -25,8 +24,8 @@ First of all, in the project root, create a `fonts` folder, then inside create a
 ```json
 [
     {
-        "name": "Konexy",
-        "path": "KonexyFont.ttf",
+        "name": "poppins",
+        "path": "Poppins-Regular.ttf",
         "px": 36.0,
         "padding": 1,
         "spread": 15.0,
@@ -44,6 +43,6 @@ It is kind of straightforward to use, but I'll exaplain it to you:
 
 After creating this file, and placing the ttfs where you prefer, you can just build and the bitmaps will be created. For now there is no API's to use it so it's just generation. The generated files will only be useful inside the library itself.
 
-> ![TIP]
+> [!NOTE]
 > You can also define an enviroment variable called `FONTS_DIR`, that contains the path that contains `fonts.json` (and it's relative to the fonts path inside it)
 
