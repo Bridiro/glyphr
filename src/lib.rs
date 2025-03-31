@@ -17,8 +17,5 @@ pub struct Glyphr<'a> {
     pixel_callback: WritePixel,
 }
 
-
-
 #[cfg(test)]
-mod tests {
-}
+mod tests {}

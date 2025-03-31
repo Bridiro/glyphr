@@ -74,7 +74,7 @@ fn generate_and_write_font_to_file(
     }
 
     file.write_all(
-        b"#[allow(unused_code)]
+        b"#[allow(unused)]
 #[repr(C)]
 pub struct OutlineBounds {
     pub xmin: f32,
@@ -85,7 +85,7 @@ pub struct OutlineBounds {
     )?;
 
     file.write_all(
-        b"#[allow(unused_code)]
+        b"#[allow(unused)]
 #[repr(C)]
 pub struct Metrics {
     pub xmin: i32,

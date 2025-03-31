@@ -1,4 +1,4 @@
-use super::{Glyphr, fonts};
+use super::{Glyphr, WritePixel, Buffer, fonts};
 
 pub trait ExtFloor {
     #[allow(unused)]
@@ -16,10 +16,15 @@ impl ExtFloor for f32 {
 }
 
 impl<'a> Glyphr<'a> {
-    pub fn new(pixel_callback: super::WritePixel, buffer: &'a mut [u32], width: u32, height: u32) -> Self {
+    pub fn new(
+        pixel_callback: WritePixel,
+        buffer: &'a mut [u32],
+        width: u32,
+        height: u32,
+    ) -> Self {
         Glyphr {
             current_font: &fonts::FONT_POPPINS_ENTRIES,
-            buffer: super::Buffer {
+            buffer: Buffer {
                 buffer,
                 width,
                 height,
@@ -52,13 +57,22 @@ impl<'a> Glyphr<'a> {
         }
         for (i, c) in phrase.chars().enumerate() {
             if c != ' ' {
-                render_glyph(x, y + (max_height - heights[i]) as u32, scale, mid_value, smoothing, color, c, self);
+                render_glyph(
+                    x,
+                    y + (max_height - heights[i]) as u32,
+                    scale,
+                    mid_value,
+                    smoothing,
+                    color,
+                    c,
+                    self,
+                );
             }
             x += (advance(self, c) as f32 * scale) as u32;
         }
     }
 
-    pub fn get_buffer(&self) -> &super::Buffer {
+    pub fn get_buffer(&self) -> &Buffer {
         &self.buffer
     }
 }
@@ -173,4 +187,3 @@ fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
 fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
     v1 + (v2 - v1) * weight
 }
-

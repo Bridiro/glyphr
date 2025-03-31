@@ -40,6 +40,7 @@ impl LineMetrics {
     }
 }
 
+#[allow(unused)]
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Metrics {
     pub xmin: i32,
