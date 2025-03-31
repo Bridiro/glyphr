@@ -26,10 +26,10 @@ First of all, in the project root, create a `fonts` folder, then inside create a
 [
     {
         "name": "Konexy",
-        "path": "fonts/KonexyFont.ttf",
-        "px": 120.0,
+        "path": "KonexyFont.ttf",
+        "px": 36.0,
         "padding": 1,
-        "spread": 20.0,
+        "spread": 15.0,
         "char_range": [33, 126]
     }
 ]
@@ -43,4 +43,7 @@ It is kind of straightforward to use, but I'll exaplain it to you:
 - `char_range`: a `u8` array of 2 elements, which defines which characters to generate
 
 After creating this file, and placing the ttfs where you prefer, you can just build and the bitmaps will be created. For now there is no API's to use it so it's just generation. The generated files will only be useful inside the library itself.
+
+> ![TIP]
+> You can also define an enviroment variable called `FONTS_DIR`, that contains the path that contains `fonts.json` (and it's relative to the fonts path inside it)
 
