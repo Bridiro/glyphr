@@ -23,10 +23,9 @@ struct FontDescriptor {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    println!("cargo::rerun-if-changed=fonts/fonts.json");
-
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let fonts_json_path = fs::read_to_string(Path::new(&manifest_dir).join("fonts/fonts.json"))?;
+    println!("cargo::rerun-if-changed={}", Path::new(&manifest_dir).join("fonts/fonts.json").to_str().unwrap());
     let loaded_fonts: Vec<FontDescriptor> = serde_json::from_str(&fonts_json_path)?;
 
     let mut file = fs::File::create(Path::new(&manifest_dir).join("src/fonts.rs"))?;
