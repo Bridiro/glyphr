@@ -23,7 +23,7 @@ struct FontDescriptor {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let config_path = if let Ok(path) = env::var("MY_LIB_CONFIG_FILE") {
+    let config_path = if let Ok(path) = env::var("FONTS_DIR") {
         PathBuf::from(path)
     } else {
         let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let fonts_json_path = fs::read_to_string(Path::new(&config_path).join("fonts.json"))?;
     let loaded_fonts: Vec<FontDescriptor> = serde_json::from_str(&fonts_json_path)?;
 
-    let mut file = fs::File::create(Path::new(&env!("CARGO_MANIFEST_DIR")).join("src/fonts.rs"))?;
+    let mut file = fs::File::create(Path::new(&env::var("OUT_DIR")?).join("generated.rs"))?;
 
     for loaded_font in loaded_fonts {
         let font_file =
