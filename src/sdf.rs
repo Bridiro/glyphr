@@ -99,9 +99,9 @@ fn render_glyph(
                 let sample_y = ((y_1 as f32) + 0.5) / height_f;
 
                 let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
-                let alpha = distance_to_pixel(sampled_distance);
+                let alpha = distance_to_pixel(sampled_distance) as u32;
                 if alpha > 0 {
-                    let blended_color = blend_pixel(color, state.buffer.buffer[((y_1+y)*state.buffer.width+x_1+x) as usize], alpha);
+                    let blended_color = (alpha << 24) | (color & 0x00ffffff);
                     (state.pixel_callback)(x_1 + x, y_1 + y, blended_color, state.buffer.buffer);
                 }
             }
@@ -174,20 +174,3 @@ fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
     v1 + (v2 - v1) * weight
 }
 
-fn blend_pixel(fg: u32, bg: u32, alpha: u8) -> u32 {
-    let alpha_f = alpha as f32 / 255.0;
-
-    let fg_r = (fg >> 16) & 0xFF;
-    let fg_g = (fg >> 8) & 0xFF;
-    let fg_b = fg & 0xFF;
-
-    let bg_r = (bg >> 16) & 0xFF;
-    let bg_g = (bg >> 8) & 0xFF;
-    let bg_b = bg & 0xFF;
-
-    let blended_r = ((fg_r as f32 * alpha_f) + (bg_r as f32 * (1.0 - alpha_f))) as u8;
-    let blended_g = ((fg_g as f32 * alpha_f) + (bg_g as f32 * (1.0 - alpha_f))) as u8;
-    let blended_b = ((fg_b as f32 * alpha_f) + (bg_b as f32 * (1.0 - alpha_f))) as u8;
-
-    (255 << 24) | ((blended_r as u32) << 17) | ((blended_g as u32) << 8) | (blended_b as u32)
-}

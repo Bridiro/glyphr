@@ -74,7 +74,9 @@ fn generate_and_write_font_to_file(
     }
 
     file.write_all(
-        b"pub struct OutlineBounds {
+        b"#[allow(unused_code)]
+#[repr(C)]
+pub struct OutlineBounds {
     pub xmin: f32,
     pub ymin: f32,
     pub width: f32,
@@ -83,7 +85,9 @@ fn generate_and_write_font_to_file(
     )?;
 
     file.write_all(
-        b"pub struct Metrics {
+        b"#[allow(unused_code)]
+#[repr(C)]
+pub struct Metrics {
     pub xmin: i32,
     pub ymin: i32,
     pub width: i32,
@@ -94,7 +98,8 @@ fn generate_and_write_font_to_file(
     )?;
 
     file.write_all(
-        b"pub struct GlyphEntry {
+        b"#[repr(C)]
+pub struct GlyphEntry {
     pub glyph: &'static [u8],
     pub metrics: Metrics,
 }\n\n",
