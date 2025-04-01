@@ -1,4 +1,4 @@
-use super::{Glyphr, WritePixel, Buffer, fonts};
+use super::{Glyphr, fonts};
 
 pub trait ExtFloor {
     #[allow(unused)]
@@ -15,74 +15,10 @@ impl ExtFloor for f32 {
     }
 }
 
-impl<'a> Glyphr<'a> {
-    pub fn new(
-        pixel_callback: WritePixel,
-        buffer: &'a mut [u32],
-        width: u32,
-        height: u32,
-    ) -> Self {
-        Glyphr {
-            current_font: &fonts::FONT_ENTRIES,
-            buffer: Buffer {
-                buffer,
-                width,
-                height,
-            },
-            pixel_callback,
-        }
-    }
-
-    pub fn render(
-        &mut self,
-        phrase: &str,
-        mut x: u32,
-        y: u32,
-        scale: f32,
-        mid_value: f32,
-        smoothing: f32,
-        color: u32,
-    ) {
-        let mut heights: [i32; 100] = [0; 100];
-        let mut max_height = i32::MIN;
-        for (i, c) in phrase.chars().enumerate() {
-            if c != ' ' {
-                let metrics = get_metrics(self, c);
-                let h = ((metrics.height + metrics.ymin) as f32 * scale) as i32;
-                max_height = max_height.max(h);
-                heights[i] = h;
-            } else {
-                heights[i] = 0;
-            }
-        }
-        for (i, c) in phrase.chars().enumerate() {
-            if c != ' ' {
-                render_glyph(
-                    x,
-                    y + (max_height - heights[i]) as u32,
-                    scale,
-                    mid_value,
-                    smoothing,
-                    color,
-                    c,
-                    self,
-                );
-            }
-            x += (advance(self, c) as f32 * scale) as u32;
-        }
-    }
-
-    pub fn get_buffer(&self) -> &Buffer {
-        &self.buffer
-    }
-}
-
-fn render_glyph(
+pub fn render_glyph(
     x: u32,
     y: u32,
     scale: f32,
-    mid_value: f32,
-    smoothing: f32,
     color: u32,
     value: char,
     state: &mut Glyphr,
@@ -101,8 +37,8 @@ fn render_glyph(
     let width_f = width as f32;
     let height_f = height as f32;
 
-    let distance_to_pixel = |distance: f32| match distance > mid_value {
-        true => (smoothstep(mid_value - smoothing, mid_value + smoothing, distance) * 255.0) as u8,
+    let distance_to_pixel = |distance: f32| match distance > state.mid_value {
+        true => (smoothstep(state.mid_value - state.smoothing, state.mid_value + state.smoothing, distance) * 255.0) as u8,
         false => 0,
     };
 
@@ -123,7 +59,7 @@ fn render_glyph(
     }
 }
 
-fn advance(state: &Glyphr, c: char) -> u32 {
+pub fn advance(state: &Glyphr, c: char) -> u32 {
     if c != ' ' {
         let sdf = &state.current_font[c as u8 as usize - 33];
         sdf.metrics.advance_width as u32
@@ -133,7 +69,7 @@ fn advance(state: &Glyphr, c: char) -> u32 {
     }
 }
 
-fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a fonts::Metrics {
+pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a fonts::Metrics {
     let sdf = &state.current_font[c as u8 as usize - 33];
     &sdf.metrics
 }

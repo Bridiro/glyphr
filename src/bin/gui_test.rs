@@ -37,8 +37,8 @@ fn test_pixel_buffer_with_window() {
     })
     .expect("Failed to create window");
 
-    let mut current = Glyphr::new(put_pixel, &mut buffer, WIDTH as u32, HEIGHT as u32);
-    current.render("test up & down!", 50, 50, 1.0, 0.5, 0.3, 0x00ffffff);
+    let mut current = Glyphr::new(put_pixel, &mut buffer, WIDTH as u32, HEIGHT as u32, 0.5, 0.5);
+    current.render("test up & down!", 50, 50, 1.0, 0x00ffffff);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
