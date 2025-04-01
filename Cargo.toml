@@ -2,7 +2,7 @@
 name = "glyphr"
 version = "0.2.2"
 edition = "2024"
-authors = ["Alessandro Bridi"]
+authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
 description = "A no_sdt, lightweight and simple font rasterizing library"
 license = "Apache-2.0"
 repository = "https://github.com/Bridiro/glyphr"
