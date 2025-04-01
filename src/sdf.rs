@@ -1,4 +1,4 @@
-use super::{Glyphr, fonts};
+use super::{Glyphr, RenderOptions, fonts};
 
 pub trait ExtFloor {
     #[allow(unused)]
@@ -18,18 +18,17 @@ impl ExtFloor for f32 {
 pub fn render_glyph(
     x: u32,
     y: u32,
-    scale: f32,
-    color: u32,
     value: char,
+    render_options: RenderOptions,
     state: &mut Glyphr,
 ) {
     let sdf = &state.current_font[value as u8 as usize - 33];
-    let width = (sdf.metrics.width as f32 * scale) as u32;
-    let height = (sdf.metrics.height as f32 * scale) as u32;
+    let width = (sdf.metrics.width as f32 * render_options.scale) as u32;
+    let height = (sdf.metrics.height as f32 * render_options.scale) as u32;
     if width <= 0 || height <= 0 {
         panic!(
             "Scaling of {:?} returns an image size of {:?}, which is impossible to render",
-            scale,
+            render_options.scale,
             (width, height)
         );
     }
@@ -37,8 +36,14 @@ pub fn render_glyph(
     let width_f = width as f32;
     let height_f = height as f32;
 
-    let distance_to_pixel = |distance: f32| match distance > state.mid_value {
-        true => (smoothstep(state.mid_value - state.smoothing, state.mid_value + state.smoothing, distance) * 255.0) as u8,
+    let distance_to_pixel = |distance: f32| match distance > state.sdf_config.mid_value {
+        true => {
+            (smoothstep(
+                state.sdf_config.mid_value - state.sdf_config.smoothing,
+                state.sdf_config.mid_value + state.sdf_config.smoothing,
+                distance,
+            ) * 255.0) as u8
+        }
         false => 0,
     };
 
@@ -51,7 +56,7 @@ pub fn render_glyph(
                 let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
                 let alpha = distance_to_pixel(sampled_distance) as u32;
                 if alpha > 0 {
-                    let blended_color = (alpha << 24) | (color & 0x00ffffff);
+                    let blended_color = (alpha << 24) | (render_options.color & 0x00ffffff);
                     (state.pixel_callback)(x_1 + x, y_1 + y, blended_color, state.buffer.buffer);
                 }
             }

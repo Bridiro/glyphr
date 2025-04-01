@@ -1,7 +1,5 @@
-extern crate glyphr;
-
+use glyphr::{Glyphr, RenderOptions, SdfConfig};
 use minifb::{Window, WindowOptions};
-use glyphr::Glyphr;
 
 const WIDTH: usize = 800;
 const HEIGHT: usize = 480;
@@ -25,7 +23,11 @@ fn blend_pixel(fg: u32, bg: u32, alpha: u8) -> u32 {
 }
 
 fn put_pixel(x: u32, y: u32, color: u32, buffer: &mut [u32]) {
-    let blended_color = blend_pixel(color, buffer[(y * WIDTH as u32 + x) as usize], (color >> 24) as u8);
+    let blended_color = blend_pixel(
+        color,
+        buffer[(y * WIDTH as u32 + x) as usize],
+        (color >> 24) as u8,
+    );
     buffer[(y as usize) * WIDTH + (x as usize)] = blended_color;
 }
 
@@ -37,8 +39,17 @@ fn test_pixel_buffer_with_window() {
     })
     .expect("Failed to create window");
 
-    let mut current = Glyphr::new(put_pixel, &mut buffer, WIDTH as u32, HEIGHT as u32, 0.5, 0.5);
-    current.render("test up & down!", 50, 50, 1.0, 0x00ffffff);
+    let mut current = Glyphr::new(
+        put_pixel,
+        &mut buffer,
+        WIDTH as u32,
+        HEIGHT as u32,
+        SdfConfig::default(),
+    );
+    current.render("test up & down!", 50, 50, RenderOptions {
+        scale: 1.0,
+        color: 0x00ffffff,
+    });
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
