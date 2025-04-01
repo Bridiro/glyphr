@@ -34,8 +34,8 @@ First of all, in the project root, create a `fonts` folder, then inside create a
 ]
 ```
 It is kind of straightforward to use, but I'll exaplain it to you:
-- `name`: a user-defined name that will be used to choose at runtime which font to use
-- `path`: the path of the ttf file (relative to `Cargo.toml`)
+- `name`: a user-defined name that will be used to choose at runtime which font to use (for now it's only one sorry, I'll add it later)
+- `path`: the path of the ttf file (relative to `fonts.json` folder)
 - `px`: size in pixel of the font
 - `padding`: space in pixel to leave between the glyph and the bitmap borders
 - `spread`: distance in pixel that the SDF extends from the edges of each glyph
@@ -44,5 +44,5 @@ It is kind of straightforward to use, but I'll exaplain it to you:
 After creating this file, and placing the ttfs where you prefer, you can just build and the bitmaps will be created. For now there is no API's to use it so it's just generation. The generated files will only be useful inside the library itself.
 
 > [!NOTE]
-> You can also define an enviroment variable called `FONTS_DIR`, that contains the path that contains `fonts.json` (and it's relative to the fonts path inside it)
+> You can also define an enviroment variable called `FONTS_DIR`, that contains the path to `fonts.json` folder (and it's relative to the fonts path inside it)
 
