@@ -43,55 +43,36 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !config_path.exists() {
         panic!("Configuration file not found at {}", config_path.display());
     }
-    println!("cargo::rerun-if-changed={}", config_path.join("fonts.json").display());
+    println!(
+        "cargo::rerun-if-changed={}",
+        config_path.join("fonts.json").display()
+    );
 
-    let fonts_json_path = fs::read_to_string(Path::new(&config_path).join("fonts.json"))?;
-    let loaded_fonts: Vec<FontDescriptor> = serde_json::from_str(&fonts_json_path)?;
+    let fonts_json_path = fs::read_to_string(Path::new(&config_path).join("fonts.json"))
+        .expect("Could not open or find fonts.json");
+    let loaded_fonts: Vec<FontDescriptor> =
+        serde_json::from_str(&fonts_json_path).expect("Error parsing fonts.json");
 
-    let mut file = fs::File::create(Path::new(&env::var("OUT_DIR")?).join("generated.rs"))?;
+    let mut file = fs::File::create(Path::new(&env::var("OUT_DIR")?).join("generated.rs"))
+        .expect("Could not create out file");
 
-    for loaded_font in loaded_fonts {
-        let font_file =
-            fs::read(Path::new(&config_path).join(&loaded_font.path)).expect("Can't read file");
+    write_basics(&mut file).expect("Could not write to out file.");
+
+    for loaded_font in &loaded_fonts {
+        let font_file = fs::read(Path::new(&config_path).join(&loaded_font.path))
+            .expect(&format!("Can't read ttf file {}", loaded_font.path));
         let font = font::Font::from_bytes(font_file.as_slice(), Default::default())
-            .expect("Failed to parse font file");
+            .expect(&format!("Failed to parse font file: {}", loaded_font.path));
 
-        generate_and_write_font_to_file(&font, &loaded_font, &mut file)?;
+        generate_and_write_font_to_file(&font, &loaded_font, &mut file)
+            .expect("Error writing font to out file");
     }
+
+    write_font_selector(&mut file, loaded_fonts).expect("Unable to write font selector");
     Ok(())
 }
 
-#[derive(Debug)]
-#[allow(dead_code)]
-struct GlyphEntry {
-    pub name: String,
-    pub metrics: font::Metrics,
-}
-
-fn generate_and_write_font_to_file(
-    font: &font::Font,
-    loaded_font: &FontDescriptor,
-    file: &mut fs::File,
-) -> Result<(), Box<dyn Error>> {
-    let mut bitmaps: Vec<Vec<u8>> = vec![];
-    let mut entries: Vec<GlyphEntry> = vec![];
-
-    for c in loaded_font.char_range[0]..=loaded_font.char_range[1] {
-        if let Some((metrics, glyph_sdf)) = font.sdf_generate(
-            loaded_font.px,
-            loaded_font.padding,
-            loaded_font.spread,
-            c as char,
-        ) {
-            let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
-            entries.push(GlyphEntry {
-                name: format!("GLYPH_{}",  c as u8),
-                metrics,
-            });
-            bitmaps.push(rle_encode(bitmap_sdf.buffer));
-        }
-    }
-
+fn write_basics(file: &mut fs::File) -> Result<(), Box<dyn Error>> {
     file.write_all(
         b"#[allow(unused)]
 #[repr(C)]
@@ -124,9 +105,44 @@ pub struct GlyphEntry {
 }\n\n",
     )?;
 
+    Ok(())
+}
+
+#[derive(Debug)]
+#[allow(dead_code)]
+struct GlyphEntry {
+    pub name: String,
+    pub metrics: font::Metrics,
+}
+
+fn generate_and_write_font_to_file(
+    font: &font::Font,
+    loaded_font: &FontDescriptor,
+    file: &mut fs::File,
+) -> Result<(), Box<dyn Error>> {
+    let mut bitmaps: Vec<Vec<u8>> = vec![];
+    let mut entries: Vec<GlyphEntry> = vec![];
+
+    for c in loaded_font.char_range[0]..=loaded_font.char_range[1] {
+        if let Some((metrics, glyph_sdf)) = font.sdf_generate(
+            loaded_font.px,
+            loaded_font.padding,
+            loaded_font.spread,
+            c as char,
+        ) {
+            let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
+            entries.push(GlyphEntry {
+                name: format!("GLYPH_{}", c as u8),
+                metrics,
+            });
+            bitmaps.push(rle_encode(bitmap_sdf.buffer));
+        }
+    }
+
     file.write_all(
         format!(
-            "pub static FONT_ENTRIES: [GlyphEntry; {}] = [\n",
+            "static FONT_{}: [GlyphEntry; {}] = [\n",
+            loaded_font.name.to_uppercase(),
             entries.len()
         )
         .as_bytes(),
@@ -147,7 +163,7 @@ pub struct GlyphEntry {
     for (i, bitmap) in bitmaps.iter().enumerate() {
         file.write_all(
             format!(
-                "pub static GLYPH_{}: [u8; {}] = [",
+                "static GLYPH_{}: [u8; {}] = [",
                 i as u8 + loaded_font.char_range[0],
                 bitmap.len()
             )
@@ -161,6 +177,41 @@ pub struct GlyphEntry {
         }
         writeln!(file, "\n];\n\n")?;
     }
+
+    Ok(())
+}
+
+fn write_font_selector(
+    file: &mut fs::File,
+    fonts: Vec<FontDescriptor>,
+) -> Result<(), Box<dyn Error>> {
+    file.write_all(b"#[derive(Clone, Copy, Default)]")?;
+    file.write_all(b"pub enum Font {\n    #[default]")?;
+    for font in &fonts {
+        file.write_all(format!("    {}\n", font.name).as_bytes())?;
+    }
+    file.write_all(b"}\n\n")?;
+
+    file.write_all(
+        b"impl Font {
+    pub fn get_glyphs(&self) -> &'static [GlyphEntry] {
+        match self {\n",
+    )?;
+    for font in fonts {
+        file.write_all(
+            format!(
+                "            Font::{} => &FONT_{},\n",
+                font.name,
+                font.name.to_uppercase()
+            )
+            .as_bytes(),
+        )?;
+    }
+    file.write_all(
+        b"        }
+    }
+}",
+    )?;
 
     Ok(())
 }

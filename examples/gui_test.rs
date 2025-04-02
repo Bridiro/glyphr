@@ -1,4 +1,4 @@
-use glyphr::{Glyphr, RenderOptions, SdfConfig};
+use glyphr::{Glyphr, SdfConfig};
 use minifb::{Window, WindowOptions};
 
 const WIDTH: usize = 800;
@@ -44,12 +44,14 @@ fn test_pixel_buffer_with_window() {
         &mut buffer,
         WIDTH as u32,
         HEIGHT as u32,
-        SdfConfig::default(),
+        SdfConfig {
+            color: 0x00ffffff,
+            scale: 1.2,
+            smoothing: 0.3,
+            ..Default::default()
+        },
     );
-    current.render("test up & down!", 50, 50, RenderOptions {
-        scale: 1.0,
-        color: 0x00ffffff,
-    });
+    current.render("test up & down!", 50, 50);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();

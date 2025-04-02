@@ -1,4 +1,4 @@
-use super::{Glyphr, RenderOptions, fonts};
+use super::{Glyphr, fonts};
 
 pub trait ExtFloor {
     #[allow(unused)]
@@ -19,16 +19,15 @@ pub fn render_glyph(
     x: u32,
     y: u32,
     value: char,
-    render_options: RenderOptions,
     state: &mut Glyphr,
 ) {
-    let sdf = &state.current_font[value as u8 as usize - 33];
-    let width = (sdf.metrics.width as f32 * render_options.scale) as u32;
-    let height = (sdf.metrics.height as f32 * render_options.scale) as u32;
+    let sdf = &state.sdf_config.font.get_glyphs()[value as u8 as usize - 33];
+    let width = (sdf.metrics.width as f32 * state.sdf_config.scale) as u32;
+    let height = (sdf.metrics.height as f32 * state.sdf_config.scale) as u32;
     if width <= 0 || height <= 0 {
         panic!(
             "Scaling of {:?} returns an image size of {:?}, which is impossible to render",
-            render_options.scale,
+            state.sdf_config.scale,
             (width, height)
         );
     }
@@ -56,7 +55,7 @@ pub fn render_glyph(
                 let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
                 let alpha = distance_to_pixel(sampled_distance) as u32;
                 if alpha > 0 {
-                    let blended_color = (alpha << 24) | (render_options.color & 0x00ffffff);
+                    let blended_color = (alpha << 24) | (state.sdf_config.color & 0x00ffffff);
                     (state.pixel_callback)(x_1 + x, y_1 + y, blended_color, state.buffer.buffer);
                 }
             }
@@ -66,16 +65,16 @@ pub fn render_glyph(
 
 pub fn advance(state: &Glyphr, c: char) -> u32 {
     if c != ' ' {
-        let sdf = &state.current_font[c as u8 as usize - 33];
+        let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
         sdf.metrics.advance_width as u32
     } else {
-        let sdf = &state.current_font['t' as u8 as usize - 33];
+        let sdf = &state.sdf_config.font.get_glyphs()['t' as u8 as usize - 33];
         sdf.metrics.advance_width as u32
     }
 }
 
 pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a fonts::Metrics {
-    let sdf = &state.current_font[c as u8 as usize - 33];
+    let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
     &sdf.metrics
 }
 
