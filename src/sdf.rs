@@ -1,4 +1,4 @@
-use super::{Glyphr, RenderOptions, fonts};
+use super::{Glyphr, fonts};
 
 pub trait ExtFloor {
     #[allow(unused)]
@@ -15,20 +15,14 @@ impl ExtFloor for f32 {
     }
 }
 
-pub fn render_glyph(
-    x: u32,
-    y: u32,
-    value: char,
-    render_options: RenderOptions,
-    state: &mut Glyphr,
-) {
-    let sdf = &state.current_font[value as u8 as usize - 33];
-    let width = (sdf.metrics.width as f32 * render_options.scale) as u32;
-    let height = (sdf.metrics.height as f32 * render_options.scale) as u32;
+pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32) {
+    let sdf = &state.sdf_config.font.get_glyphs()[value as u8 as usize - 33];
+    let width = (sdf.metrics.width as f32 * scale) as u32;
+    let height = (sdf.metrics.height as f32 * scale) as u32;
     if width <= 0 || height <= 0 {
         panic!(
             "Scaling of {:?} returns an image size of {:?}, which is impossible to render",
-            render_options.scale,
+            scale,
             (width, height)
         );
     }
@@ -47,17 +41,17 @@ pub fn render_glyph(
         false => 0,
     };
 
-    for x_1 in 0..width {
-        for y_1 in 0..height {
-            if x_1 + x < state.buffer.width && y_1 + y < state.buffer.height {
+    for x_1 in 0..width as i32 {
+        for y_1 in 0..height as i32 {
+            if x_1 + x >= 0 && x_1 + x < state.buffer.width as i32 && y_1 + y >= 0 && y_1 + y < state.buffer.height as i32 {
                 let sample_x = ((x_1 as f32) + 0.5) / width_f;
                 let sample_y = ((y_1 as f32) + 0.5) / height_f;
 
                 let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
                 let alpha = distance_to_pixel(sampled_distance) as u32;
                 if alpha > 0 {
-                    let blended_color = (alpha << 24) | (render_options.color & 0x00ffffff);
-                    (state.pixel_callback)(x_1 + x, y_1 + y, blended_color, state.buffer.buffer);
+                    let blended_color = (alpha << 24) | (state.sdf_config.color & 0x00ffffff);
+                    (state.pixel_callback)((x_1 + x) as u32, (y_1 + y) as u32, blended_color, state.buffer.buffer);
                 }
             }
         }
@@ -66,16 +60,16 @@ pub fn render_glyph(
 
 pub fn advance(state: &Glyphr, c: char) -> u32 {
     if c != ' ' {
-        let sdf = &state.current_font[c as u8 as usize - 33];
+        let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
         sdf.metrics.advance_width as u32
     } else {
-        let sdf = &state.current_font['t' as u8 as usize - 33];
+        let sdf = &state.sdf_config.font.get_glyphs()['t' as u8 as usize - 33];
         sdf.metrics.advance_width as u32
     }
 }
 
 pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a fonts::Metrics {
-    let sdf = &state.current_font[c as u8 as usize - 33];
+    let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
     &sdf.metrics
 }
 
