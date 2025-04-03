@@ -10,8 +10,8 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 - Compile time font bitmaps generation
 
 ## Roadmap
-- [x] Loading fonts.json from project root
-- [x] Generating what's specified in fonts.json
+- [x] Loading fonts.toml from project root
+- [x] Generating what's specified in fonts.toml
 - [x] Saving the bitmaps somewhere
 - [x] Generating the file(s) that the library will use
 - [x] Main functionalities, like rasterization...
@@ -20,22 +20,19 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 
 ## How To Build
 
-In the project root, create a `fonts` folder, then inside create a `fonts.json`. The library expect an array of fonts, with some parameters. Here is an example:
-```json
-[
-    {
-        "name": "Poppins",
-        "path": "Poppins-Regular.ttf",
-        "px": 36.0,
-        "padding": 1,
-        "spread": 15.0,
-        "char_range": [33, 126]
-    }
-]
+In the project root, create a `fonts` folder, then inside create a `fonts.toml`. The library expect an array of fonts, with some parameters. Here is an example:
+```toml
+[[font]]
+name = "Poppins"
+path = "Poppins-Regular.ttf"
+px = 64.0
+padding = 1
+spread = 20.0
+char_range = [33, 126]
 ```
 It is kind of straightforward to use, but I'll exaplain it to you:
 - `name`: a user-defined name that will be used to choose at runtime which font to use (should be UpperCamelCase as it's used as enum entry)
-- `path`: the path of the ttf file (relative to `fonts.json` folder)
+- `path`: the path of the ttf file (relative to `fonts.toml` folder)
 - `px`: size in pixel of the font
 - `padding`: space in pixel to leave between the glyph and the bitmap borders (0 creates a weird visual artifact, so 1 is better)
 - `spread`: distance in pixel that the SDF extends from the edges of each glyph. Generally the lower the number, the higher space will be occupied, but the best upscaled resolution you will have.
@@ -44,7 +41,7 @@ It is kind of straightforward to use, but I'll exaplain it to you:
 After creating this file, and placing the ttfs where you prefer, you can just build and the bitmaps will be created. For now there is no API's to use it so it's just generation. The generated files will only be useful inside the library itself.
 
 > [!NOTE]
-> You can also define an enviroment variable called `FONTS_DIR`, that contains the path to `fonts.json` folder (and it's relative to the fonts path inside it)
+> You can also define an enviroment variable called `FONTS_DIR`, that contains the path to `fonts.toml` folder (and it's relative to the fonts path inside it)
 
 ## How To Use
 

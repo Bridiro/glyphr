@@ -5,7 +5,7 @@ mod sdf_generation;
 mod vec2;
 
 use serde::{Deserialize, Serialize};
-use serde_json;
+use toml;
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -20,6 +20,11 @@ struct FontDescriptor {
     padding: i32,
     spread: f32,
     char_range: Vec<u8>,
+}
+
+#[derive(Deserialize)]
+struct Config {
+    font: Vec<FontDescriptor>,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -45,13 +50,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     println!(
         "cargo::rerun-if-changed={}",
-        config_path.join("fonts.json").display()
+        config_path.join("fonts.toml").display()
     );
 
-    let fonts_json_path = fs::read_to_string(Path::new(&config_path).join("fonts.json"))
-        .expect("Could not open or find fonts.json");
-    let loaded_fonts: Vec<FontDescriptor> =
-        serde_json::from_str(&fonts_json_path).expect("Error parsing fonts.json");
+    let fonts_toml_path = fs::read_to_string(Path::new(&config_path).join("fonts.toml"))
+        .expect("Could not open or find fonts.toml");
+    let loaded_fonts_config: Config =
+        toml::from_str(&fonts_toml_path).expect("Error parsing fonts.toml");
+    let loaded_fonts = loaded_fonts_config.font;
 
     let mut file = fs::File::create(Path::new(&env::var("OUT_DIR")?).join("generated.rs"))
         .expect("Could not create out file");
