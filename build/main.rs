@@ -136,6 +136,8 @@ fn generate_and_write_font_to_file(
                 metrics,
             });
             bitmaps.push(rle_encode(bitmap_sdf.buffer));
+        } else {
+            panic!("font is not complete!");
         }
     }
 
@@ -185,6 +187,12 @@ fn write_font_selector(
     file: &mut fs::File,
     fonts: Vec<FontDescriptor>,
 ) -> Result<(), Box<dyn Error>> {
+    file.write_all(b"#[derive(Clone, Copy, Default)]
+pub enum FontAlign {
+    #[default] Left,
+    Center,
+    Right,
+}\n\n")?;
     file.write_all(b"#[derive(Clone, Copy, Default)]")?;
     file.write_all(b"pub enum Font {\n    #[default]")?;
     for font in &fonts {

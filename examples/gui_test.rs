@@ -48,10 +48,11 @@ fn test_pixel_buffer_with_window() {
             color: 0x00ffffff,
             scale: 1.2,
             smoothing: 0.3,
+            align: glyphr::fonts::FontAlign::Center,
             ..Default::default()
         },
     );
-    current.render("test up & down!", 50, 50);
+    current.render("test up & down!", 400, 1);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();

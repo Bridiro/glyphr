@@ -51,7 +51,7 @@ After creating this file, and placing the ttfs where you prefer, you can just bu
 Firstly you need to define the callback used to write a pixel. The signature must be `fn(u32, u32, u32, &[u32])`.
 Then you create the struct `Glyphr`:
 ```rust
-use glyphr::{ Glyphr, fonts::Font };
+use glyphr::{ Glyphr, fonts::{ Font, FontAlign } };
 
 let mut glyphr_struct = Glyphr::new(
     pixel_callback,
@@ -62,8 +62,9 @@ let mut glyphr_struct = Glyphr::new(
         color: 0xffffff,
         scale: 2.1,
         smoothing: 0.4,
-        mid_value: 0.5,         // should always be 0.5 except for some edge cases
-        font: Font::default(),  // will pick the first one generated
+        mid_value: 0.5,            // should always be 0.5 except for some edge cases
+        align: FontAlign::Center,  // Align the rendered string on x axis
+        font: Font::default(),     // will pick the first one generated
     },
 );
 ```
