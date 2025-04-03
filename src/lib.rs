@@ -9,7 +9,7 @@ type WritePixel = fn(u32, u32, u32, &mut [u32]);
 pub struct SdfConfig {
     pub font: fonts::Font,
     pub align: fonts::FontAlign,
-    pub scale: f32,
+    pub px: u32,
     pub color: u32,
     pub mid_value: f32,
     pub smoothing: f32,
@@ -20,7 +20,7 @@ impl Default for SdfConfig {
         Self {
             font: fonts::Font::default(),
             align: fonts::FontAlign::default(),
-            scale: 1.0,
+            px: fonts::Font::default().get_glyphs()[0].px,
             color: 0x000000,
             mid_value: 0.5,
             smoothing: 0.5,
@@ -59,20 +59,21 @@ impl<'a> Glyphr<'a> {
         }
     }
 
-    pub fn render(&mut self, phrase: &str, mut x: u32, y: u32) {
+    pub fn render(&mut self, phrase: &str, mut x: i32, y: i32) {
         let mut heights: [i32; 100] = [0; 100];
         let mut max_height = i32::MIN;
+        let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_glyphs()[0].px as f32;
 
         use fonts::FontAlign;
         match self.sdf_config.align {
             FontAlign::Center => x -= phrase_length(self, phrase) / 2,
             FontAlign::Right => x -= phrase_length(self, phrase),
-            _ => {},
+            _ => {}
         }
         for (i, c) in phrase.chars().enumerate() {
             if c != ' ' {
                 let metrics = sdf::get_metrics(self, c);
-                let h = ((metrics.height + metrics.ymin) as f32 * self.sdf_config.scale) as i32;
+                let h = ((metrics.height + metrics.ymin) as f32 * scale) as i32;
                 max_height = max_height.max(h);
                 heights[i] = h;
             } else {
@@ -81,14 +82,9 @@ impl<'a> Glyphr<'a> {
         }
         for (i, c) in phrase.chars().enumerate() {
             if c != ' ' {
-                sdf::render_glyph(
-                    x,
-                    y + (max_height - heights[i]) as u32,
-                    c,
-                    self,
-                );
+                sdf::render_glyph(x, y + (max_height - heights[i]) as i32, c, self, scale);
             }
-            x += (sdf::advance(self, c) as f32 * self.sdf_config.scale) as u32;
+            x += (sdf::advance(self, c) as f32 * scale) as i32;
         }
     }
 
@@ -104,8 +100,8 @@ impl<'a> Glyphr<'a> {
         self.sdf_config.align = align;
     }
 
-    pub fn set_scale(&mut self, scale: f32) {
-        self.sdf_config.scale = scale;
+    pub fn set_scale(&mut self, px: u32) {
+        self.sdf_config.px = px;
     }
 
     pub fn set_color(&mut self, color: u32) {
@@ -121,10 +117,11 @@ impl<'a> Glyphr<'a> {
     }
 }
 
-fn phrase_length(state: &mut Glyphr, phrase: &str) -> u32 {
+fn phrase_length(state: &mut Glyphr, phrase: &str) -> i32 {
+    let scale = state.sdf_config.px as f32 / state.sdf_config.font.get_glyphs()[0].px as f32;
     let mut tot = 0;
     for c in phrase.chars() {
-        tot += (sdf::advance(state, c) as f32 * state.sdf_config.scale) as u32;
+        tot += (sdf::advance(state, c) as f32 * scale) as i32;
     }
     tot
 }

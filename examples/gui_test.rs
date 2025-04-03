@@ -46,7 +46,7 @@ fn test_pixel_buffer_with_window() {
         HEIGHT as u32,
         SdfConfig {
             color: 0x00ffffff,
-            scale: 1.2,
+            px: 70,
             smoothing: 0.3,
             align: glyphr::fonts::FontAlign::Center,
             ..Default::default()

@@ -60,7 +60,7 @@ let mut glyphr_struct = Glyphr::new(
     buffer_height,
     SdfConfig {
         color: 0xffffff,
-        scale: 2.1,
+        px: 70,
         smoothing: 0.4,
         mid_value: 0.5,            // should always be 0.5 except for some edge cases
         align: FontAlign::Center,  // Align the rendered string on x axis

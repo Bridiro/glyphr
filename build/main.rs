@@ -101,6 +101,7 @@ pub struct Metrics {
         b"#[repr(C)]
 pub struct GlyphEntry {
     pub glyph: &'static [u8],
+    pub px: u32,
     pub metrics: Metrics,
 }\n\n",
     )?;
@@ -112,6 +113,7 @@ pub struct GlyphEntry {
 #[allow(dead_code)]
 struct GlyphEntry {
     pub name: String,
+    pub px: u32,
     pub metrics: font::Metrics,
 }
 
@@ -133,6 +135,7 @@ fn generate_and_write_font_to_file(
             let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
             entries.push(GlyphEntry {
                 name: format!("GLYPH_{}", c as u8),
+                px: loaded_font.px as u32,
                 metrics,
             });
             bitmaps.push(rle_encode(bitmap_sdf.buffer));
@@ -154,8 +157,9 @@ fn generate_and_write_font_to_file(
             format!(
                 "GlyphEntry {{
     glyph: &{},
+    px: {},
     metrics: {:#?},\n}},\n",
-                entry.name, entry.metrics
+                entry.name, entry.px, entry.metrics
             )
             .as_bytes(),
         )?;
@@ -187,12 +191,14 @@ fn write_font_selector(
     file: &mut fs::File,
     fonts: Vec<FontDescriptor>,
 ) -> Result<(), Box<dyn Error>> {
-    file.write_all(b"#[derive(Clone, Copy, Default)]
+    file.write_all(
+        b"#[derive(Clone, Copy, Default)]
 pub enum FontAlign {
     #[default] Left,
     Center,
     Right,
-}\n\n")?;
+}\n\n",
+    )?;
     file.write_all(b"#[derive(Clone, Copy, Default)]")?;
     file.write_all(b"pub enum Font {\n    #[default]")?;
     for font in &fonts {
