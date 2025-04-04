@@ -15,7 +15,7 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 - [x] Saving the bitmaps somewhere
 - [x] Generating the file(s) that the library will use
 - [x] Main functionalities, like rasterization...
-- [ ] Clear and useful APIs
+- [x] Clear and useful APIs
 - [ ] General optimization and refactor (I already know I'll need it)
 
 ## How To Build
@@ -69,6 +69,12 @@ and to render anything you just call:
 ```rust
 glyphr_struct.render("Hello, World!", 100, 50);
 ```
+
+> [!TIP]
+> If you want to run an example on your machine you can just do:
+> ```rust
+> cargo run --example glyphr_test_window --features window
+> ```
 
 This will rasterize the font in the buffer, so you just need to display it.
 

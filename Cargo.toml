@@ -16,4 +16,11 @@ toml = "0.8.20"
 ttf-parser = "0.25"
 
 [dependencies]
-minifb = "0.28"
+minifb = { version = "0.28", optional = true }
+
+[features]
+window = ["dep:minifb"]
+
+[[example]]
+name = "glyphr_test_window"
+required-features = ["window"]
