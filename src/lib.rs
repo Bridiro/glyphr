@@ -1,6 +1,7 @@
 #![no_std]
 
 pub mod fonts;
+mod utils;
 mod sdf;
 
 type WritePixel = fn(u32, u32, u32, &mut [u32]);
@@ -59,6 +60,34 @@ impl<'a> Glyphr<'a> {
         }
     }
 
+    pub fn set_sdf_config(&mut self, config: SdfConfig) {
+        self.sdf_config = config;
+    }
+
+    pub fn set_font(&mut self, font: fonts::Font) {
+        self.sdf_config.font = font;
+    }
+
+    pub fn set_font_align(&mut self, align: fonts::FontAlign) {
+        self.sdf_config.align = align;
+    }
+
+    pub fn set_scale(&mut self, px: u32) {
+        self.sdf_config.px = px;
+    }
+
+    pub fn set_color(&mut self, color: u32) {
+        self.sdf_config.color = color;
+    }
+
+    pub fn set_smoothing(&mut self, smoothing: f32) {
+        self.sdf_config.smoothing = smoothing;
+    }
+
+    pub fn set_mid_value(&mut self, mid_value: f32) {
+        self.sdf_config.mid_value = mid_value;
+    }
+
     pub fn render(&mut self, phrase: &str, mut x: i32, y: i32) {
         let mut heights: [i32; 100] = [0; 100];
         let mut max_height = i32::MIN;
@@ -86,34 +115,6 @@ impl<'a> Glyphr<'a> {
             }
             x += (sdf::advance(self, c) as f32 * scale) as i32;
         }
-    }
-
-    pub fn set_sdf_config(&mut self, config: SdfConfig) {
-        self.sdf_config = config;
-    }
-
-    pub fn set_font(&mut self, font: fonts::Font) {
-        self.sdf_config.font = font;
-    }
-
-    pub fn set_font_align(&mut self, align: fonts::FontAlign) {
-        self.sdf_config.align = align;
-    }
-
-    pub fn set_scale(&mut self, px: u32) {
-        self.sdf_config.px = px;
-    }
-
-    pub fn set_color(&mut self, color: u32) {
-        self.sdf_config.color = color;
-    }
-
-    pub fn set_smoothing(&mut self, smoothing: f32) {
-        self.sdf_config.smoothing = smoothing;
-    }
-
-    pub fn set_mid_value(&mut self, mid_value: f32) {
-        self.sdf_config.mid_value = mid_value;
     }
 }
 

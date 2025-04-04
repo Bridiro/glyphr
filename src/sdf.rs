@@ -1,19 +1,8 @@
-use super::{Glyphr, fonts};
-
-pub trait ExtFloor {
-    #[allow(unused)]
-    fn floor(self) -> f32;
-}
-
-impl ExtFloor for f32 {
-    fn floor(self) -> f32 {
-        let mut xi = self as i32;
-        if self < 0.0 && self != xi as f32 {
-            xi -= 1;
-        }
-        xi as f32
-    }
-}
+#[allow(unused_imports)]
+use crate::{
+    Glyphr, fonts,
+    utils::{ExtFloor, mix, smoothstep},
+};
 
 pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32) {
     let sdf = &state.sdf_config.font.get_glyphs()[value as u8 as usize - 33];
@@ -121,15 +110,6 @@ fn sdf_sample(sdf: &fonts::GlyphEntry, x: f32, y: f32) -> f32 {
         mix(p01 as f32 / 255.0, p11 as f32 / 255.0, wx),
         wy,
     )
-}
-
-fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
-    let t = ((x - edge0) / (edge1 - edge0)).clamp(0.0, 1.0);
-    t * t * (3.0 - 2.0 * t)
-}
-
-fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
-    v1 + (v2 - v1) * weight
 }
 
 #[cfg(test)]
