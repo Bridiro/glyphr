@@ -21,4 +21,3 @@ pub fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
 pub fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
     v1 + (v2 - v1) * weight
 }
-

@@ -1,6 +1,7 @@
 #[allow(unused_imports)]
 use crate::{
     Glyphr, fonts,
+    glyph::{GlyphEntry, Metrics},
     utils::{ExtFloor, mix, smoothstep},
 };
 
@@ -66,7 +67,7 @@ pub fn advance(state: &Glyphr, c: char) -> u32 {
     }
 }
 
-pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a fonts::Metrics {
+pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a Metrics {
     let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
     &sdf.metrics
 }
@@ -86,7 +87,7 @@ fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
     0
 }
 
-fn sdf_sample(sdf: &fonts::GlyphEntry, x: f32, y: f32) -> f32 {
+fn sdf_sample(sdf: &GlyphEntry, x: f32, y: f32) -> f32 {
     let gx = (x * (sdf.metrics.width as f32) - 0.5).max(0.0);
     let gy = (y * (sdf.metrics.height as f32) - 0.5).max(0.0);
     let left = gx.floor() as usize;

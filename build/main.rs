@@ -79,38 +79,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn write_basics(file: &mut fs::File) -> Result<(), Box<dyn Error>> {
-    file.write_all(
-        b"#[allow(unused)]
-#[repr(C)]
-pub struct OutlineBounds {
-    pub xmin: f32,
-    pub ymin: f32,
-    pub width: f32,
-    pub height: f32
-}\n\n",
-    )?;
-
-    file.write_all(
-        b"#[allow(unused)]
-#[repr(C)]
-pub struct Metrics {
-    pub xmin: i32,
-    pub ymin: i32,
-    pub width: i32,
-    pub height: i32,
-    pub advance_width: f32,
-    pub bounds: OutlineBounds,
-}\n\n",
-    )?;
-
-    file.write_all(
-        b"#[repr(C)]
-pub struct GlyphEntry {
-    pub glyph: &'static [u8],
-    pub px: u32,
-    pub metrics: Metrics,
-}\n\n",
-    )?;
+    file.write_all(b"use crate::glyph::{GlyphEntry, Metrics, OutlineBounds};\n\n")?;
 
     Ok(())
 }
@@ -205,7 +174,7 @@ pub enum FontAlign {
     Right,
 }\n\n",
     )?;
-    file.write_all(b"#[derive(Clone, Copy, Default)]")?;
+    file.write_all(b"#[derive(Clone, Copy, Default)]\n")?;
     file.write_all(b"pub enum Font {\n    #[default]")?;
     for font in &fonts {
         file.write_all(format!("    {}\n", font.name).as_bytes())?;
