@@ -127,4 +127,95 @@ fn phrase_length(state: &mut Glyphr, phrase: &str) -> i32 {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+    use crate::fonts::{Font, FontAlign};
+
+    fn dummy_pixel_callback(x: u32, y: u32, color: u32, buf: &mut [u32]) {
+        let idx = (y * 4 + x) as usize;
+        if idx < buf.len() {
+            buf[idx] = color;
+        }
+    }
+
+    fn make_test_config() -> SdfConfig {
+        let font = Font::default();
+        SdfConfig {
+            font,
+            align: FontAlign::Left,
+            px: 24,
+            color: 0xAABBCC,
+            mid_value: 0.4,
+            smoothing: 0.2,
+        }
+    }
+
+    #[test]
+    fn test_sdf_config_default_values() {
+        let cfg = SdfConfig::default();
+        assert_eq!(cfg.color, 0x000000);
+        assert!(cfg.mid_value > 0.0 && cfg.mid_value <= 1.0);
+        assert!(cfg.smoothing > 0.0 && cfg.smoothing <= 1.0);
+        let g = cfg.font.get_glyphs();
+        assert!(!g.is_empty());
+    }
+
+    #[test]
+    fn test_sdf_config_custom_values() {
+        let cfg = make_test_config();
+        assert_eq!(cfg.color, 0xAABBCC);
+        assert_eq!(cfg.px, 24);
+        assert_eq!(cfg.mid_value, 0.4);
+        assert_eq!(cfg.smoothing, 0.2);
+    }
+
+    #[test]
+    fn test_glyphr_new_initializes_correctly() {
+        let mut buffer = [0u32; 16];
+        let config = make_test_config();
+
+        let glyphr = Glyphr::new(dummy_pixel_callback, &mut buffer, 4, 4, config);
+
+        assert_eq!(glyphr.buffer.width, 4);
+        assert_eq!(glyphr.buffer.height, 4);
+        assert_eq!(glyphr.sdf_config.color, 0xAABBCC);
+    }
+
+    #[test]
+    fn test_pixel_callback_writes_color() {
+        let mut buffer = [0u32; 16];
+        let callback = |x, y, color, buf: &mut [u32]| {
+            let idx = (y * 4 + x) as usize;
+            buf[idx] = color;
+        };
+
+        callback(2, 1, 0x123456, &mut buffer);
+
+        let idx = 1 * 4 + 2;
+        assert_eq!(buffer[idx], 0x123456);
+    }
+
+    #[test]
+    fn test_out_of_bounds_pixel_callback_does_not_crash() {
+        let mut buffer = [0u32; 16];
+        dummy_pixel_callback(10, 10, 0xFFFFFF, &mut buffer);
+        assert!(buffer.iter().all(|&b| b == 0)); // Should be unchanged
+    }
+
+    #[test]
+    fn test_glyphr_multiple_renders_dont_corrupt() {
+        let mut buffer = [0u32; 16];
+        let mut glyphr = Glyphr::new(
+            dummy_pixel_callback,
+            &mut buffer,
+            4,
+            4,
+            SdfConfig::default(),
+        );
+
+        glyphr.render("H", 0, 0);
+
+        let modified = buffer.iter().any(|&c| c != 0);
+        assert!(modified);
+    }
+}

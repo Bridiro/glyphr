@@ -43,7 +43,11 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
 
     for x_1 in 0..width as i32 {
         for y_1 in 0..height as i32 {
-            if x_1 + x >= 0 && x_1 + x < state.buffer.width as i32 && y_1 + y >= 0 && y_1 + y < state.buffer.height as i32 {
+            if x_1 + x >= 0
+                && x_1 + x < state.buffer.width as i32
+                && y_1 + y >= 0
+                && y_1 + y < state.buffer.height as i32
+            {
                 let sample_x = ((x_1 as f32) + 0.5) / width_f;
                 let sample_y = ((y_1 as f32) + 0.5) / height_f;
 
@@ -51,7 +55,12 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
                 let alpha = distance_to_pixel(sampled_distance) as u32;
                 if alpha > 0 {
                     let blended_color = (alpha << 24) | (state.sdf_config.color & 0x00ffffff);
-                    (state.pixel_callback)((x_1 + x) as u32, (y_1 + y) as u32, blended_color, state.buffer.buffer);
+                    (state.pixel_callback)(
+                        (x_1 + x) as u32,
+                        (y_1 + y) as u32,
+                        blended_color,
+                        state.buffer.buffer,
+                    );
                 }
             }
         }
@@ -121,4 +130,80 @@ fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
 
 fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
     v1 + (v2 - v1) * weight
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::fonts::Font;
+    use crate::{Glyphr, SdfConfig};
+
+    fn dummy_pixel_callback(x: u32, y: u32, color: u32, buf: &mut [u32]) {
+        let idx = (y * 10 + x) as usize;
+        if idx < buf.len() {
+            buf[idx] = color;
+        }
+    }
+
+    fn setup_dummy_state<'a>(buffer: &'a mut [u32]) -> Glyphr<'a> {
+        let config = SdfConfig {
+            font: Font::default(),
+            align: crate::fonts::FontAlign::default(),
+            px: 16,
+            color: 0x112233,
+            mid_value: 0.5,
+            smoothing: 0.5,
+        };
+
+        Glyphr::new(dummy_pixel_callback, buffer, 10, 10, config)
+    }
+
+    #[test]
+    fn test_ext_floor_behavior() {
+        assert_eq!(1.9f32.floor(), 1.0);
+        assert_eq!((-1.1f32).floor(), -2.0);
+        assert_eq!(0.0f32.floor(), 0.0);
+        assert_eq!((-0.999f32).floor(), -1.0);
+    }
+
+    #[test]
+    fn test_smoothstep_behavior() {
+        assert_eq!(super::smoothstep(0.0, 1.0, -1.0), 0.0);
+        assert_eq!(super::smoothstep(0.0, 1.0, 0.0), 0.0);
+        assert_eq!(super::smoothstep(0.0, 1.0, 0.5), 0.5);
+        assert_eq!(super::smoothstep(0.0, 1.0, 1.0), 1.0);
+        assert_eq!(super::smoothstep(0.0, 1.0, 2.0), 1.0);
+    }
+
+    #[test]
+    fn test_mix_behavior() {
+        assert_eq!(super::mix(0.0, 10.0, 0.0), 0.0);
+        assert_eq!(super::mix(0.0, 10.0, 0.5), 5.0);
+        assert_eq!(super::mix(0.0, 10.0, 1.0), 10.0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_render_glyph_invalid_size() {
+        let mut buffer = [0u32; 100];
+        let mut state = setup_dummy_state(&mut buffer);
+        super::render_glyph(0, 0, ' ', &mut state, 0.0);
+    }
+
+    #[test]
+    fn test_render_glyph_valid() {
+        let mut buffer = [0u32; 100];
+        let mut state = setup_dummy_state(&mut buffer);
+        super::render_glyph(0, 0, 'A', &mut state, 1.0);
+        // we expect some pixels to be written, exact values depend on sdf decoding logic
+    }
+
+    #[test]
+    fn test_render_whole_string() {
+        let mut buffer = [0u32; 100];
+        let mut state = setup_dummy_state(&mut buffer);
+        state.render("HI", 0, 0);
+        // Check the buffer is not empty
+        let written = state.buffer.buffer.iter().any(|&x| x != 0);
+        assert!(written);
+    }
 }

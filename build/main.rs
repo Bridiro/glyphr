@@ -5,12 +5,12 @@ mod sdf_generation;
 mod vec2;
 
 use serde::{Deserialize, Serialize};
-use toml;
 use std::env;
 use std::error::Error;
 use std::fs;
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
+use toml;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct FontDescriptor {
