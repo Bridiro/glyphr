@@ -1,3 +1,8 @@
+//! # sdf
+//!
+//! Contains the core logic to render SDF-based fonts with RLE decoding,
+//! bilinear sampling, and blending to an output framebuffer.
+
 #[allow(unused_imports)]
 use crate::{
     Glyphr, fonts,
@@ -5,6 +10,18 @@ use crate::{
     utils::{ExtFloor, mix, smoothstep},
 };
 
+/// Renders a glyph at a given position.
+///
+/// # Panics
+/// Panics if the scaled glyph size is 0.
+/// 
+/// # Examples
+/// ```
+/// # use glyphr::{sdf::render_glyph, Glyphr, SdfConfig};
+/// # let mut buffer = [0u32; 100];
+/// # let mut state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
+/// render_glyph(0, 0, 'A', &mut state, 1.0);
+/// ```
 pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32) {
     let sdf = &state.sdf_config.font.get_glyphs()[value as u8 as usize - 33];
     let width = (sdf.metrics.width as f32 * scale) as u32;
@@ -57,6 +74,16 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
     }
 }
 
+/// Returns the advance width for a character.
+///
+/// # Examples
+/// ```
+/// # use glyphr::{sdf::advance, Glyphr, SdfConfig};
+/// # let mut buffer = [0u32; 100];
+/// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
+/// let adv = advance(&state, 'A');
+/// assert!(adv > 0);
+/// ```
 pub fn advance(state: &Glyphr, c: char) -> u32 {
     if c != ' ' {
         let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
@@ -67,6 +94,16 @@ pub fn advance(state: &Glyphr, c: char) -> u32 {
     }
 }
 
+/// Returns the glyph metrics for the given character.
+///
+/// # Examples
+/// ```
+/// # use glyphr::{sdf::get_metrics, Glyphr, SdfConfig};
+/// # let mut buffer = [0u32; 100];
+/// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
+/// let m = get_metrics(&state, 'A');
+/// assert!(m.advance_width > 0.0);
+/// ```
 pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a Metrics {
     let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
     &sdf.metrics
