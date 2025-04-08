@@ -3,7 +3,7 @@
 pub mod fonts;
 pub mod glyph;
 pub mod renderer;
-mod sdf;
+pub mod sdf;
 pub mod utils;
 
 pub use fonts::{Font, FontAlign};
