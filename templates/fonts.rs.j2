@@ -1,0 +1,58 @@
+use crate::glyph::{GlyphEntry, Metrics, OutlineBounds};
+
+{%- for font in fonts %}
+    {%- for glyph in font.glyphs %}
+static {{ glyph.codepoint }}_{{ font.name|upper }}: [u8; {{ glyph.bitmap_len }}] = [
+    {%- for chunk in glyph.bitmap|batch(15) %}
+    {% for column in chunk %}{{ column }}, {% endfor %}
+    {%- endfor %}
+];
+    {%- endfor %}
+
+pub static FONT_{{ font.name|upper }}: [GlyphEntry; {{ font.glyphs|length }}] = [
+    {%- for glyph in font.glyphs %}
+    GlyphEntry {
+        glyph: &{{ glyph.codepoint }}_{{ font.name|upper }},
+        px: {{ glyph.px }},
+        metrics: Metrics {
+            xmin: {{ glyph.metrics.xmin }},
+            ymin: {{ glyph.metrics.ymin }},
+            width: {{ glyph.metrics.width }},
+            height: {{ glyph.metrics.height }},
+            advance_width: {{ glyph.metrics.advance_width }},
+            bounds: OutlineBounds {
+                xmin: {{ glyph.metrics.bounds.xmin }},
+                ymin: {{ glyph.metrics.bounds.ymin }},
+                width: {{ glyph.metrics.bounds.width }},
+                height: {{ glyph.metrics.bounds.height }},
+            },
+        },
+    },
+    {%- endfor %}
+];
+{%- endfor %}
+
+#[derive(Clone, Copy, Default)]
+pub enum FontAlign {
+    #[default] Left,
+    Center,
+    Right,
+}
+
+#[derive(Clone, Copy, Default)]
+pub enum Font {
+    {%- for font in fonts %}
+    #[default]
+    {{ font.name|capitalize }}{{ "," if not loop.last }}
+    {%- endfor %}
+}
+
+impl Font {
+    pub fn get_glyphs(&self) -> &'static [GlyphEntry] {
+        match self {
+            {%- for font in fonts %}
+            Font::{{ font.name|capitalize }} => &FONT_{{ font.name|upper }},
+            {%- endfor %}
+        }
+    }
+}

@@ -4,11 +4,11 @@ mod line;
 mod sdf_generation;
 mod vec2;
 
+use minijinja::{Environment, context};
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::error::Error;
 use std::fs;
-use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 use toml;
 
@@ -59,27 +59,59 @@ fn main() -> Result<(), Box<dyn Error>> {
         toml::from_str(&fonts_toml_path).expect("Error parsing fonts.toml");
     let loaded_fonts = loaded_fonts_config.font;
 
-    let mut file = fs::File::create(Path::new(&env::var("OUT_DIR")?).join("generated.rs"))
-        .expect("Could not create out file");
+    let mut env = Environment::new();
+    env.add_template("fonts", include_str!("../templates/fonts.rs.j2"))
+        .unwrap();
 
-    write_basics(&mut file).expect("Could not write to out file.");
-
+    let mut all_fonts: Vec<(&str, Vec<Vec<u8>>, Vec<GlyphEntry>)> = Vec::new();
     for loaded_font in &loaded_fonts {
         let font_file = fs::read(Path::new(&config_path).join(&loaded_font.path))
             .expect(&format!("Can't read ttf file {}", loaded_font.path));
         let font = font::Font::from_bytes(font_file.as_slice(), Default::default())
             .expect(&format!("Failed to parse font file: {}", loaded_font.path));
 
-        generate_and_write_font_to_file(&font, &loaded_font, &mut file)
-            .expect("Error writing font to out file");
+        let (bitmaps, entries) = generate_font(&font, loaded_font);
+        all_fonts.push((&loaded_font.name, bitmaps, entries));
     }
 
-    write_font_selector(&mut file, loaded_fonts).expect("Unable to write font selector");
-    Ok(())
+    let mut fonts_meta = vec![];
+
+    for (font_name, bitmaps, entries) in &all_fonts {
+    let mut glyphs = vec![];
+
+    for (entry, bitmap) in entries.iter().zip(bitmaps.iter()) {
+        glyphs.push(context! {
+            codepoint => entry.name.clone(),
+            bitmap_len => bitmap.len(),
+            bitmap => bitmap.clone(),
+            px => entry.px,
+            metrics => context! {
+                xmin => entry.metrics.xmin,
+                ymin => entry.metrics.ymin,
+                width => entry.metrics.width,
+                height => entry.metrics.height,
+                advance_width => entry.metrics.advance_width,
+                bounds => context! {
+                    xmin => entry.metrics.bounds.xmin,
+                    ymin => entry.metrics.bounds.ymin,
+                    width => entry.metrics.bounds.width,
+                    height => entry.metrics.bounds.height,
+                }
+            }
+        });
+    }
+
+    fonts_meta.push(context! {
+        name => *font_name,
+        glyphs => glyphs,
+    });
 }
 
-fn write_basics(file: &mut fs::File) -> Result<(), Box<dyn Error>> {
-    file.write_all(b"use crate::glyph::{GlyphEntry, Metrics, OutlineBounds};\n\n")?;
+// Now render fonts.rs with everything
+let rendered = env.get_template("fonts").unwrap().render(context! {
+    fonts => fonts_meta,
+}).unwrap();
+    fs::write(Path::new(&env::var("OUT_DIR")?).join("fonts.rs"), rendered).unwrap();
 
     Ok(())
 }
@@ -92,11 +124,10 @@ struct GlyphEntry {
     pub metrics: font::Metrics,
 }
 
-fn generate_and_write_font_to_file(
+fn generate_font(
     font: &font::Font,
     loaded_font: &FontDescriptor,
-    file: &mut fs::File,
-) -> Result<(), Box<dyn Error>> {
+) -> (Vec<Vec<u8>>, Vec<GlyphEntry>) {
     let mut bitmaps: Vec<Vec<u8>> = vec![];
     let mut entries: Vec<GlyphEntry> = vec![];
 
@@ -119,90 +150,7 @@ fn generate_and_write_font_to_file(
         }
     }
 
-    file.write_all(
-        format!(
-            "static FONT_{}: [GlyphEntry; {}] = [\n",
-            loaded_font.name.to_uppercase(),
-            entries.len()
-        )
-        .as_bytes(),
-    )?;
-    for entry in entries {
-        file.write_all(
-            format!(
-                "GlyphEntry {{
-    glyph: &{},
-    px: {},
-    metrics: {:#?},\n}},\n",
-                entry.name, entry.px, entry.metrics
-            )
-            .as_bytes(),
-        )?;
-    }
-    file.write_all(b"];\n\n")?;
-
-    for (i, bitmap) in bitmaps.iter().enumerate() {
-        file.write_all(
-            format!(
-                "static GLYPH_{}: [u8; {}] = [",
-                i as u8 + loaded_font.char_range[0],
-                bitmap.len()
-            )
-            .as_bytes(),
-        )?;
-        for (j, byte) in bitmap.iter().enumerate() {
-            if j % 16 == 0 {
-                writeln!(file)?;
-            }
-            write!(file, "{}, ", byte)?;
-        }
-        writeln!(file, "\n];\n\n")?;
-    }
-
-    Ok(())
-}
-
-fn write_font_selector(
-    file: &mut fs::File,
-    fonts: Vec<FontDescriptor>,
-) -> Result<(), Box<dyn Error>> {
-    file.write_all(
-        b"#[derive(Clone, Copy, Default)]
-pub enum FontAlign {
-    #[default] Left,
-    Center,
-    Right,
-}\n\n",
-    )?;
-    file.write_all(b"#[derive(Clone, Copy, Default)]\n")?;
-    file.write_all(b"pub enum Font {\n    #[default]")?;
-    for font in &fonts {
-        file.write_all(format!("    {}\n", font.name).as_bytes())?;
-    }
-    file.write_all(b"}\n\n")?;
-
-    file.write_all(
-        b"impl Font {
-    pub fn get_glyphs(&self) -> &'static [GlyphEntry] {
-        match self {\n",
-    )?;
-    for font in fonts {
-        file.write_all(
-            format!(
-                "            Font::{} => &FONT_{},\n",
-                font.name,
-                font.name.to_uppercase()
-            )
-            .as_bytes(),
-        )?;
-    }
-    file.write_all(
-        b"        }
-    }
-}",
-    )?;
-
-    Ok(())
+    (bitmaps, entries)
 }
 
 fn rle_encode(data: Vec<u8>) -> Vec<u8> {
