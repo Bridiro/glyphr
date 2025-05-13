@@ -41,8 +41,8 @@ pub enum FontAlign {
 
 #[derive(Clone, Copy, Default)]
 pub enum Font {
-    {%- for font in fonts %}
     #[default]
+    {%- for font in fonts %}
     {{ font.name|capitalize }}{{ "," if not loop.last }}
     {%- endfor %}
 }
