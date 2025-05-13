@@ -14,6 +14,7 @@ categories = ["no-std", "no-std::no-alloc", "graphics", "embedded"]
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.8.20"
 ttf-parser = "0.25"
+minijinja = "2.10.2"
 
 [dependencies]
 minifb = { version = "0.28", optional = true }
