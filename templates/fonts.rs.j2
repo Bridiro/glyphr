@@ -32,14 +32,14 @@ pub static FONT_{{ font.name|upper }}: [GlyphEntry; {{ font.glyphs|length }}] = 
 ];
 {%- endfor %}
 
-#[derive(Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub enum FontAlign {
     #[default] Left,
     Center,
     Right,
 }
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub enum Font {
     #[default]
     {%- for font in fonts %}

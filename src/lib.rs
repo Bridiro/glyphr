@@ -34,40 +34,6 @@
 //! > ### NOTE
 //! > You can also define an enviroment variable called `FONTS_DIR`, that contains the path to `fonts.toml` folder (and it's relative to the fonts path inside it)
 //!
-//! ## How To Use
-//!
-//! Firstly you need to define the callback used to write a pixel. The signature must be `fn(u32, u32, u32, &[u32])`.
-//! Then you create the struct `Glyphr`:
-//! ```rust
-//! use glyphr::{ Glyphr, fonts::{ Font, FontAlign } };
-//!
-//! let mut glyphr_struct = Glyphr::new(
-//!     pixel_callback,
-//!     &mut buffer,  // &[u32]
-//!     buffer_width,
-//!     buffer_height,
-//!     SdfConfig {
-//!         color: 0xffffff,
-//!         px: 70,
-//!         smoothing: 0.4,
-//!         mid_value: 0.5,            // should always be 0.5 except for some edge cases
-//!         align: FontAlign::Center,  // Align the rendered string on x axis
-//!         font: Font::default(),     // will pick the first one generated
-//!     },
-//! );
-//! ```
-//! and to render anything you just call:
-//! ```rust
-//! glyphr_struct.render("Hello, World!", 100, 50);
-//! ```
-//!
-//! > ### TIP
-//! > If you want to run an example on your machine you can just do:
-//! > ```rust
-//! > cargo run --example glyphr_test_window --features window
-//! > ```
-//!
-//! This will rasterize the font in the buffer, so you just need to display it.
 
 #![no_std]
 
