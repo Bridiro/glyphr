@@ -109,6 +109,7 @@ pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a Metrics {
     &sdf.metrics
 }
 
+/// Returns the value that would be found at a given index in a non-encoded array.
 fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
     let mut i = 0;
     let mut decoded_index = 0;
@@ -124,6 +125,8 @@ fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
     0
 }
 
+// This function samples the nearest 4 pixels to `x` and `y`, then does a bilinear interpolation
+// and finds the average of them.
 fn sdf_sample(sdf: &GlyphEntry, x: f32, y: f32) -> f32 {
     let gx = (x * (sdf.metrics.width as f32) - 0.5).max(0.0);
     let gy = (y * (sdf.metrics.height as f32) - 0.5).max(0.0);

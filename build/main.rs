@@ -28,7 +28,11 @@ struct Config {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let config_path = if let Ok(path) = env::var("FONTS_DIR") {
+    if std::env::var("DOCS_RS").is_ok() {
+        return Ok(());
+    };
+
+    let config_path = if let Ok(path) = env::var("GLYPHR_CONFIG") {
         PathBuf::from(path)
     } else {
         let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
@@ -77,40 +81,44 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut fonts_meta = vec![];
 
     for (font_name, bitmaps, entries) in &all_fonts {
-    let mut glyphs = vec![];
+        let mut glyphs = vec![];
 
-    for (entry, bitmap) in entries.iter().zip(bitmaps.iter()) {
-        glyphs.push(context! {
-            codepoint => entry.name.clone(),
-            bitmap_len => bitmap.len(),
-            bitmap => bitmap.clone(),
-            px => entry.px,
-            metrics => context! {
-                xmin => entry.metrics.xmin,
-                ymin => entry.metrics.ymin,
-                width => entry.metrics.width,
-                height => entry.metrics.height,
-                advance_width => entry.metrics.advance_width,
-                bounds => context! {
-                    xmin => entry.metrics.bounds.xmin,
-                    ymin => entry.metrics.bounds.ymin,
-                    width => entry.metrics.bounds.width,
-                    height => entry.metrics.bounds.height,
+        for (entry, bitmap) in entries.iter().zip(bitmaps.iter()) {
+            glyphs.push(context! {
+                codepoint => entry.name.clone(),
+                bitmap_len => bitmap.len(),
+                bitmap => bitmap.clone(),
+                px => entry.px,
+                metrics => context! {
+                    xmin => entry.metrics.xmin,
+                    ymin => entry.metrics.ymin,
+                    width => entry.metrics.width,
+                    height => entry.metrics.height,
+                    advance_width => entry.metrics.advance_width,
+                    bounds => context! {
+                        xmin => entry.metrics.bounds.xmin,
+                        ymin => entry.metrics.bounds.ymin,
+                        width => entry.metrics.bounds.width,
+                        height => entry.metrics.bounds.height,
+                    }
                 }
-            }
+            });
+        }
+
+        fonts_meta.push(context! {
+            name => *font_name,
+            glyphs => glyphs,
         });
     }
 
-    fonts_meta.push(context! {
-        name => *font_name,
-        glyphs => glyphs,
-    });
-}
-
-// Now render fonts.rs with everything
-let rendered = env.get_template("fonts").unwrap().render(context! {
-    fonts => fonts_meta,
-}).unwrap();
+    // Now render fonts.rs with everything
+    let rendered = env
+        .get_template("fonts")
+        .unwrap()
+        .render(context! {
+            fonts => fonts_meta,
+        })
+        .unwrap();
     fs::write(Path::new(&env::var("OUT_DIR")?).join("fonts.rs"), rendered).unwrap();
 
     Ok(())

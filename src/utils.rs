@@ -1,4 +1,4 @@
-//! # utils
+//! # utils.rs
 //!
 //! Utility functions for float operations, used primarily for SDF rendering.
 //!
