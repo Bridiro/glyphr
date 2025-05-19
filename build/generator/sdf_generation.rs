@@ -1,4 +1,4 @@
-use crate::line;
+use crate::generator::line;
 
 pub struct SdfRaster {
     pub width: u32,

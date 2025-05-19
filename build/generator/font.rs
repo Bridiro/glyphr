@@ -1,7 +1,7 @@
 use std::{collections::HashMap, ops::Deref};
 use ttf_parser::{Face, FaceParsingError, name_id::FULL_NAME};
 
-use super::{
+use crate::generator::{
     font_geometry::{FontGeometry, OutlineBounds},
     line::Line,
     sdf_generation::{SdfRaster, sdf_generate},

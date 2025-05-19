@@ -1,67 +1,20 @@
-mod font;
-mod font_geometry;
-mod line;
-mod sdf_generation;
-mod vec2;
+mod config;
+mod generator;
 
 use minijinja::{Environment, context};
-use serde::{Deserialize, Serialize};
-use std::env;
 use std::error::Error;
 use std::fs;
-use std::path::{Path, PathBuf};
-use toml;
+use std::path::Path;
+use std::env;
 
-#[derive(Serialize, Deserialize, Debug)]
-struct FontDescriptor {
-    name: String,
-    path: String,
-    px: f32,
-    padding: i32,
-    spread: f32,
-    char_range: Vec<u8>,
-}
-
-#[derive(Deserialize)]
-struct Config {
-    font: Vec<FontDescriptor>,
-}
+use crate::generator::{font::Metrics, sdf_generation};
 
 fn main() -> Result<(), Box<dyn Error>> {
     if std::env::var("DOCS_RS").is_ok() {
         return Ok(());
     };
 
-    let config_path = if let Ok(path) = env::var("GLYPHR_CONFIG") {
-        PathBuf::from(path)
-    } else {
-        let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-        let mut current_dir = out_dir;
-
-        loop {
-            if current_dir.join("Cargo.toml").exists() {
-                break current_dir.join("fonts");
-            }
-            if !current_dir.pop() {
-                panic!("Failed to locate project root containing Cargo.toml");
-            }
-        }
-    };
-
-    // Verify the configuration file exists
-    if !config_path.exists() {
-        panic!("Configuration file not found at {}", config_path.display());
-    }
-    println!(
-        "cargo::rerun-if-changed={}",
-        config_path.join("fonts.toml").display()
-    );
-
-    let fonts_toml_path = fs::read_to_string(Path::new(&config_path).join("fonts.toml"))
-        .expect("Could not open or find fonts.toml");
-    let loaded_fonts_config: Config =
-        toml::from_str(&fonts_toml_path).expect("Error parsing fonts.toml");
-    let loaded_fonts = loaded_fonts_config.font;
+    let loaded_fonts = config::get_config();
 
     let mut env = Environment::new();
     env.add_template("fonts", include_str!("../templates/fonts.rs.j2"))
@@ -69,12 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut all_fonts: Vec<(&str, Vec<Vec<u8>>, Vec<GlyphEntry>)> = Vec::new();
     for loaded_font in &loaded_fonts {
-        let font_file = fs::read(Path::new(&config_path).join(&loaded_font.path))
-            .expect(&format!("Can't read ttf file {}", loaded_font.path));
-        let font = font::Font::from_bytes(font_file.as_slice(), Default::default())
-            .expect(&format!("Failed to parse font file: {}", loaded_font.path));
-
-        let (bitmaps, entries) = generate_font(&font, loaded_font);
+        let (bitmaps, entries) = generate_font(loaded_font);
         all_fonts.push((&loaded_font.name, bitmaps, entries));
     }
 
@@ -129,18 +77,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 struct GlyphEntry {
     pub name: String,
     pub px: u32,
-    pub metrics: font::Metrics,
+    pub metrics: Metrics,
 }
 
 fn generate_font(
-    font: &font::Font,
-    loaded_font: &FontDescriptor,
+    loaded_font: &crate::config::FontLoaded,
 ) -> (Vec<Vec<u8>>, Vec<GlyphEntry>) {
     let mut bitmaps: Vec<Vec<u8>> = vec![];
     let mut entries: Vec<GlyphEntry> = vec![];
 
     for c in loaded_font.char_range[0]..=loaded_font.char_range[1] {
-        if let Some((metrics, glyph_sdf)) = font.sdf_generate(
+        if let Some((metrics, glyph_sdf)) = loaded_font.font.sdf_generate(
             loaded_font.px,
             loaded_font.padding,
             loaded_font.spread,

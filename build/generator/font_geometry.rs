@@ -1,4 +1,4 @@
-use super::{line::Line, vec2::vec2};
+use crate::generator::{line::Line, vec2::vec2};
 use ttf_parser::OutlineBuilder;
 
 #[derive(Default, Copy, Clone)]
