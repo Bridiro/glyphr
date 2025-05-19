@@ -41,7 +41,7 @@ It is kind of straightforward to use, but I'll exaplain it to you:
 After creating this file, and placing the ttfs where you prefer, you can just build and the bitmaps will be created. For now there is no API's to use it so it's just generation. The generated files will only be useful inside the library itself.
 
 > [!NOTE]
-> You can also define an enviroment variable called `FONTS_DIR`, that contains the path to `fonts.toml` folder (and it's relative to the fonts path inside it)
+> You can also define an enviroment variable called `GLYPHR_CONFIG`, that contains the path to `fonts.toml` folder (and it's relative to the fonts path inside it)
 
 ## How To Use
 

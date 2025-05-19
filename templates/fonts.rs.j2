@@ -48,6 +48,9 @@ pub enum Font {
 }
 
 impl Font {
+    /// # get_glyphs
+    ///
+    /// Returns the static array of glyphs of the font on which is called.
     pub fn get_glyphs(&self) -> &'static [GlyphEntry] {
         match self {
             {%- for font in fonts %}
