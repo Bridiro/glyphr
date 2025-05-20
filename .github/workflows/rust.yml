@@ -1,0 +1,30 @@
+name: Build & Test
+
+on:
+  push:
+    branches:
+      - master
+
+env: 
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    name: Rust project - latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+    steps:
+      - name: Checkout glyphr repo
+        uses: actions/checkout@v4
+      - name: Update rust compiler
+        run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - name: Checkout config repo
+        run: git clone https://github.com/Bridiro/glyphr-ci-assets.git fonts
+      - name: Build
+        run: cargo build
+      - name: Tests
+        run: cargo test
+  

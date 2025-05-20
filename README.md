@@ -1,5 +1,11 @@
 # Glyphr
 
+[![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://github.com/Bridiro/glyphr#license)
+[![Crates.io](https://img.shields.io/crates/v/glyphr.svg)](https://crates.io/crates/glyphr)
+[![Downloads](https://img.shields.io/crates/d/glyphr.svg)](https://crates.io/crates/glyphr)
+[![Docs](https://docs.rs/glyphr/badge.svg)](https://docs.rs/glyphr/latest/glyphr/)
+[![CI](https://github.com/Bridiro/glyphr/actions/workflows/rust.yml/badge.svg)](https://github.com/Bridiro/glyphr/actions)
+
 This is the successor (only spiritually) of [libraster-sw](https://github.com/eagletrt/libraster-sw). I wrote that library because all the alternatives were completely bloated
 and had too much features that I did not use. I just wanted it to be as fast as possible, while possibly maintaining an easy use.
 
