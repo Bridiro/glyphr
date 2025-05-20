@@ -6,6 +6,7 @@ on:
       - master
 
 env: 
+  DOCS_RS: 1
   CARGO_TERM_COLOR: always
 
 jobs:
@@ -21,10 +22,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Update rust compiler
         run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
-      - name: Checkout config repo
-        run: git clone https://github.com/Bridiro/glyphr-ci-assets.git fonts
       - name: Build
         run: cargo build
       - name: Tests
         run: cargo test
+      - name: Docs
+        run: cargo doc
   

@@ -169,7 +169,7 @@ mod tests {
         let config = SdfConfig {
             font: Font::default(),
             align: crate::fonts::FontAlign::default(),
-            px: 16,
+            px: 30,
             color: 0x112233,
             mid_value: 0.5,
             smoothing: 0.5,
