@@ -1,6 +1,6 @@
 [package]
 name = "glyphr"
-version = "0.2.6"
+version = "0.3.0"
 edition = "2024"
 authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
 description = "A no_std, lightweight and simple font rasterizing library"
