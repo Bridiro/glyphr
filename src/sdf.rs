@@ -27,11 +27,7 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
     let width = (sdf.metrics.width as f32 * scale) as u32;
     let height = (sdf.metrics.height as f32 * scale) as u32;
     if width <= 0 || height <= 0 {
-        panic!(
-            "Scaling of {:?} returns an image size of {:?}, which is impossible to render",
-            scale,
-            (width, height)
-        );
+        return;
     }
 
     let width_f = width as f32;
@@ -201,14 +197,6 @@ mod tests {
         assert_eq!(super::mix(0.0, 10.0, 0.0), 0.0);
         assert_eq!(super::mix(0.0, 10.0, 0.5), 5.0);
         assert_eq!(super::mix(0.0, 10.0, 1.0), 10.0);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_render_glyph_invalid_size() {
-        let mut buffer = [0u32; 100];
-        let mut state = setup_dummy_state(&mut buffer);
-        super::render_glyph(0, 0, ' ', &mut state, 0.0);
     }
 
     #[test]

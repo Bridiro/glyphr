@@ -309,15 +309,14 @@ impl<'a> Glyphr<'a> {
             _ => {}
         }
         for (i, c) in phrase.chars().enumerate() {
-            let metrics = sdf::get_metrics(self, c).unwrap();
-            let h = ((metrics.height + metrics.ymin) as f32 * scale) as i32;
-            max_height = max_height.max(h);
-            heights[i] = h;
+            if let Some(metrics) = sdf::get_metrics(self, c) {
+                let h = ((metrics.height + metrics.ymin) as f32 * scale) as i32;
+                max_height = max_height.max(h);
+                heights[i] = h;
+            }
         }
         for (i, c) in phrase.chars().enumerate() {
-            if c != ' ' {
-                sdf::render_glyph(x, y + (max_height - heights[i]) as i32, c, self, scale);
-            }
+            sdf::render_glyph(x, y + (max_height - heights[i]) as i32, c, self, scale);
             x += (sdf::advance(self, c).unwrap() as f32 * scale) as i32;
         }
     }
@@ -345,7 +344,7 @@ impl<'a> Glyphr<'a> {
         let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_size() as f32;
         let mut tot = 0;
         for c in phrase.chars() {
-            tot += (sdf::advance(self, c).unwrap() as f32 * scale) as i32;
+            tot += (sdf::advance(self, c).unwrap_or(0) as f32 * scale) as i32;
         }
         tot
     }
