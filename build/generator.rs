@@ -20,21 +20,35 @@ pub fn generate_font(
     let mut bitmaps: Vec<Vec<u8>> = vec![];
     let mut entries: Vec<GlyphEntry> = vec![];
 
-    for c in loaded_font.char_range[0]..=loaded_font.char_range[1] {
+    for c in &loaded_font.char_range {
         if let Some((metrics, glyph_sdf)) = loaded_font.font.sdf_generate(
             loaded_font.px,
             loaded_font.padding,
             loaded_font.spread,
-            c as char,
+            *c as char,
         ) {
             let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
             entries.push(GlyphEntry {
-                name: format!("GLYPH_{}", c as u8),
+                name: format!("GLYPH_{}", *c as u8),
                 px: loaded_font.px as u32,
                 metrics,
             });
             bitmaps.push(rle_encode(bitmap_sdf.buffer));
         } else {
+            // Check if the character is a space or similar invisible character
+            let ch = *c as char;
+            let metrics = loaded_font.font.metrics(ch, loaded_font.px);
+            if ch.is_whitespace() || metrics.map_or(false, |m| m.advance_width > 0.0) {
+                eprintln!("Info: Glyph '{}' is empty or not renderable, but has metrics. Inserting dummy entry.", ch);
+                entries.push(GlyphEntry {
+                    name: format!("GLYPH_{}", *c as u8),
+                    px: loaded_font.px as u32,
+                    metrics: metrics.unwrap_or_default(),
+                });
+                bitmaps.push(Vec::new());
+                continue;
+            }
+
             panic!("font is not complete!");
         }
     }

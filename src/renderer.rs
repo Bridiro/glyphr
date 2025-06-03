@@ -37,7 +37,7 @@ impl Default for SdfConfig {
         Self {
             font: Font::default(),
             align: FontAlign::default(),
-            px: Font::default().get_glyphs()[0].px,
+            px: Font::default().get_size() as u32,
             color: 0x000000,
             mid_value: 0.5,
             smoothing: 0.5,
@@ -294,14 +294,14 @@ impl<'a> Glyphr<'a> {
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
-    /// glyphr_struct.render("hi!", 0, 0);
+    /// glyphr_struct.render("hi", 0, 0);
     ///
     /// assert!(buf.iter().any(|c| *c != 0));
     /// ```
     pub fn render(&mut self, phrase: &str, mut x: i32, y: i32) {
         let mut heights: [i32; 100] = [0; 100];
         let mut max_height = i32::MIN;
-        let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_glyphs()[0].px as f32;
+        let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_size() as f32;
 
         match self.sdf_config.align {
             FontAlign::Center => x -= self.phrase_length(phrase) / 2,
@@ -309,20 +309,15 @@ impl<'a> Glyphr<'a> {
             _ => {}
         }
         for (i, c) in phrase.chars().enumerate() {
-            if c != ' ' {
-                let metrics = sdf::get_metrics(self, c);
+            if let Some(metrics) = sdf::get_metrics(self, c) {
                 let h = ((metrics.height + metrics.ymin) as f32 * scale) as i32;
                 max_height = max_height.max(h);
                 heights[i] = h;
-            } else {
-                heights[i] = 0;
             }
         }
         for (i, c) in phrase.chars().enumerate() {
-            if c != ' ' {
-                sdf::render_glyph(x, y + (max_height - heights[i]) as i32, c, self, scale);
-            }
-            x += (sdf::advance(self, c) as f32 * scale) as i32;
+            sdf::render_glyph(x, y + (max_height - heights[i]) as i32, c, self, scale);
+            x += (sdf::advance(self, c).unwrap_or(0) as f32 * scale) as i32;
         }
     }
 
@@ -343,13 +338,13 @@ impl<'a> Glyphr<'a> {
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
     ///
-    /// assert_eq!(glyphr_struct.phrase_length("hello, world!"), glyphr_struct.phrase_length("hello, world!"));
+    /// assert_eq!(glyphr_struct.phrase_length("hello world"), glyphr_struct.phrase_length("hello world"));
     /// ```
     pub fn phrase_length(&self, phrase: &str) -> i32 {
-        let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_glyphs()[0].px as f32;
+        let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_size() as f32;
         let mut tot = 0;
         for c in phrase.chars() {
-            tot += (sdf::advance(self, c) as f32 * scale) as i32;
+            tot += (sdf::advance(self, c).unwrap_or(0) as f32 * scale) as i32;
         }
         tot
     }
@@ -385,8 +380,8 @@ mod tests {
         assert_eq!(cfg.color, 0x000000);
         assert!(cfg.mid_value > 0.0 && cfg.mid_value <= 1.0);
         assert!(cfg.smoothing > 0.0 && cfg.smoothing <= 1.0);
-        let g = cfg.font.get_glyphs();
-        assert!(!g.is_empty());
+        let g = cfg.font.get_glyph('a').unwrap();
+        assert!(g.px > 1);
     }
 
     #[test]

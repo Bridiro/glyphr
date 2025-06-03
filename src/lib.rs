@@ -19,7 +19,7 @@
 //! px = 64.0
 //! padding = 1
 //! spread = 20.0
-//! char_range = [33, 126]
+//! char_range = "A-Za-z0-9& "
 //! ```
 //! It is kind of straightforward to use, but I'll exaplain it to you:
 //! - `name`: a user-defined name that will be used to choose at runtime which font to use (should be UpperCamelCase as it's used as enum entry)
@@ -27,7 +27,7 @@
 //! - `px`: size in pixel of the font
 //! - `padding`: space in pixel to leave between the glyph and the bitmap borders (0 creates a weird visual artifact, so 1 is better)
 //! - `spread`: distance in pixel that the SDF extends from the edges of each glyph. Generally the lower the number, the higher space will be occupied, but the best upscaled resolution you will have.
-//! - `char_range`: a `u8` array of 2 elements, which defines which characters to generate
+//! - `char_range`: a `String` regex-like used to define which characters to generate.
 //!
 //! After creating this file, and placing the ttfs where you prefer, you can just build and the bitmaps will be created. For now there is no API's to use it so it's just generation. The generated files will only be useful inside the library itself.
 //!

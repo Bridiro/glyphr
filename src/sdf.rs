@@ -14,7 +14,7 @@ use crate::{
 ///
 /// # Panics
 /// Panics if the scaled glyph size is 0.
-/// 
+///
 /// # Examples
 /// ```
 /// # use glyphr::{sdf::render_glyph, Glyphr, SdfConfig};
@@ -23,15 +23,15 @@ use crate::{
 /// render_glyph(0, 0, 'A', &mut state, 1.0);
 /// ```
 pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32) {
-    let sdf = &state.sdf_config.font.get_glyphs()[value as u8 as usize - 33];
+    let sdf_opt = &state.sdf_config.font.get_glyph(value);
+    let sdf = match sdf_opt {
+        Some(sdf) => sdf,
+        None => return,
+    };
     let width = (sdf.metrics.width as f32 * scale) as u32;
     let height = (sdf.metrics.height as f32 * scale) as u32;
     if width <= 0 || height <= 0 {
-        panic!(
-            "Scaling of {:?} returns an image size of {:?}, which is impossible to render",
-            scale,
-            (width, height)
-        );
+        return;
     }
 
     let width_f = width as f32;
@@ -82,15 +82,13 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
 /// # let mut buffer = [0u32; 100];
 /// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
 /// let adv = advance(&state, 'A');
-/// assert!(adv > 0);
+/// assert!(adv > Some(0));
 /// ```
-pub fn advance(state: &Glyphr, c: char) -> u32 {
-    if c != ' ' {
-        let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
-        sdf.metrics.advance_width as u32
+pub fn advance(state: &Glyphr, c: char) -> Option<u32> {
+    if let Some(sdf) = &state.sdf_config.font.get_glyph(c) {
+        Some(sdf.metrics.advance_width as u32)
     } else {
-        let sdf = &state.sdf_config.font.get_glyphs()['t' as u8 as usize - 33];
-        sdf.metrics.advance_width as u32
+        None
     }
 }
 
@@ -101,12 +99,15 @@ pub fn advance(state: &Glyphr, c: char) -> u32 {
 /// # use glyphr::{sdf::get_metrics, Glyphr, SdfConfig};
 /// # let mut buffer = [0u32; 100];
 /// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
-/// let m = get_metrics(&state, 'A');
+/// let m = get_metrics(&state, 'A').unwrap();
 /// assert!(m.advance_width > 0.0);
 /// ```
-pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> &'a Metrics {
-    let sdf = &state.sdf_config.font.get_glyphs()[c as u8 as usize - 33];
-    &sdf.metrics
+pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> Option<&'a Metrics> {
+    if let Some(sdf) = &state.sdf_config.font.get_glyph(c) {
+        Some(&sdf.metrics)
+    } else {
+        None
+    }
 }
 
 /// Returns the value that would be found at a given index in a non-encoded array.
@@ -200,14 +201,6 @@ mod tests {
         assert_eq!(super::mix(0.0, 10.0, 0.0), 0.0);
         assert_eq!(super::mix(0.0, 10.0, 0.5), 5.0);
         assert_eq!(super::mix(0.0, 10.0, 1.0), 10.0);
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_render_glyph_invalid_size() {
-        let mut buffer = [0u32; 100];
-        let mut state = setup_dummy_state(&mut buffer);
-        super::render_glyph(0, 0, ' ', &mut state, 0.0);
     }
 
     #[test]
