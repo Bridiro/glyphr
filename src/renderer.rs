@@ -317,7 +317,7 @@ impl<'a> Glyphr<'a> {
         }
         for (i, c) in phrase.chars().enumerate() {
             sdf::render_glyph(x, y + (max_height - heights[i]) as i32, c, self, scale);
-            x += (sdf::advance(self, c).unwrap() as f32 * scale) as i32;
+            x += (sdf::advance(self, c).unwrap_or(0) as f32 * scale) as i32;
         }
     }
 

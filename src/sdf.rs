@@ -23,7 +23,11 @@ use crate::{
 /// render_glyph(0, 0, 'A', &mut state, 1.0);
 /// ```
 pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32) {
-    let sdf = &state.sdf_config.font.get_glyph(value).unwrap();
+    let sdf_opt = &state.sdf_config.font.get_glyph(value);
+    let sdf = match sdf_opt {
+        Some(sdf) => sdf,
+        None => return,
+    };
     let width = (sdf.metrics.width as f32 * scale) as u32;
     let height = (sdf.metrics.height as f32 * scale) as u32;
     if width <= 0 || height <= 0 {
