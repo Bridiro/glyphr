@@ -1,50 +1,5 @@
 use crate::glyph::{GlyphEntry, Metrics, OutlineBounds};
-static GLYPH_33_POPPINS: [u8; 10] = [
-    2, 0, 1, 14, 19, 0, 4, 127, 2, 0, 
-];
-static GLYPH_34_POPPINS: [u8; 6] = [
-    5, 0, 2, 255, 5, 0, 
-];
-static GLYPH_35_POPPINS: [u8; 158] = [
-    20, 0, 1, 129, 1, 255, 3, 0, 1, 54, 1, 255, 1, 39, 7, 
-    0, 1, 204, 1, 220, 3, 0, 1, 129, 1, 255, 8, 0, 1, 255, 
-    1, 145, 3, 0, 1, 204, 1, 221, 5, 0, 3, 199, 1, 255, 4, 
-    199, 1, 255, 1, 207, 2, 199, 3, 0, 3, 197, 1, 255, 4, 197, 
-    1, 255, 3, 197, 5, 0, 1, 174, 1, 250, 3, 0, 1, 99, 1, 
-    255, 8, 0, 1, 251, 1, 174, 3, 0, 1, 175, 1, 250, 5, 0, 
-    3, 173, 1, 255, 4, 173, 1, 253, 1, 200, 2, 173, 1, 2, 2, 
-    0, 3, 217, 1, 255, 4, 217, 1, 255, 3, 217, 1, 2, 4, 0, 
-    1, 142, 1, 255, 3, 0, 1, 66, 1, 255, 1, 26, 7, 0, 1, 
-    218, 1, 207, 3, 0, 1, 142, 1, 255, 8, 0, 1, 255, 1, 130, 
-    3, 0, 1, 219, 1, 206, 20, 0, 
-];
-static GLYPH_36_POPPINS: [u8; 184] = [
-    4, 0, 1, 9, 8, 0, 1, 248, 6, 0, 1, 58, 1, 149, 1, 
-    252, 1, 120, 4, 0, 1, 124, 1, 255, 1, 184, 1, 253, 1, 246, 
-    1, 255, 3, 0, 1, 255, 1, 133, 1, 0, 1, 248, 1, 0, 1, 
-    255, 1, 220, 2, 0, 1, 255, 1, 19, 1, 0, 1, 248, 1, 0, 
-    2, 109, 2, 0, 1, 255, 1, 146, 1, 0, 1, 248, 5, 0, 1, 
-    163, 1, 255, 1, 176, 1, 248, 6, 0, 1, 103, 1, 224, 1, 255, 
-    1, 237, 1, 112, 6, 0, 1, 248, 1, 159, 1, 255, 1, 167, 5, 
-    0, 1, 248, 1, 0, 1, 132, 1, 255, 2, 0, 1, 170, 1, 49, 
-    1, 0, 1, 248, 1, 0, 1, 10, 1, 255, 2, 0, 1, 255, 1, 
-    220, 1, 0, 1, 248, 1, 0, 1, 129, 1, 255, 2, 0, 1, 47, 
-    1, 255, 1, 207, 1, 248, 1, 157, 1, 255, 1, 140, 3, 0, 1, 
-    19, 1, 145, 1, 255, 1, 180, 1, 86, 6, 0, 1, 248, 8, 0, 
-    1, 9, 4, 0, 
-];
-static GLYPH_37_POPPINS: [u8; 162] = [
-    12, 0, 1, 113, 2, 255, 1, 186, 2, 0, 1, 42, 1, 255, 3, 
-    0, 1, 255, 2, 0, 1, 238, 1, 45, 1, 0, 1, 247, 1, 166, 
-    3, 0, 1, 255, 2, 0, 1, 163, 1, 93, 1, 67, 1, 255, 4, 
-    0, 1, 255, 1, 50, 1, 3, 1, 255, 1, 14, 1, 255, 1, 141, 
-    4, 0, 1, 40, 1, 230, 1, 251, 1, 109, 1, 92, 1, 255, 9, 
-    0, 1, 255, 1, 116, 8, 0, 1, 116, 1, 255, 9, 0, 1, 255, 
-    1, 92, 1, 106, 1, 250, 1, 231, 1, 43, 4, 0, 1, 141, 1, 
-    255, 1, 7, 1, 255, 1, 3, 1, 50, 1, 255, 4, 0, 1, 255, 
-    1, 67, 1, 86, 1, 170, 2, 0, 1, 255, 3, 0, 1, 166, 1, 
-    247, 1, 0, 1, 38, 1, 243, 2, 0, 1, 255, 3, 0, 1, 255, 
-    1, 42, 2, 0, 1, 182, 2, 255, 1, 115, 12, 0, 
+static GLYPH_32_POPPINS: [u8; 0] = [
 ];
 static GLYPH_38_POPPINS: [u8; 156] = [
     15, 0, 1, 20, 1, 249, 2, 255, 1, 208, 7, 0, 1, 254, 1, 
@@ -58,62 +13,6 @@ static GLYPH_38_POPPINS: [u8; 156] = [
     1, 183, 1, 255, 1, 69, 1, 24, 1, 158, 1, 255, 1, 0, 1, 
     169, 1, 255, 4, 0, 1, 184, 2, 255, 1, 253, 1, 22, 2, 0, 
     1, 212, 1, 201, 13, 0, 
-];
-static GLYPH_39_POPPINS: [u8; 6] = [
-    1, 0, 1, 255, 1, 0, 
-];
-static GLYPH_40_POPPINS: [u8; 130] = [
-    5, 0, 1, 34, 5, 0, 1, 180, 1, 195, 4, 0, 1, 145, 1, 
-    247, 4, 0, 1, 29, 1, 255, 1, 44, 4, 0, 1, 221, 1, 189, 
-    5, 0, 1, 255, 1, 3, 4, 0, 1, 143, 1, 255, 5, 0, 1, 
-    255, 1, 169, 5, 0, 1, 255, 1, 46, 5, 0, 1, 255, 6, 0, 
-    1, 255, 6, 0, 1, 255, 6, 0, 1, 255, 6, 0, 1, 255, 6, 
-    0, 1, 255, 1, 47, 5, 0, 1, 255, 1, 170, 5, 0, 1, 143, 
-    1, 255, 6, 0, 1, 255, 1, 3, 5, 0, 1, 220, 1, 189, 5, 
-    0, 1, 28, 1, 255, 1, 44, 5, 0, 1, 143, 1, 247, 6, 0, 
-    1, 179, 1, 195, 6, 0, 1, 34, 1, 0, 
-];
-static GLYPH_41_POPPINS: [u8; 130] = [
-    1, 0, 1, 34, 6, 0, 1, 197, 1, 180, 6, 0, 1, 251, 1, 
-    145, 5, 0, 1, 48, 1, 255, 1, 29, 5, 0, 1, 196, 1, 221, 
-    5, 0, 1, 11, 1, 255, 6, 0, 1, 255, 1, 143, 5, 0, 1, 
-    183, 1, 255, 5, 0, 1, 59, 1, 255, 6, 0, 1, 255, 6, 0, 
-    1, 255, 6, 0, 1, 255, 6, 0, 1, 255, 6, 0, 1, 255, 5, 
-    0, 1, 57, 1, 255, 5, 0, 1, 180, 1, 255, 5, 0, 1, 255, 
-    1, 142, 4, 0, 1, 9, 1, 255, 5, 0, 1, 195, 1, 219, 4, 
-    0, 1, 48, 1, 255, 1, 27, 4, 0, 1, 250, 1, 143, 4, 0, 
-    1, 196, 1, 179, 5, 0, 1, 34, 5, 0, 
-];
-static GLYPH_42_POPPINS: [u8; 46] = [
-    10, 0, 1, 255, 4, 0, 1, 255, 1, 142, 1, 255, 1, 122, 1, 
-    255, 3, 0, 1, 30, 1, 255, 1, 27, 3, 0, 1, 255, 1, 148, 
-    1, 255, 1, 124, 1, 255, 2, 0, 1, 12, 1, 0, 1, 255, 10, 
-    0, 
-];
-static GLYPH_43_POPPINS: [u8; 54] = [
-    14, 0, 1, 247, 1, 239, 8, 0, 1, 247, 1, 239, 8, 0, 1, 
-    247, 1, 239, 5, 0, 3, 214, 2, 255, 3, 214, 2, 0, 3, 222, 
-    2, 255, 3, 222, 5, 0, 1, 247, 1, 239, 8, 0, 1, 247, 1, 
-    239, 8, 0, 1, 247, 1, 239, 14, 0, 
-];
-static GLYPH_44_POPPINS: [u8; 8] = [
-    2, 0, 1, 42, 1, 110, 2, 0, 
-];
-static GLYPH_45_POPPINS: [u8; 6] = [
-    1, 0, 6, 255, 1, 0, 
-];
-static GLYPH_46_POPPINS: [u8; 2] = [
-    4, 127, 
-];
-static GLYPH_47_POPPINS: [u8; 114] = [
-    5, 0, 1, 30, 6, 0, 1, 255, 5, 0, 1, 89, 1, 255, 5, 
-    0, 1, 214, 1, 246, 5, 0, 1, 255, 1, 121, 5, 0, 1, 255, 
-    6, 0, 1, 255, 5, 0, 1, 100, 1, 255, 5, 0, 1, 225, 1, 
-    233, 5, 0, 1, 255, 1, 108, 5, 0, 1, 255, 6, 0, 1, 255, 
-    5, 0, 1, 111, 1, 255, 5, 0, 1, 236, 1, 220, 5, 0, 1, 
-    255, 1, 94, 5, 0, 1, 255, 6, 0, 1, 255, 5, 0, 1, 122, 
-    1, 255, 5, 0, 1, 247, 1, 206, 5, 0, 1, 255, 1, 81, 5, 
-    0, 1, 255, 6, 0, 1, 30, 5, 0, 
 ];
 static GLYPH_48_POPPINS: [u8; 150] = [
     12, 0, 1, 89, 4, 255, 1, 84, 3, 0, 1, 23, 1, 255, 1, 
@@ -219,70 +118,6 @@ static GLYPH_57_POPPINS: [u8; 154] = [
     1, 171, 1, 255, 4, 0, 1, 231, 1, 198, 3, 0, 1, 255, 1, 
     162, 2, 8, 1, 153, 1, 255, 1, 7, 3, 0, 1, 62, 4, 255, 
     1, 75, 12, 0, 
-];
-static GLYPH_58_POPPINS: [u8; 14] = [
-    2, 0, 2, 127, 2, 121, 8, 0, 2, 121, 2, 127, 2, 0, 
-];
-static GLYPH_59_POPPINS: [u8; 18] = [
-    2, 0, 4, 127, 12, 0, 1, 81, 1, 32, 1, 59, 1, 86, 1, 
-    11, 3, 0, 
-];
-static GLYPH_60_POPPINS: [u8; 46] = [
-    11, 0, 1, 255, 1, 144, 4, 0, 1, 255, 1, 143, 4, 0, 1, 
-    255, 1, 141, 4, 0, 1, 255, 1, 143, 5, 0, 1, 4, 1, 255, 
-    1, 136, 6, 0, 1, 255, 1, 139, 6, 0, 1, 255, 1, 143, 8, 
-    0, 
-];
-static GLYPH_61_POPPINS: [u8; 10] = [
-    11, 0, 8, 255, 12, 0, 8, 255, 11, 0, 
-];
-static GLYPH_62_POPPINS: [u8; 46] = [
-    8, 0, 1, 144, 1, 255, 6, 0, 1, 143, 1, 255, 6, 0, 1, 
-    141, 1, 255, 6, 0, 1, 143, 1, 255, 4, 0, 1, 136, 1, 255, 
-    1, 4, 3, 0, 1, 139, 1, 255, 4, 0, 1, 143, 1, 255, 11, 
-    0, 
-];
-static GLYPH_63_POPPINS: [u8; 88] = [
-    10, 0, 1, 225, 2, 255, 1, 248, 3, 0, 1, 255, 1, 231, 1, 
-    16, 1, 9, 1, 221, 1, 255, 2, 0, 1, 255, 4, 0, 1, 255, 
-    2, 0, 1, 36, 4, 0, 1, 255, 6, 0, 1, 32, 1, 255, 3, 
-    0, 1, 27, 1, 35, 1, 110, 1, 255, 1, 167, 3, 0, 1, 179, 
-    1, 255, 1, 211, 1, 97, 4, 0, 1, 179, 1, 229, 6, 0, 1, 
-    179, 1, 229, 14, 0, 2, 186, 6, 0, 2, 255, 12, 0, 
-];
-static GLYPH_64_POPPINS: [u8; 472] = [
-    10, 0, 1, 17, 1, 22, 1, 12, 14, 0, 1, 38, 1, 129, 1, 
-    198, 1, 245, 3, 255, 1, 234, 1, 179, 1, 99, 9, 0, 1, 11, 
-    1, 148, 1, 255, 1, 213, 1, 138, 1, 88, 1, 63, 1, 60, 1, 
-    79, 1, 124, 1, 197, 1, 255, 1, 215, 1, 73, 6, 0, 1, 44, 
-    1, 210, 1, 231, 1, 93, 8, 0, 1, 81, 1, 227, 1, 255, 1, 
-    82, 4, 0, 1, 24, 1, 216, 1, 207, 1, 35, 4, 0, 1, 14, 
-    1, 10, 4, 0, 1, 44, 1, 233, 1, 231, 1, 20, 3, 0, 1, 
-    165, 1, 247, 1, 45, 2, 0, 1, 4, 1, 134, 1, 225, 2, 255, 
-    1, 209, 1, 99, 3, 0, 1, 99, 1, 255, 1, 126, 2, 0, 1, 
-    64, 1, 255, 1, 124, 2, 0, 1, 20, 1, 199, 1, 242, 1, 132, 
-    1, 87, 1, 111, 1, 208, 1, 255, 1, 111, 3, 0, 1, 232, 1, 
-    203, 2, 0, 1, 152, 1, 255, 1, 26, 2, 0, 1, 166, 1, 234, 
-    1, 45, 3, 0, 1, 18, 1, 223, 1, 226, 3, 0, 1, 177, 1, 
-    249, 1, 8, 1, 0, 1, 216, 1, 193, 2, 0, 1, 49, 1, 255, 
-    1, 113, 5, 0, 1, 146, 1, 255, 1, 35, 2, 0, 1, 154, 1, 
-    255, 1, 26, 1, 13, 1, 255, 1, 154, 2, 0, 1, 109, 1, 255, 
-    1, 45, 5, 0, 1, 134, 1, 255, 1, 27, 2, 0, 1, 158, 1, 
-    255, 1, 20, 1, 27, 1, 255, 1, 140, 2, 0, 1, 131, 1, 255, 
-    1, 27, 5, 0, 1, 168, 1, 228, 3, 0, 1, 189, 1, 224, 1, 
-    0, 1, 20, 1, 255, 1, 148, 2, 0, 1, 115, 1, 255, 1, 65, 
-    4, 0, 1, 30, 1, 247, 1, 186, 2, 0, 1, 28, 1, 255, 1, 
-    153, 2, 0, 1, 233, 1, 180, 2, 0, 1, 54, 1, 255, 1, 179, 
-    3, 0, 1, 15, 1, 178, 1, 181, 1, 157, 2, 0, 1, 151, 1, 
-    255, 1, 50, 2, 0, 1, 179, 1, 241, 1, 11, 2, 0, 1, 143, 
-    1, 255, 1, 216, 1, 149, 1, 158, 1, 235, 1, 134, 1, 159, 1, 
-    246, 1, 146, 1, 188, 1, 255, 1, 109, 3, 0, 1, 97, 1, 255, 
-    1, 115, 3, 0, 1, 101, 1, 187, 1, 209, 1, 175, 1, 85, 1, 
-    0, 1, 30, 1, 165, 1, 209, 1, 176, 1, 73, 5, 0, 1, 195, 
-    1, 253, 1, 67, 18, 0, 1, 43, 1, 221, 1, 252, 1, 107, 18, 
-    0, 1, 31, 1, 173, 1, 255, 1, 223, 1, 145, 1, 93, 1, 64, 
-    1, 52, 15, 0, 1, 62, 1, 147, 1, 209, 1, 250, 1, 255, 1, 
-    67, 19, 0, 1, 18, 11, 0, 
 ];
 static GLYPH_65_POPPINS: [u8; 114] = [
     17, 0, 2, 255, 9, 0, 1, 113, 2, 255, 1, 119, 8, 0, 1, 
@@ -561,38 +396,9 @@ static GLYPH_90_POPPINS: [u8; 78] = [
     1, 255, 1, 13, 6, 0, 1, 255, 1, 189, 5, 10, 2, 0, 7, 
     255, 10, 0, 
 ];
-static GLYPH_91_POPPINS: [u8; 26] = [
-    1, 0, 1, 30, 2, 0, 1, 255, 2, 0, 1, 75, 50, 0, 1, 
-    75, 2, 0, 1, 255, 2, 0, 1, 30, 1, 0, 
-];
-static GLYPH_92_POPPINS: [u8; 130] = [
-    1, 0, 1, 30, 7, 0, 1, 255, 1, 60, 6, 0, 1, 255, 1, 
-    190, 6, 0, 1, 159, 1, 255, 6, 0, 1, 29, 1, 255, 7, 0, 
-    1, 255, 1, 53, 6, 0, 1, 255, 1, 183, 6, 0, 1, 165, 1, 
-    255, 6, 0, 1, 35, 1, 255, 7, 0, 1, 255, 1, 45, 6, 0, 
-    1, 255, 1, 175, 6, 0, 1, 171, 1, 255, 6, 0, 1, 40, 1, 
-    255, 7, 0, 1, 255, 1, 38, 6, 0, 1, 255, 1, 168, 6, 0, 
-    1, 177, 1, 255, 6, 0, 1, 46, 1, 255, 7, 0, 1, 255, 1, 
-    30, 6, 0, 1, 255, 1, 160, 6, 0, 1, 182, 1, 255, 6, 0, 
-    1, 52, 1, 255, 7, 0, 1, 30, 1, 0, 
-];
 static GLYPH_93_POPPINS: [u8; 26] = [
     1, 0, 1, 30, 2, 0, 1, 255, 2, 0, 1, 75, 50, 0, 1, 
     75, 2, 0, 1, 255, 2, 0, 1, 30, 1, 0, 
-];
-static GLYPH_94_POPPINS: [u8; 90] = [
-    15, 0, 1, 139, 1, 255, 1, 139, 8, 0, 1, 255, 1, 165, 1, 
-    255, 7, 0, 1, 116, 1, 255, 1, 0, 1, 255, 1, 116, 6, 0, 
-    1, 255, 1, 171, 1, 0, 1, 156, 1, 255, 5, 0, 1, 93, 1, 
-    255, 3, 0, 1, 255, 1, 93, 4, 0, 1, 255, 1, 189, 3, 0, 
-    1, 181, 1, 255, 3, 0, 1, 70, 1, 255, 5, 0, 1, 255, 1, 
-    70, 2, 0, 1, 255, 1, 208, 5, 0, 1, 206, 1, 255, 12, 0, 
-];
-static GLYPH_95_POPPINS: [u8; 6] = [
-    1, 0, 8, 255, 1, 0, 
-];
-static GLYPH_96_POPPINS: [u8; 8] = [
-    5, 0, 1, 255, 1, 249, 5, 0, 
 ];
 static GLYPH_97_POPPINS: [u8; 122] = [
     13, 0, 1, 64, 4, 255, 1, 78, 1, 67, 1, 255, 2, 0, 1, 
@@ -845,120 +651,26 @@ static GLYPH_122_POPPINS: [u8; 44] = [
     255, 5, 0, 1, 255, 1, 91, 4, 0, 1, 174, 1, 255, 5, 0, 
     1, 255, 5, 0, 1, 255, 1, 118, 5, 0, 5, 255, 8, 0, 
 ];
-static GLYPH_123_POPPINS: [u8; 106] = [
-    3, 0, 1, 34, 3, 0, 1, 56, 1, 235, 3, 0, 1, 255, 1, 
-    28, 3, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 
-    1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 3, 
-    0, 1, 96, 1, 204, 3, 0, 1, 255, 4, 0, 1, 105, 1, 201, 
-    4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 
-    255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 
-    1, 255, 1, 28, 3, 0, 1, 56, 1, 235, 4, 0, 1, 34, 1, 
-    0, 
-];
-static GLYPH_124_POPPINS: [u8; 6] = [
-    1, 14, 16, 255, 1, 14, 
-];
-static GLYPH_125_POPPINS: [u8; 106] = [
-    1, 0, 1, 34, 4, 0, 1, 246, 1, 54, 3, 0, 1, 40, 1, 
-    255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 
-    1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 
-    0, 1, 207, 1, 101, 4, 0, 1, 255, 3, 0, 1, 207, 1, 97, 
-    3, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 
-    255, 4, 0, 1, 255, 4, 0, 1, 255, 4, 0, 1, 255, 3, 0, 
-    1, 40, 1, 255, 3, 0, 1, 246, 1, 54, 3, 0, 1, 34, 3, 
-    0, 
-];
-static GLYPH_126_POPPINS: [u8; 6] = [
-    10, 0, 7, 255, 10, 0, 
-];
 
-pub static FONT_POPPINS: [GlyphEntry; 94] = [
-    GlyphEntry {
-        glyph: &GLYPH_33_POPPINS,
+pub static FONT_POPPINS: [(char, GlyphEntry); 65] = [
+    (' ', GlyphEntry {
+        glyph: &GLYPH_32_POPPINS,
         px: 20,
         metrics: Metrics {
-            xmin: 1,
+            xmin: 0,
             ymin: 0,
-            width: 2,
-            height: 14,
-            advance_width: 5.980000019073486,
+            width: 0,
+            height: 0,
+            advance_width: 4.940000057220459,
             bounds: OutlineBounds {
-                xmin: 1.959999918937683,
+                xmin: 0.0,
                 ymin: 0.0,
-                width: 2.2200000286102295,
-                height: 14.4399995803833,
+                width: 0.0,
+                height: 0.0,
             },
         },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_34_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 11,
-            width: 4,
-            height: 3,
-            advance_width: 6.0,
-            bounds: OutlineBounds {
-                xmin: 0.8399999737739563,
-                ymin: 11.960000038146973,
-                width: 4.339999675750732,
-                height: 3.9800000190734863,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_35_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 0,
-            width: 15,
-            height: 14,
-            advance_width: 16.19999885559082,
-            bounds: OutlineBounds {
-                xmin: 0.5799999833106995,
-                ymin: 0.0,
-                width: 15.039999961853027,
-                height: 14.799999237060547,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_36_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -1,
-            width: 9,
-            height: 17,
-            advance_width: 11.639999389648438,
-            bounds: OutlineBounds {
-                xmin: 0.9799999594688416,
-                ymin: -1.7400000095367432,
-                width: 9.679999351501465,
-                height: 17.739999771118164,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_37_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 0,
-            width: 11,
-            height: 14,
-            advance_width: 13.179999351501465,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: -0.17999999225139618,
-                width: 11.859999656677246,
-                height: 14.479999542236328,
-            },
-        },
-    },
-    GlyphEntry {
+    }),
+    ('&', GlyphEntry {
         glyph: &GLYPH_38_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -974,161 +686,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.380000114440918,
             },
         },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_39_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 11,
-            width: 1,
-            height: 3,
-            advance_width: 3.419999837875366,
-            bounds: OutlineBounds {
-                xmin: 0.8399999737739563,
-                ymin: 11.960000038146973,
-                width: 1.7400000095367432,
-                height: 3.9800000190734863,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_40_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -3,
-            width: 7,
-            height: 23,
-            advance_width: 7.659999847412109,
-            bounds: OutlineBounds {
-                xmin: 0.8799999952316284,
-                ymin: -3.679999828338623,
-                width: 7.059999942779541,
-                height: 23.459999084472656,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_41_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -3,
-            width: 7,
-            height: 23,
-            advance_width: 7.679999828338623,
-            bounds: OutlineBounds {
-                xmin: -0.25999999046325684,
-                ymin: -3.679999828338623,
-                width: 7.059999942779541,
-                height: 23.459999084472656,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_42_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 1,
-            ymin: 7,
-            width: 7,
-            height: 7,
-            advance_width: 9.519999504089355,
-            bounds: OutlineBounds {
-                xmin: 1.1200000047683716,
-                ymin: 7.199999809265137,
-                width: 7.359999656677246,
-                height: 7.480000019073486,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_43_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 2,
-            width: 10,
-            height: 10,
-            advance_width: 11.519999504089355,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: 2.2200000286102295,
-                width: 10.199999809265137,
-                height: 10.199999809265137,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_44_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -2,
-            width: 2,
-            height: 3,
-            advance_width: 3.5,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: -2.5999999046325684,
-                width: 2.1399998664855957,
-                height: 3.93999981880188,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_45_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 6,
-            width: 8,
-            height: 1,
-            advance_width: 9.819999694824219,
-            bounds: OutlineBounds {
-                xmin: -0.29999998211860657,
-                ymin: 6.559999942779541,
-                width: 8.0,
-                height: 1.5399999618530273,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_46_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 0,
-            width: 2,
-            height: 2,
-            advance_width: 3.419999837875366,
-            bounds: OutlineBounds {
-                xmin: 0.5999999642372131,
-                ymin: 0.0,
-                width: 2.200000047683716,
-                height: 2.1399998664855957,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_47_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -3,
-            width: 7,
-            height: 22,
-            advance_width: 7.460000038146973,
-            bounds: OutlineBounds {
-                xmin: 0.14000000059604645,
-                ymin: -3.419999837875366,
-                width: 7.239999771118164,
-                height: 22.260000228881836,
-            },
-        },
-    },
-    GlyphEntry {
+    }),
+    ('0', GlyphEntry {
         glyph: &GLYPH_48_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1144,8 +703,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.359999656677246,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('1', GlyphEntry {
         glyph: &GLYPH_49_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1161,8 +720,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('2', GlyphEntry {
         glyph: &GLYPH_50_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1178,8 +737,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.25999927520752,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('3', GlyphEntry {
         glyph: &GLYPH_51_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1195,8 +754,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.619999885559082,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('4', GlyphEntry {
         glyph: &GLYPH_52_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1212,8 +771,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.199999809265137,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('5', GlyphEntry {
         glyph: &GLYPH_53_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1229,8 +788,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.380000114440918,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('6', GlyphEntry {
         glyph: &GLYPH_54_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1246,8 +805,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.59999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('7', GlyphEntry {
         glyph: &GLYPH_55_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1263,8 +822,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.179999351501465,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('8', GlyphEntry {
         glyph: &GLYPH_56_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1280,8 +839,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.9399995803833,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('9', GlyphEntry {
         glyph: &GLYPH_57_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1297,127 +856,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.619999885559082,
             },
         },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_58_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 0,
-            width: 2,
-            height: 10,
-            advance_width: 3.819999933242798,
-            bounds: OutlineBounds {
-                xmin: 0.8399999737739563,
-                ymin: 0.0,
-                width: 2.200000047683716,
-                height: 10.779999732971191,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_59_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 1,
-            ymin: -2,
-            width: 2,
-            height: 13,
-            advance_width: 4.880000114440918,
-            bounds: OutlineBounds {
-                xmin: 1.5799999237060547,
-                ymin: -2.5999999046325684,
-                width: 2.200000047683716,
-                height: 13.319999694824219,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_60_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 2,
-            width: 7,
-            height: 9,
-            advance_width: 8.4399995803833,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: 2.740000009536743,
-                width: 7.119999885559082,
-                height: 9.179999351501465,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_61_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 4,
-            width: 10,
-            height: 5,
-            advance_width: 11.719999313354492,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: 4.360000133514404,
-                width: 10.399999618530273,
-                height: 5.920000076293945,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_62_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 2,
-            width: 7,
-            height: 9,
-            advance_width: 8.4399995803833,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: 2.740000009536743,
-                width: 7.119999885559082,
-                height: 9.179999351501465,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_63_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 0,
-            width: 8,
-            height: 14,
-            advance_width: 10.039999961853027,
-            bounds: OutlineBounds {
-                xmin: 0.5199999809265137,
-                ymin: 0.0,
-                width: 8.859999656677246,
-                height: 14.65999984741211,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_64_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -5,
-            width: 21,
-            height: 20,
-            advance_width: 22.81999969482422,
-            bounds: OutlineBounds {
-                xmin: 0.9599999785423279,
-                ymin: -5.099999904632568,
-                width: 21.059999465942383,
-                height: 20.8799991607666,
-            },
-        },
-    },
-    GlyphEntry {
+    }),
+    ('A', GlyphEntry {
         glyph: &GLYPH_65_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1433,8 +873,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 13.84000015258789,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('B', GlyphEntry {
         glyph: &GLYPH_66_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1450,8 +890,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('C', GlyphEntry {
         glyph: &GLYPH_67_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1467,8 +907,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.359999656677246,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('D', GlyphEntry {
         glyph: &GLYPH_68_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1484,8 +924,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('E', GlyphEntry {
         glyph: &GLYPH_69_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1501,8 +941,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('F', GlyphEntry {
         glyph: &GLYPH_70_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1518,8 +958,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('G', GlyphEntry {
         glyph: &GLYPH_71_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1535,8 +975,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.380000114440918,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('H', GlyphEntry {
         glyph: &GLYPH_72_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1552,8 +992,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('I', GlyphEntry {
         glyph: &GLYPH_73_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1569,8 +1009,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('J', GlyphEntry {
         glyph: &GLYPH_74_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1586,8 +1026,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.239999771118164,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('K', GlyphEntry {
         glyph: &GLYPH_75_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1603,8 +1043,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('L', GlyphEntry {
         glyph: &GLYPH_76_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1620,8 +1060,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('M', GlyphEntry {
         glyph: &GLYPH_77_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1637,8 +1077,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 13.859999656677246,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('N', GlyphEntry {
         glyph: &GLYPH_78_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1654,8 +1094,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('O', GlyphEntry {
         glyph: &GLYPH_79_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1671,8 +1111,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.4399995803833,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('P', GlyphEntry {
         glyph: &GLYPH_80_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1688,8 +1128,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('Q', GlyphEntry {
         glyph: &GLYPH_81_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1705,8 +1145,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 17.020000457763672,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('R', GlyphEntry {
         glyph: &GLYPH_82_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1722,8 +1162,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('S', GlyphEntry {
         glyph: &GLYPH_83_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1739,8 +1179,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.420000076293945,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('T', GlyphEntry {
         glyph: &GLYPH_84_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1756,8 +1196,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('U', GlyphEntry {
         glyph: &GLYPH_85_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1773,8 +1213,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.239999771118164,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('V', GlyphEntry {
         glyph: &GLYPH_86_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1790,8 +1230,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('W', GlyphEntry {
         glyph: &GLYPH_87_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1807,8 +1247,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('X', GlyphEntry {
         glyph: &GLYPH_88_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1824,8 +1264,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('Y', GlyphEntry {
         glyph: &GLYPH_89_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1841,8 +1281,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('Z', GlyphEntry {
         glyph: &GLYPH_90_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1858,42 +1298,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.09999942779541,
             },
         },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_91_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 1,
-            ymin: -3,
-            width: 3,
-            height: 22,
-            advance_width: 6.599999904632568,
-            bounds: OutlineBounds {
-                xmin: 1.7799999713897705,
-                ymin: -3.419999837875366,
-                width: 3.919999837875366,
-                height: 22.260000228881836,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_92_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 1,
-            ymin: -3,
-            width: 8,
-            height: 22,
-            advance_width: 12.34000015258789,
-            bounds: OutlineBounds {
-                xmin: 1.7999999523162842,
-                ymin: -3.419999837875366,
-                width: 8.059999465942383,
-                height: 22.260000228881836,
-            },
-        },
-    },
-    GlyphEntry {
+    }),
+    (']', GlyphEntry {
         glyph: &GLYPH_93_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1909,59 +1315,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 22.260000228881836,
             },
         },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_94_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 3,
-            width: 11,
-            height: 10,
-            advance_width: 12.5,
-            bounds: OutlineBounds {
-                xmin: 0.699999988079071,
-                ymin: 3.3999998569488525,
-                width: 11.09999942779541,
-                height: 10.460000038146973,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_95_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -2,
-            width: 10,
-            height: 1,
-            advance_width: 12.300000190734863,
-            bounds: OutlineBounds {
-                xmin: 0.85999995470047,
-                ymin: -2.4600000381469727,
-                width: 10.639999389648438,
-                height: 1.7799999713897705,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_96_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 11,
-            width: 4,
-            height: 3,
-            advance_width: 5.739999771118164,
-            bounds: OutlineBounds {
-                xmin: 0.5799999833106995,
-                ymin: 11.84000015258789,
-                width: 4.259999752044678,
-                height: 3.819999933242798,
-            },
-        },
-    },
-    GlyphEntry {
+    }),
+    ('a', GlyphEntry {
         glyph: &GLYPH_97_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1977,8 +1332,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.25999927520752,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('b', GlyphEntry {
         glyph: &GLYPH_98_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -1994,8 +1349,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.9399995803833,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('c', GlyphEntry {
         glyph: &GLYPH_99_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2011,8 +1366,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.25999927520752,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('d', GlyphEntry {
         glyph: &GLYPH_100_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2028,8 +1383,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.9399995803833,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('e', GlyphEntry {
         glyph: &GLYPH_101_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2045,8 +1400,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.25999927520752,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('f', GlyphEntry {
         glyph: &GLYPH_102_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2062,8 +1417,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 15.179999351501465,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('g', GlyphEntry {
         glyph: &GLYPH_103_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2079,8 +1434,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 16.5,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('h', GlyphEntry {
         glyph: &GLYPH_104_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2096,8 +1451,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.799999237060547,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('i', GlyphEntry {
         glyph: &GLYPH_105_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2113,8 +1468,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 15.319999694824219,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('j', GlyphEntry {
         glyph: &GLYPH_106_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2130,8 +1485,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 20.520000457763672,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('k', GlyphEntry {
         glyph: &GLYPH_107_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2147,8 +1502,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.799999237060547,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('l', GlyphEntry {
         glyph: &GLYPH_108_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2164,8 +1519,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 14.799999237060547,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('m', GlyphEntry {
         glyph: &GLYPH_109_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2181,8 +1536,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.15999984741211,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('n', GlyphEntry {
         glyph: &GLYPH_110_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2198,8 +1553,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.15999984741211,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('o', GlyphEntry {
         glyph: &GLYPH_111_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2215,8 +1570,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.25999927520752,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('p', GlyphEntry {
         glyph: &GLYPH_112_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2232,8 +1587,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 16.31999969482422,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('q', GlyphEntry {
         glyph: &GLYPH_113_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2249,8 +1604,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 16.279998779296875,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('r', GlyphEntry {
         glyph: &GLYPH_114_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2266,8 +1621,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.15999984741211,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('s', GlyphEntry {
         glyph: &GLYPH_115_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2283,8 +1638,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.25999927520752,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('t', GlyphEntry {
         glyph: &GLYPH_116_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2300,8 +1655,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 13.719999313354492,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('u', GlyphEntry {
         glyph: &GLYPH_117_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2317,8 +1672,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 11.15999984741211,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('v', GlyphEntry {
         glyph: &GLYPH_118_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2334,8 +1689,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 10.979999542236328,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('w', GlyphEntry {
         glyph: &GLYPH_119_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2351,8 +1706,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 10.979999542236328,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('x', GlyphEntry {
         glyph: &GLYPH_120_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2368,8 +1723,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 10.979999542236328,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('y', GlyphEntry {
         glyph: &GLYPH_121_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2385,8 +1740,8 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 16.18000030517578,
             },
         },
-    },
-    GlyphEntry {
+    }),
+    ('z', GlyphEntry {
         glyph: &GLYPH_122_POPPINS,
         px: 20,
         metrics: Metrics {
@@ -2402,75 +1757,7 @@ pub static FONT_POPPINS: [GlyphEntry; 94] = [
                 height: 10.979999542236328,
             },
         },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_123_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -4,
-            width: 5,
-            height: 23,
-            advance_width: 7.419999599456787,
-            bounds: OutlineBounds {
-                xmin: 0.9199999570846558,
-                ymin: -4.339999675750732,
-                width: 5.87999963760376,
-                height: 23.559999465942383,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_124_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 1,
-            ymin: -2,
-            width: 1,
-            height: 18,
-            advance_width: 4.319999694824219,
-            bounds: OutlineBounds {
-                xmin: 1.2400000095367432,
-                ymin: -2.1399998664855957,
-                width: 1.8399999141693115,
-                height: 18.059999465942383,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_125_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -4,
-            width: 5,
-            height: 23,
-            advance_width: 7.37999963760376,
-            bounds: OutlineBounds {
-                xmin: 0.7799999713897705,
-                ymin: -4.339999675750732,
-                width: 5.859999656677246,
-                height: 23.559999465942383,
-            },
-        },
-    },
-    GlyphEntry {
-        glyph: &GLYPH_126_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: 4,
-            width: 9,
-            height: 3,
-            advance_width: 10.359999656677246,
-            bounds: OutlineBounds {
-                xmin: 0.6599999666213989,
-                ymin: 4.880000114440918,
-                width: 9.039999961853027,
-                height: 3.0199999809265137,
-            },
-        },
-    },
+    }),
 ];
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
@@ -2490,9 +1777,21 @@ impl Font {
     /// # get_glyphs
     ///
     /// Returns the static array of glyphs of the font on which is called.
-    pub fn get_glyphs(&self) -> &'static [GlyphEntry] {
+    pub fn get_glyph(&self, ch: char) -> Option<&GlyphEntry> {
         match self {
-            Font::Poppins => &FONT_POPPINS,
+            Font::Poppins => Self::find_glyph(&FONT_POPPINS, ch),
         }
+    }
+
+    pub fn get_size(&self) -> i32 {
+        match self {
+            Font::Poppins => 20,
+        }
+    }
+
+    fn find_glyph(font: &[(char, GlyphEntry)], ch: char) -> Option<&GlyphEntry> {
+        font.binary_search_by_key(&ch, |&(c, _)| c)
+            .ok()
+            .map(|idx| &font[idx].1)
     }
 }

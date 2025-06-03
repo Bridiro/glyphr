@@ -294,7 +294,7 @@ impl<'a> Glyphr<'a> {
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
-    /// glyphr_struct.render("hi!", 0, 0);
+    /// glyphr_struct.render("hi", 0, 0);
     ///
     /// assert!(buf.iter().any(|c| *c != 0));
     /// ```
@@ -339,7 +339,7 @@ impl<'a> Glyphr<'a> {
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
     ///
-    /// assert_eq!(glyphr_struct.phrase_length("hello, world!"), glyphr_struct.phrase_length("hello, world!"));
+    /// assert_eq!(glyphr_struct.phrase_length("hello world"), glyphr_struct.phrase_length("hello world"));
     /// ```
     pub fn phrase_length(&self, phrase: &str) -> i32 {
         let scale = self.sdf_config.px as f32 / self.sdf_config.font.get_size() as f32;

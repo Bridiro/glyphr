@@ -82,7 +82,7 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
 /// # let mut buffer = [0u32; 100];
 /// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
 /// let adv = advance(&state, 'A');
-/// assert!(adv > 0);
+/// assert!(adv > Some(0));
 /// ```
 pub fn advance(state: &Glyphr, c: char) -> Option<u32> {
     if let Some(sdf) = &state.sdf_config.font.get_glyph(c) {
@@ -99,7 +99,7 @@ pub fn advance(state: &Glyphr, c: char) -> Option<u32> {
 /// # use glyphr::{sdf::get_metrics, Glyphr, SdfConfig};
 /// # let mut buffer = [0u32; 100];
 /// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
-/// let m = get_metrics(&state, 'A');
+/// let m = get_metrics(&state, 'A').unwrap();
 /// assert!(m.advance_width > 0.0);
 /// ```
 pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> Option<&'a Metrics> {
