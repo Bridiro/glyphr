@@ -11,7 +11,7 @@ pub struct FontLoaded {
     pub px: f32,
     pub padding: i32,
     pub spread: f32,
-    pub char_range: Vec<u8>,
+    pub char_range: Vec<char>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -21,7 +21,7 @@ struct FontDescriptor {
     px: f32,
     padding: i32,
     spread: f32,
-    char_range: Vec<u8>,
+    char_range: String,
 }
 
 #[derive(Deserialize)]
@@ -47,6 +47,33 @@ pub fn path_to() -> PathBuf {
     }
 }
 
+fn parse_char_set(pattern: &str) -> Vec<char> {
+    let mut chars = Vec::new();
+    let mut chars_iter = pattern.chars().peekable();
+
+    if let (Some('['), Some(']')) = (chars_iter.next(), chars_iter.clone().last()) {
+        let mut last = '\0';
+        while let Some(c) = chars_iter.next() {
+            match c {
+                '-' if last != '\0' && chars_iter.peek().is_some() => {
+                    if let Some(&next) = chars_iter.peek() {
+                        chars.extend((last as u8 + 1..=next as u8).map(|b| b as char));
+                        chars_iter.next(); // consume next
+                        last = '\0';
+                    }
+                }
+                _ => {
+                    chars.push(c);
+                    last = c;
+                }
+            }
+        }
+    }
+
+    chars.sort();
+    chars
+}
+
 pub fn get_config() -> Vec<FontLoaded> {
     let config_path = path_to();
 
@@ -69,13 +96,14 @@ pub fn get_config() -> Vec<FontLoaded> {
             .expect(&format!("Can't read ttf file {}", loaded_font.path));
         let font = Font::from_bytes(font_file.as_slice(), Default::default())
             .expect(&format!("Failed to parse font file: {}", loaded_font.path));
+
         fonts.push(FontLoaded {
             name: loaded_font.name,
             font,
             px: loaded_font.px,
             padding: loaded_font.padding,
             spread: loaded_font.spread,
-            char_range: loaded_font.char_range,
+            char_range: parse_char_set(&loaded_font.char_range),
         })
     }
 

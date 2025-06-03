@@ -9,9 +9,9 @@ static {{ glyph.codepoint }}_{{ font.name|upper }}: [u8; {{ glyph.bitmap_len }}]
 ];
     {%- endfor %}
 
-pub static FONT_{{ font.name|upper }}: [GlyphEntry; {{ font.glyphs|length }}] = [
+pub static FONT_{{ font.name|upper }}: [(char, GlyphEntry); {{ font.glyphs|length }}] = [
     {%- for glyph in font.glyphs %}
-    GlyphEntry {
+    ('{{ glyph.character }}', GlyphEntry {
         glyph: &{{ glyph.codepoint }}_{{ font.name|upper }},
         px: {{ glyph.px }},
         metrics: Metrics {
@@ -27,7 +27,7 @@ pub static FONT_{{ font.name|upper }}: [GlyphEntry; {{ font.glyphs|length }}] = 
                 height: {{ glyph.metrics.bounds.height }},
             },
         },
-    },
+    }),
     {%- endfor %}
 ];
 {%- endfor %}
@@ -51,11 +51,25 @@ impl Font {
     /// # get_glyphs
     ///
     /// Returns the static array of glyphs of the font on which is called.
-    pub fn get_glyphs(&self) -> &'static [GlyphEntry] {
+    pub fn get_glyph(&self, ch: char) -> Option<&GlyphEntry> {
         match self {
             {%- for font in fonts %}
-            Font::{{ font.name|capitalize }} => &FONT_{{ font.name|upper }},
+            Font::{{ font.name|capitalize }} => Self::find_glyph(&FONT_{{ font.name|upper }}, ch),
             {%- endfor %}
         }
+    }
+
+    pub fn get_size(&self) -> i32 {
+        match self {
+            {%- for font in fonts %}
+            Font::{{ font.name|capitalize }} => {{ font.glyphs[0].px }},
+            {%- endfor %}
+        }
+    }
+
+    fn find_glyph(font: &[(char, GlyphEntry)], ch: char) -> Option<&GlyphEntry> {
+        font.binary_search_by_key(&ch, |&(c, _)| c)
+            .ok()
+            .map(|idx| &font[idx].1)
     }
 }

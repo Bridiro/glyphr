@@ -14,8 +14,9 @@ pub fn render(loaded_fonts: Vec<FontLoaded>) -> String {
 
         let (bitmaps, entries) = generate_font(loaded_font);
 
-        for (entry, bitmap) in entries.iter().zip(bitmaps.iter()) {
+        for ((entry, bitmap), character) in entries.iter().zip(bitmaps.iter()).zip(loaded_font.char_range.iter()) {
             glyphs.push(context! {
+                character => character,
                 codepoint => entry.name.clone(),
                 bitmap_len => bitmap.len(),
                 bitmap => bitmap.clone(),
