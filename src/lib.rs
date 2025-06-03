@@ -19,7 +19,7 @@
 //! px = 64.0
 //! padding = 1
 //! spread = 20.0
-//! char_range = "[A-Za-z0-9& ]"
+//! char_range = "A-Za-z0-9& "
 //! ```
 //! It is kind of straightforward to use, but I'll exaplain it to you:
 //! - `name`: a user-defined name that will be used to choose at runtime which font to use (should be UpperCamelCase as it's used as enum entry)
