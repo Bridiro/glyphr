@@ -71,7 +71,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -79,7 +79,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -107,7 +108,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -115,7 +116,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -125,7 +127,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 110,
     ///     smoothing: 1.0,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Left,
+    ///     halign: HFontAlign::Left,
+    ///     valign: VFontAlign::Baseline,
     ///     font: Font::default(),
     /// };
     ///
@@ -140,7 +143,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -148,7 +151,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -164,7 +168,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -172,13 +176,13 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     valign: HFontAlign::Center,
-    ///     halign: VFontAlign::default(),
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
     ///
-    /// glyphr_struct.set_font_halign(VFontAlign::Left);
+    /// glyphr_struct.set_font_halign(HFontAlign::Left);
     /// assert_eq!(glyphr_struct.sdf_config.halign, HFontAlign::Left);
     /// ```
     pub fn set_font_halign(&mut self, align: HFontAlign) {
@@ -189,7 +193,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -197,14 +201,14 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     valign: VFontAlign::Center,
-    ///     halign: HFontAlign::default(),
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
     ///
-    /// glyphr_struct.set_font_valign(VFontAlign::Left);
-    /// assert_eq!(glyphr_struct.sdf_config.valign, VFontAlign::Left);
+    /// glyphr_struct.set_font_valign(VFontAlign::Baseline);
+    /// assert_eq!(glyphr_struct.sdf_config.valign, VFontAlign::Baseline);
     /// ```
     pub fn set_font_valign(&mut self, align: VFontAlign) {
         self.sdf_config.valign = align;
@@ -214,7 +218,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -222,7 +226,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -238,7 +243,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -246,7 +251,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -262,7 +268,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -270,7 +276,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -286,7 +293,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -294,7 +301,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 70,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Center,
+    ///     halign: HFontAlign::Center,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
@@ -310,7 +318,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -361,7 +369,7 @@ impl<'a> Glyphr<'a> {
     ///
     /// # Examples
     /// ```
-    /// use glyphr::{Glyphr, SdfConfig, Font, FontAlign};
+    /// use glyphr::{Glyphr, SdfConfig, Font, VFontAlign, HFontAlign};
     ///
     /// let mut buf = [0u32, 100];
     /// let config =  SdfConfig {
@@ -369,7 +377,8 @@ impl<'a> Glyphr<'a> {
     ///     px: 20,
     ///     smoothing: 0.4,
     ///     mid_value: 0.5,
-    ///     align: FontAlign::Left,
+    ///     halign: HFontAlign::Left,
+    ///     valign: VFontAlign::Top,
     ///     font: Font::default(),
     /// };
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
