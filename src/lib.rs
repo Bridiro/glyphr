@@ -8,6 +8,7 @@
 //! - You decide how pixel are written on the screen
 //! - No heap allocation
 //! - Compile time font bitmaps generation
+//! - Full Unicode support
 //!
 //! ## How To Build
 //!

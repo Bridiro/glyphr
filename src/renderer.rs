@@ -183,7 +183,7 @@ impl<'a> Glyphr<'a> {
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
     ///
     /// glyphr_struct.set_font_halign(HFontAlign::Left);
-    /// assert_eq!(glyphr_struct.sdf_config.halign, HFontAlign::Left);
+    /// assert!(glyphr_struct.sdf_config.halign == HFontAlign::Left);
     /// ```
     pub fn set_font_halign(&mut self, align: HFontAlign) {
         self.sdf_config.halign = align;
@@ -208,7 +208,7 @@ impl<'a> Glyphr<'a> {
     /// let mut glyphr_struct = Glyphr::new(|_, _, _, _| (), &mut buf, 10, 10, config);
     ///
     /// glyphr_struct.set_font_valign(VFontAlign::Baseline);
-    /// assert_eq!(glyphr_struct.sdf_config.valign, VFontAlign::Baseline);
+    /// assert!(glyphr_struct.sdf_config.valign == VFontAlign::Baseline);
     /// ```
     pub fn set_font_valign(&mut self, align: VFontAlign) {
         self.sdf_config.valign = align;

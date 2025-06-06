@@ -14,6 +14,7 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 - You decide how pixel are written on the screen
 - No heap allocation
 - Compile time font bitmaps generation
+- Full Unicode support
 
 ## Roadmap
 - [x] Loading fonts.toml from project root
@@ -65,9 +66,10 @@ let mut glyphr_struct = Glyphr::new(
         color: 0xffffff,
         px: 70,
         smoothing: 0.4,
-        mid_value: 0.5,            // should always be 0.5 except for some edge cases
-        align: FontAlign::Center,  // Align the rendered string on x axis
-        font: Font::default(),     // will pick the first one generated
+        mid_value: 0.5,              // should always be 0.5 except for some edge cases
+        valign: VFontAlign::Center,  // Align the rendered string on y axis
+        halign: HFontAlign::Center,  // Align the rendered string on x axis
+        font: Font::default(),       // will pick the first one generated
     },
 );
 ```
