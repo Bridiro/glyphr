@@ -62,7 +62,6 @@ pub struct Font {
     #[allow(dead_code)]
     name: Option<String>,
     glyphs: HashMap<char, Glyph>,
-    #[allow(dead_code)]
     horizontal_line_metrics: LineMetrics,
     units_per_em: f32,
 }
@@ -172,6 +171,14 @@ impl Font {
 
     fn scale_factor(&self, px: f32) -> f32 {
         px / self.units_per_em
+    }
+
+    pub fn get_ascent(&self, px: f32) -> i32 {
+        (self.horizontal_line_metrics.ascent * self.scale_factor(px)) as i32
+    }
+
+    pub fn get_descent(&self, px: f32) -> i32 {
+        (self.horizontal_line_metrics.descent * self.scale_factor(px)) as i32
     }
 }
 
