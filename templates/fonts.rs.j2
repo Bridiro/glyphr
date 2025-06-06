@@ -33,7 +33,14 @@ pub static FONT_{{ font.name|upper }}: [(char, GlyphEntry); {{ font.glyphs|lengt
 {%- endfor %}
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
-pub enum FontAlign {
+pub enum VFontAlign {
+    #[default] Top,
+    Center,
+    Baseline,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub enum HFontAlign {
     #[default] Left,
     Center,
     Right,
@@ -59,6 +66,9 @@ impl Font {
         }
     }
 
+    /// # get_size
+    ///
+    /// Returns the size of the generated font (the one decided by the user).
     pub fn get_size(&self) -> i32 {
         match self {
             {%- for font in fonts %}
@@ -66,6 +76,23 @@ impl Font {
             {%- endfor %}
         }
     }
+
+    pub fn get_ascent(&self) -> i32 {
+        match self {
+            {%- for font in fonts %}
+            Font::{{ font.name|capitalize }} => {{ font.ascent }},
+            {%- endfor %}
+        }
+    }
+
+    pub fn get_descent(&self) -> i32 {
+        match self {
+            {%- for font in fonts %}
+            Font::{{ font.name|capitalize }} => {{ font.descent }},
+            {%- endfor %}
+        }
+    }
+
 
     fn find_glyph(font: &[(char, GlyphEntry)], ch: char) -> Option<&GlyphEntry> {
         font.binary_search_by_key(&ch, |&(c, _)| c)

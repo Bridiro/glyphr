@@ -6,8 +6,6 @@ pub mod vec2;
 
 use font::Metrics;
 
-#[derive(Debug)]
-#[allow(dead_code)]
 pub struct GlyphEntry {
     pub name: String,
     pub px: u32,

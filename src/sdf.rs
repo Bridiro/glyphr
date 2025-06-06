@@ -169,7 +169,8 @@ mod tests {
     fn setup_dummy_state<'a>(buffer: &'a mut [u32]) -> Glyphr<'a> {
         let config = SdfConfig {
             font: Font::default(),
-            align: crate::fonts::FontAlign::default(),
+            valign: crate::fonts::VFontAlign::default(),
+            halign: crate::fonts::HFontAlign::default(),
             px: 30,
             color: 0x112233,
             mid_value: 0.5,

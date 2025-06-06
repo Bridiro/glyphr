@@ -39,6 +39,8 @@ pub fn render(loaded_fonts: Vec<FontLoaded>) -> String {
 
         fonts_meta.push(context! {
             name => loaded_font.name,
+            ascent => loaded_font.font.get_ascent(loaded_font.px as f32),
+            descent => loaded_font.font.get_descent(loaded_font.px as f32),
             glyphs => glyphs,
         });
     }

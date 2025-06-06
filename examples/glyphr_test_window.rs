@@ -32,12 +32,24 @@ fn put_pixel(x: u32, y: u32, color: u32, buffer: &mut [u32]) {
 }
 
 fn test_pixel_buffer_with_window() {
+    use glyphr::fonts::{HFontAlign, VFontAlign};
+
     let mut buffer: [u32; WIDTH * HEIGHT] = [0; WIDTH * HEIGHT];
 
-    let mut window = Window::new("Pixel Buffer Test", WIDTH, HEIGHT, WindowOptions {
-        ..WindowOptions::default()
-    })
+    let mut window = Window::new(
+        "Pixel Buffer Test",
+        WIDTH,
+        HEIGHT,
+        WindowOptions {
+            ..WindowOptions::default()
+        },
+    )
     .expect("Failed to create window");
+    for x in 0..WIDTH {
+        buffer[120 * WIDTH + x] = 0xffffffff;
+        buffer[240 * WIDTH + x] = 0xffffffff;
+        buffer[360 * WIDTH + x] = 0xffffffff;
+    }
 
     let mut current = Glyphr::new(
         put_pixel,
@@ -46,13 +58,22 @@ fn test_pixel_buffer_with_window() {
         HEIGHT as u32,
         SdfConfig {
             color: 0x00ffffff,
-            px: 70,
+            px: 64,
             smoothing: 0.3,
-            align: glyphr::fonts::FontAlign::Center,
+            halign: HFontAlign::Left,
+            valign: VFontAlign::Baseline,
             ..Default::default()
         },
     );
-    current.render("test up & down!", 400, 1);
+    current.render("test base left!", 0, 120);
+
+    current.set_font_halign(HFontAlign::Center);
+    current.set_font_valign(VFontAlign::Center);
+    current.render("test center center!", 400, 240);
+
+    current.set_font_halign(HFontAlign::Right);
+    current.set_font_valign(VFontAlign::Top);
+    current.render("test top right!", 800, 360);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
