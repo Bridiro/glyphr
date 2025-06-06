@@ -14,7 +14,7 @@ pub struct FontLoaded {
     pub char_range: Vec<char>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 struct FontDescriptor {
     name: String,
     path: String,
@@ -51,24 +51,30 @@ fn parse_char_set(pattern: &str) -> Vec<char> {
     let mut chars = Vec::new();
     let mut chars_iter = pattern.chars().peekable();
 
-    let mut last = '\0';
+    let mut last = None;
+
     while let Some(c) = chars_iter.next() {
         match c {
-            '-' if last != '\0' && chars_iter.peek().is_some() => {
-                if let Some(&next) = chars_iter.peek() {
-                    chars.extend((last as u8 + 1..=next as u8).map(|b| b as char));
-                    chars_iter.next(); // consume next
-                    last = '\0';
+            '-' if last.is_some() && chars_iter.peek().is_some() => {
+                let start = last.unwrap() as u32;
+                let end = *chars_iter.peek().unwrap() as u32;
+
+                if start < end {
+                    chars.extend((start + 1..=end).filter_map(std::char::from_u32));
                 }
+
+                last = Some(chars_iter.next().unwrap());
+                chars.push(last.unwrap());
             }
             _ => {
                 chars.push(c);
-                last = c;
+                last = Some(c);
             }
         }
     }
 
-    chars.sort();
+    chars.sort_unstable();
+    chars.dedup();
     chars
 }
 

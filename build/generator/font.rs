@@ -1,5 +1,5 @@
 use std::{collections::HashMap, ops::Deref};
-use ttf_parser::{Face, FaceParsingError, name_id::FULL_NAME};
+use ttf_parser::{Face, FaceParsingError};
 
 use crate::generator::{
     font_geometry::{FontGeometry, OutlineBounds},
@@ -7,7 +7,7 @@ use crate::generator::{
     sdf_generation::{SdfRaster, sdf_generate},
 };
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct FontSettings {
     pub collection_index: u32,
 }
@@ -20,7 +20,7 @@ impl Default for FontSettings {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq)]
 pub struct LineMetrics {
     pub ascent: f32,
     pub descent: f32,
@@ -40,8 +40,7 @@ impl LineMetrics {
     }
 }
 
-#[allow(unused)]
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Metrics {
     pub xmin: i32,
     pub ymin: i32,
@@ -59,8 +58,6 @@ pub(crate) struct Glyph {
 }
 
 pub struct Font {
-    #[allow(dead_code)]
-    name: Option<String>,
     glyphs: HashMap<char, Glyph>,
     horizontal_line_metrics: LineMetrics,
     units_per_em: f32,
@@ -72,7 +69,6 @@ impl Font {
         settings: FontSettings,
     ) -> Result<Self, FaceParsingError> {
         let face = Face::parse(&data, settings.collection_index)?;
-        let name = convert_name(&face);
         let units_per_em = face.units_per_em() as f32;
 
         let glyph_count = face.number_of_glyphs();
@@ -111,7 +107,6 @@ impl Font {
             LineMetrics::new(face.ascender(), face.descender(), face.line_gap());
 
         let font = Font {
-            name,
             glyphs,
             units_per_em,
             horizontal_line_metrics,
@@ -180,13 +175,4 @@ impl Font {
     pub fn get_descent(&self, px: f32) -> i32 {
         (self.horizontal_line_metrics.descent * self.scale_factor(px)) as i32
     }
-}
-
-fn convert_name(face: &Face) -> Option<String> {
-    for name in face.names() {
-        if name.name_id == FULL_NAME && name.is_unicode() {
-            return name.to_string();
-        }
-    }
-    None
 }

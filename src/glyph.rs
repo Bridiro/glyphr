@@ -4,7 +4,6 @@
 
 /// Bounding box of the glyph outline, in float coordinates.
 /// Generally used only for some precision cases.
-#[allow(unused)]
 #[repr(C)]
 pub struct OutlineBounds {
     pub xmin: f32,
@@ -21,7 +20,6 @@ pub struct OutlineBounds {
 /// made. Take for example `g` and `t`. With this 2 you can clearly see that `g` goes lower than `t`, and the opposite applies as well.
 /// `advance_width` is used to calculate how far away the next glyph should be placed for optimal
 /// font reading.
-#[allow(unused)]
 #[repr(C)]
 pub struct Metrics {
     pub xmin: i32,

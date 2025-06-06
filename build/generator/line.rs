@@ -1,6 +1,6 @@
 use crate::generator::vec2::{Point, Vec2, vec2, vec3};
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub enum Line {
     Line {
         start: Point,

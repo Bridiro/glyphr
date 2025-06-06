@@ -2,7 +2,7 @@
 use std::ops::*;
 
 #[repr(transparent)]
-#[derive(Default, Copy, Clone, Debug, PartialEq)]
+#[derive(Default, Copy, Clone, PartialEq)]
 pub struct Vec2 {
     v: [f32; 2],
 }
@@ -131,7 +131,7 @@ impl IndexMut<usize> for Vec2 {
 }
 
 #[repr(transparent)]
-#[derive(Default, Copy, Clone, Debug, PartialEq)]
+#[derive(Default, Copy, Clone, PartialEq)]
 pub(crate) struct Vec3 {
     v: [f32; 3],
 }

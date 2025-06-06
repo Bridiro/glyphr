@@ -5,7 +5,7 @@
 
 #[allow(unused_imports)]
 use crate::{
-    Glyphr, fonts,
+    Glyphr,
     glyph::{GlyphEntry, Metrics},
     utils::{ExtFloor, mix, smoothstep},
 };

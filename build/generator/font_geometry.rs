@@ -13,7 +13,7 @@ impl PartialEq for Point {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Debug, Default)]
+#[derive(Copy, Clone, PartialEq, Default)]
 pub struct OutlineBounds {
     pub xmin: f32,
     pub ymin: f32,

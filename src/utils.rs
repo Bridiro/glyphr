@@ -16,7 +16,6 @@ pub trait ExtFloor {
     /// assert_eq!(1.9f32.floor(), 1.0);
     /// assert_eq!((-1.1f32).floor(), -2.0);
     /// ```
-    #[allow(unused)]
     fn floor(self) -> f32;
 }
 

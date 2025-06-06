@@ -23,23 +23,22 @@ pub fn generate_font(
             loaded_font.px,
             loaded_font.padding,
             loaded_font.spread,
-            *c as char,
+            *c,
         ) {
             let bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
             entries.push(GlyphEntry {
-                name: format!("GLYPH_{}", *c as u8),
+                name: format!("GLYPH_{}", *c as u32),
                 px: loaded_font.px as u32,
                 metrics,
             });
-            bitmaps.push(rle_encode(bitmap_sdf.buffer));
+            bitmaps.push(rle_encode(bitmap_sdf));
         } else {
             // Check if the character is a space or similar invisible character
-            let ch = *c as char;
-            let metrics = loaded_font.font.metrics(ch, loaded_font.px);
-            if ch.is_whitespace() || metrics.map_or(false, |m| m.advance_width > 0.0) {
-                eprintln!("Info: Glyph '{}' is empty or not renderable, but has metrics. Inserting dummy entry.", ch);
+            let metrics = loaded_font.font.metrics(*c, loaded_font.px);
+            if c.is_whitespace() || metrics.map_or(false, |m| m.advance_width > 0.0) {
+                eprintln!("Info: Glyph '{}' is empty or not renderable, but has metrics. Inserting dummy entry.", c);
                 entries.push(GlyphEntry {
-                    name: format!("GLYPH_{}", *c as u8),
+                    name: format!("GLYPH_{}", *c as u32),
                     px: loaded_font.px as u32,
                     metrics: metrics.unwrap_or_default(),
                 });
@@ -47,7 +46,7 @@ pub fn generate_font(
                 continue;
             }
 
-            panic!("font is not complete!");
+            panic!("font is not complete! U+{:04X} '{}' is not present", *c as u32, c);
         }
     }
 

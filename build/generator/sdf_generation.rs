@@ -6,14 +6,6 @@ pub struct SdfRaster {
     pub buffer: Vec<f32>,
 }
 
-pub struct SdfBitmap {
-    #[allow(dead_code)]
-    pub width: u32,
-    #[allow(dead_code)]
-    pub height: u32,
-    pub buffer: Vec<u8>,
-}
-
 pub fn sdf_generate(
     width: u32,
     height: u32,
@@ -84,7 +76,7 @@ pub fn sdf_generate(
     }
 }
 
-pub fn sdf_to_bitmap(sdf: &SdfRaster) -> SdfBitmap {
+pub fn sdf_to_bitmap(sdf: &SdfRaster) -> Vec<u8> {
     let width = sdf.width;
     let height = sdf.height;
     let mut buffer: Vec<u8> = vec![0u8; (width * height) as usize];
@@ -96,11 +88,7 @@ pub fn sdf_to_bitmap(sdf: &SdfRaster) -> SdfBitmap {
         }
     }
 
-    SdfBitmap {
-        width,
-        height,
-        buffer,
-    }
+    buffer
 }
 
 struct Scanline {

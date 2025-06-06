@@ -1759,14 +1759,14 @@ pub static FONT_POPPINS: [(char, GlyphEntry); 65] = [
     }),
 ];
 
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub enum VFontAlign {
     #[default] Top,
     Center,
     Baseline,
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub enum HFontAlign {
     #[default] Left,
     Center,
