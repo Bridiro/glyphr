@@ -1,6 +1,9 @@
 use crate::glyph::{GlyphEntry, Metrics, OutlineBounds};
 static GLYPH_32_POPPINS: [u8; 0] = [
 ];
+static GLYPH_33_POPPINS: [u8; 10] = [
+    2, 0, 1, 14, 19, 0, 4, 127, 2, 0, 
+];
 static GLYPH_38_POPPINS: [u8; 156] = [
     15, 0, 1, 20, 1, 249, 2, 255, 1, 208, 7, 0, 1, 254, 1, 
     232, 1, 21, 1, 46, 1, 255, 1, 157, 6, 0, 1, 255, 1, 65, 
@@ -396,10 +399,6 @@ static GLYPH_90_POPPINS: [u8; 78] = [
     1, 255, 1, 13, 6, 0, 1, 255, 1, 189, 5, 10, 2, 0, 7, 
     255, 10, 0, 
 ];
-static GLYPH_93_POPPINS: [u8; 26] = [
-    1, 0, 1, 30, 2, 0, 1, 255, 2, 0, 1, 75, 50, 0, 1, 
-    75, 2, 0, 1, 255, 2, 0, 1, 30, 1, 0, 
-];
 static GLYPH_97_POPPINS: [u8; 122] = [
     13, 0, 1, 64, 4, 255, 1, 78, 1, 67, 1, 255, 2, 0, 1, 
     47, 1, 255, 1, 251, 1, 45, 1, 0, 1, 50, 1, 255, 1, 67, 
@@ -667,6 +666,23 @@ pub static FONT_POPPINS: [(char, GlyphEntry); 65] = [
                 ymin: 0.0,
                 width: 0.0,
                 height: 0.0,
+            },
+        },
+    }),
+    ('!', GlyphEntry {
+        glyph: &GLYPH_33_POPPINS,
+        px: 20,
+        metrics: Metrics {
+            xmin: 1,
+            ymin: 0,
+            width: 2,
+            height: 14,
+            advance_width: 5.980000019073486,
+            bounds: OutlineBounds {
+                xmin: 1.959999918937683,
+                ymin: 0.0,
+                width: 2.2200000286102295,
+                height: 14.4399995803833,
             },
         },
     }),
@@ -1299,23 +1315,6 @@ pub static FONT_POPPINS: [(char, GlyphEntry); 65] = [
             },
         },
     }),
-    (']', GlyphEntry {
-        glyph: &GLYPH_93_POPPINS,
-        px: 20,
-        metrics: Metrics {
-            xmin: 0,
-            ymin: -3,
-            width: 3,
-            height: 22,
-            advance_width: 6.579999923706055,
-            bounds: OutlineBounds {
-                xmin: 0.8999999761581421,
-                ymin: -3.419999837875366,
-                width: 3.919999837875366,
-                height: 22.260000228881836,
-            },
-        },
-    }),
     ('a', GlyphEntry {
         glyph: &GLYPH_97_POPPINS,
         px: 20,
@@ -1761,7 +1760,14 @@ pub static FONT_POPPINS: [(char, GlyphEntry); 65] = [
 ];
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
-pub enum FontAlign {
+pub enum VFontAlign {
+    #[default] Top,
+    Center,
+    Baseline,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub enum HFontAlign {
     #[default] Left,
     Center,
     Right,
@@ -1783,11 +1789,27 @@ impl Font {
         }
     }
 
+    /// # get_size
+    ///
+    /// Returns the size of the generated font (the one decided by the user).
     pub fn get_size(&self) -> i32 {
         match self {
             Font::Poppins => 20,
         }
     }
+
+    pub fn get_ascent(&self) -> i32 {
+        match self {
+            Font::Poppins => 21,
+        }
+    }
+
+    pub fn get_descent(&self) -> i32 {
+        match self {
+            Font::Poppins => -7,
+        }
+    }
+
 
     fn find_glyph(font: &[(char, GlyphEntry)], ch: char) -> Option<&GlyphEntry> {
         font.binary_search_by_key(&ch, |&(c, _)| c)
