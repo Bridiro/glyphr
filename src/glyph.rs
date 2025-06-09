@@ -16,7 +16,7 @@ pub struct Metrics {
     pub ymin: i32,
     pub width: i32,
     pub height: i32,
-    pub advance_width: f32,
+    pub advance_width: i32,
 }
 
 /// One glyph entry in the font, including raw data, resolution, and metrics.

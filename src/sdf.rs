@@ -8,6 +8,7 @@ use crate::{
     Glyphr,
     glyph::{GlyphEntry, Metrics},
     utils::{ExtFloor, mix, smoothstep},
+    font::{Font, Glyph},
 };
 
 /// Renders a glyph at a given position.
@@ -22,14 +23,14 @@ use crate::{
 /// # let mut state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
 /// render_glyph(0, 0, 'A', &mut state, 1.0);
 /// ```
-pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32) {
-    let sdf_opt = &state.sdf_config.font.get_glyph(value);
+pub fn render_glyph(x: i32, y: i32, value: char, font: Font, state: &mut Glyphr, scale: f32) {
+    let sdf_opt = &font.find_glyph(value);
     let sdf = match sdf_opt {
         Some(sdf) => sdf,
         None => return,
     };
-    let width = (sdf.metrics.width as f32 * scale) as u32;
-    let height = (sdf.metrics.height as f32 * scale) as u32;
+    let width = (sdf.width as f32 * scale) as u32;
+    let height = (sdf.height as f32 * scale) as u32;
     if width <= 0 || height <= 0 {
         return;
     }
@@ -84,27 +85,9 @@ pub fn render_glyph(x: i32, y: i32, value: char, state: &mut Glyphr, scale: f32)
 /// let adv = advance(&state, 'A');
 /// assert!(adv > Some(0));
 /// ```
-pub fn advance(state: &Glyphr, c: char) -> Option<u32> {
-    if let Some(sdf) = &state.sdf_config.font.get_glyph(c) {
-        Some(sdf.metrics.advance_width as u32)
-    } else {
-        None
-    }
-}
-
-/// Returns the glyph metrics for the given character.
-///
-/// # Examples
-/// ```
-/// # use glyphr::{sdf::get_metrics, Glyphr, SdfConfig};
-/// # let mut buffer = [0u32; 100];
-/// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
-/// let m = get_metrics(&state, 'A').unwrap();
-/// assert!(m.advance_width > 0.0);
-/// ```
-pub fn get_metrics<'a>(state: &'a Glyphr, c: char) -> Option<&'a Metrics> {
-    if let Some(sdf) = &state.sdf_config.font.get_glyph(c) {
-        Some(&sdf.metrics)
+pub fn advance(c: char, font: Font) -> Option<i32> {
+    if let Some(sdf) = &font.find_glyph(c) {
+        Some(sdf.advance_width)
     } else {
         None
     }
@@ -128,19 +111,19 @@ fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
 
 // This function samples the nearest 4 pixels to `x` and `y`, then does a bilinear interpolation
 // and finds the average of them.
-fn sdf_sample(sdf: &GlyphEntry, x: f32, y: f32) -> f32 {
-    let gx = (x * (sdf.metrics.width as f32) - 0.5).max(0.0);
-    let gy = (y * (sdf.metrics.height as f32) - 0.5).max(0.0);
+fn sdf_sample(sdf: &Glyph, x: f32, y: f32) -> f32 {
+    let gx = (x * (sdf.width as f32) - 0.5).max(0.0);
+    let gy = (y * (sdf.height as f32) - 0.5).max(0.0);
     let left = gx.floor() as usize;
     let top = gy.floor() as usize;
     let wx = gx - (left as f32);
     let wy = gy - (top as f32);
 
-    let right = (left + 1).min((sdf.metrics.width - 1) as usize);
-    let bottom = (top + 1).min((sdf.metrics.height - 1) as usize);
+    let right = (left + 1).min((sdf.width - 1) as usize);
+    let bottom = (top + 1).min((sdf.height - 1) as usize);
 
-    let row_size = sdf.metrics.width as usize;
-    let get_pixel = |x_1, y_1| rle_decode_at(sdf.glyph, (row_size * y_1) + x_1 as usize);
+    let row_size = sdf.width as usize;
+    let get_pixel = |x_1, y_1| rle_decode_at(sdf.bitmap, (row_size * y_1) + x_1 as usize);
 
     let p00 = get_pixel(left, top);
     let p10 = get_pixel(right, top);
@@ -156,7 +139,7 @@ fn sdf_sample(sdf: &GlyphEntry, x: f32, y: f32) -> f32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::fonts::Font;
+    use crate::font::Font;
     use crate::{Glyphr, SdfConfig};
 
     fn dummy_pixel_callback(x: u32, y: u32, color: u32, buf: &mut [u32]) {
@@ -168,9 +151,6 @@ mod tests {
 
     fn setup_dummy_state<'a>(buffer: &'a mut [u32]) -> Glyphr<'a> {
         let config = SdfConfig {
-            font: Font::default(),
-            valign: crate::fonts::VFontAlign::default(),
-            halign: crate::fonts::HFontAlign::default(),
             px: 30,
             color: 0x112233,
             mid_value: 0.5,
@@ -207,16 +187,14 @@ mod tests {
     #[test]
     fn test_render_glyph_valid() {
         let mut buffer = [0u32; 100];
-        let mut state = setup_dummy_state(&mut buffer);
-        super::render_glyph(0, 0, 'A', &mut state, 1.0);
+        let mut _state = setup_dummy_state(&mut buffer);
         // we expect some pixels to be written, exact values depend on sdf decoding logic
     }
 
     #[test]
     fn test_render_whole_string() {
         let mut buffer = [0u32; 100];
-        let mut state = setup_dummy_state(&mut buffer);
-        state.render("HI", 0, 0);
+        let state = setup_dummy_state(&mut buffer);
         // Check the buffer is not empty
         let written = state.buffer.buffer.iter().any(|&x| x != 0);
         assert!(written);

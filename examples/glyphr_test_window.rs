@@ -1,4 +1,4 @@
-use glyphr::{Glyphr, SdfConfig};
+use glyphr::{Glyphr, SdfConfig, AlignH, AlignV, Glyph, Font};
 use minifb::{Window, WindowOptions};
 
 const WIDTH: usize = 800;
@@ -32,8 +32,6 @@ fn put_pixel(x: u32, y: u32, color: u32, buffer: &mut [u32]) {
 }
 
 fn test_pixel_buffer_with_window() {
-    use glyphr::fonts::{HFontAlign, VFontAlign};
-
     let mut buffer: [u32; WIDTH * HEIGHT] = [0; WIDTH * HEIGHT];
 
     let mut window = Window::new(
@@ -60,20 +58,24 @@ fn test_pixel_buffer_with_window() {
             color: 0x00ffffff,
             px: 64,
             smoothing: 0.3,
-            halign: HFontAlign::Left,
-            valign: VFontAlign::Baseline,
             ..Default::default()
         },
     );
-    current.render("test base left!", 0, 120);
 
-    current.set_font_halign(HFontAlign::Center);
-    current.set_font_valign(VFontAlign::Center);
-    current.render("test center center!", 400, 240);
+    glyphr::generate_font! {
+        name: POPPINS,
+        path: "fonts/Poppins-Regular.ttf",
+        size: 64,
+        characters: "A-Za-z0-9 ",
+        padding: 1,
+        spread: 20.0,
+    }
 
-    current.set_font_halign(HFontAlign::Right);
-    current.set_font_valign(VFontAlign::Top);
-    current.render("test top right!", 800, 360);
+    current.render("test base left!", FONT_POPPINS, 0, 120, AlignV::Baseline, AlignH::Left);
+
+    current.render("test center center!", FONT_POPPINS, 400, 240, AlignV::Center, AlignH::Center);
+
+    current.render("test top right!", FONT_POPPINS, 800, 360, AlignV::Top, AlignH::Right);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();

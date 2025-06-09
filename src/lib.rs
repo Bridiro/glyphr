@@ -38,12 +38,13 @@
 
 #![no_std]
 
-pub mod fonts;
+pub mod font;
 pub mod glyph;
 pub mod renderer;
 pub mod sdf;
 pub mod utils;
 
-pub use fonts::{Font, VFontAlign, HFontAlign};
+pub use glyphr_macros::generate_font;
+pub use font::{AlignH, AlignV, Font, Glyph};
 pub use glyph::{GlyphEntry, Metrics};
 pub use renderer::{Buffer, Glyphr, SdfConfig};

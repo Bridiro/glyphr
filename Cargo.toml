@@ -6,7 +6,6 @@ authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
 description = "A no_std, lightweight and simple font rasterizing library"
 license = "Apache-2.0"
 repository = "https://github.com/Bridiro/glyphr"
-build = "build/main.rs"
 keywords = ["sdf", "font", "rasterizer"]
 categories = ["no-std", "no-std::no-alloc", "graphics", "embedded"]
 
@@ -18,6 +17,7 @@ minijinja = "2.10.2"
 
 [dependencies]
 minifb = { version = "0.28", optional = true }
+glyphr-macros = { git = "https://github.com/Bridiro/glyphr-macros" }
 
 [features]
 window = ["dep:minifb"]
