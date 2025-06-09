@@ -2,16 +2,6 @@
 //!
 //! Definitions for glyph bounding boxes and metrics used in SDF rendering.
 
-/// Bounding box of the glyph outline, in float coordinates.
-/// Generally used only for some precision cases.
-#[repr(C)]
-pub struct OutlineBounds {
-    pub xmin: f32,
-    pub ymin: f32,
-    pub width: f32,
-    pub height: f32
-}
-
 /// Glyph metrics, including bounding box and advance width.
 /// Used internally to calculate how and where to place glyphs.
 /// 
@@ -27,7 +17,6 @@ pub struct Metrics {
     pub width: i32,
     pub height: i32,
     pub advance_width: f32,
-    pub bounds: OutlineBounds,
 }
 
 /// One glyph entry in the font, including raw data, resolution, and metrics.

@@ -47,7 +47,6 @@ pub struct Metrics {
     pub width: i32,
     pub height: i32,
     pub advance_width: f32,
-    pub bounds: OutlineBounds,
 }
 
 #[derive(Default)]
@@ -127,7 +126,6 @@ impl Font {
             width: bounds.width as i32,
             height: bounds.height as i32,
             advance_width: glyph.advance_width * scale,
-            bounds,
         };
 
         Some(metrics)

@@ -1,4 +1,4 @@
-use crate::glyph::{GlyphEntry, Metrics, OutlineBounds};
+use crate::glyph::{GlyphEntry, Metrics};
 
 {%- for font in fonts %}
     {%- for glyph in font.glyphs %}
@@ -20,12 +20,6 @@ pub static FONT_{{ font.name|upper }}: [(char, GlyphEntry); {{ font.glyphs|lengt
             width: {{ glyph.metrics.width }},
             height: {{ glyph.metrics.height }},
             advance_width: {{ glyph.metrics.advance_width }},
-            bounds: OutlineBounds {
-                xmin: {{ glyph.metrics.bounds.xmin }},
-                ymin: {{ glyph.metrics.bounds.ymin }},
-                width: {{ glyph.metrics.bounds.width }},
-                height: {{ glyph.metrics.bounds.height }},
-            },
         },
     }),
     {%- endfor %}

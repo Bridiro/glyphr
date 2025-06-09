@@ -27,12 +27,6 @@ pub fn render(loaded_fonts: Vec<FontLoaded>) -> String {
                     width => entry.metrics.width,
                     height => entry.metrics.height,
                     advance_width => entry.metrics.advance_width,
-                    bounds => context! {
-                        xmin => entry.metrics.bounds.xmin,
-                        ymin => entry.metrics.bounds.ymin,
-                        width => entry.metrics.bounds.width,
-                        height => entry.metrics.bounds.height,
-                    }
                 }
             });
         }

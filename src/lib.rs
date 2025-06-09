@@ -45,5 +45,5 @@ pub mod sdf;
 pub mod utils;
 
 pub use fonts::{Font, VFontAlign, HFontAlign};
-pub use glyph::{OutlineBounds, GlyphEntry, Metrics};
+pub use glyph::{GlyphEntry, Metrics};
 pub use renderer::{Buffer, Glyphr, SdfConfig};
