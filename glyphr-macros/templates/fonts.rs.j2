@@ -1,0 +1,29 @@
+{%- for glyph in font.glyphs %}
+static {{ glyph.codepoint }}_{{ font.name|upper }}: [u8; {{ glyph.bitmap_len }}] = [
+    {%- for chunk in glyph.bitmap|batch(15) %}
+    {% for column in chunk %}{{ column }}, {% endfor %}
+    {%- endfor %}
+];
+{%- endfor %}
+
+static GLYPHS_{{ font.name|upper }}: [::glyphr::Glyph; {{ font.glyphs|length }}] = [
+    {%- for glyph in font.glyphs %}
+    ::glyphr::Glyph {
+        character: '{{ glyph.character }}',
+        bitmap: &{{ glyph.codepoint }}_{{ font.name|upper }},
+        xmin: {{ glyph.xmin }},
+        ymin: {{ glyph.ymin }},
+        width: {{ glyph.width }},
+        height: {{ glyph.height }},
+        advance_width: {{ glyph.advance_width }},
+    },
+    {%- endfor %}
+];
+
+pub static {{ font.name|upper }}: ::glyphr::Font = ::glyphr::Font {
+    glyphs: &GLYPHS_{{ font.name|upper }},
+    size: {{ font.size }},
+    ascent: {{ font.ascent }},
+    descent: {{ font.descent }},
+    format: ::glyphr::{{ font.format }},
+};

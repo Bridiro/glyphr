@@ -1,21 +1,12 @@
-[package]
-name = "glyphr"
-version = "0.4.1"
-edition = "2024"
+[workspace]
+members = [
+    "glyphr",
+    "glyphr-macros",
+]
+resolver = "2"
+
+[workspace.package]
 authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
-description = "A no_std, lightweight and simple font rasterizing library"
 license = "Apache-2.0"
+edition = "2021"
 repository = "https://github.com/Bridiro/glyphr"
-keywords = ["sdf", "font", "rasterizer"]
-categories = ["no-std", "no-std::no-alloc", "graphics", "embedded"]
-
-[dependencies]
-minifb = { version = "0.28", optional = true }
-glyphr-macros = { git = "https://github.com/Bridiro/glyphr-macros" }
-
-[features]
-window = ["dep:minifb"]
-
-[[example]]
-name = "glyphr_test_window"
-required-features = ["window"]
