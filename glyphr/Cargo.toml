@@ -10,7 +10,7 @@ categories = ["no-std", "no-std::no-alloc", "graphics", "embedded"]
 
 [dependencies]
 minifb = { version = "0.28", optional = true }
-glyphr-macros = { path = "../glyphr-macros" }
+glyphr-macros = { path = "../glyphr-macros", version = "0.1" }
 
 [features]
 window = ["dep:minifb"]
