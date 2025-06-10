@@ -67,8 +67,10 @@ fn test_pixel_buffer_with_window() {
         path: "fonts/Poppins-Regular.ttf",
         size: 64,
         characters: "A-Za-z0-9 ",
-        padding: 1,
-        spread: 20.0,
+        format: SDF {
+            spread: 20.0,
+            padding: 0,
+        }
     }
 
     current.render("test base left!", POPPINS, 0, 120, AlignV::Baseline, AlignH::Left);

@@ -9,11 +9,18 @@ pub struct Glyph<'a> {
 }
 
 #[derive(Clone, Copy)]
+pub enum BitmapFormat {
+    SDF,
+    Bitmap,
+}
+
+#[derive(Clone, Copy)]
 pub struct Font<'a> {
     pub glyphs: &'a [Glyph<'a>],
     pub size: i32,
     pub ascent: i32,
     pub descent: i32,
+    pub format: BitmapFormat,
 }
 
 impl<'a> Font<'a> {

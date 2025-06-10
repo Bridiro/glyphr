@@ -45,6 +45,6 @@ pub mod sdf;
 pub mod utils;
 
 pub use glyphr_macros::generate_font;
-pub use font::{AlignH, AlignV, Font, Glyph};
+pub use font::{AlignH, AlignV, Font, Glyph, BitmapFormat};
 pub use glyph::{GlyphEntry, Metrics};
 pub use renderer::{Buffer, Glyphr, SdfConfig};
