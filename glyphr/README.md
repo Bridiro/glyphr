@@ -16,15 +16,6 @@ and had too much features that I did not use. I just wanted it to be as fast as 
 - Compile time font bitmaps generation
 - Full Unicode support
 
-## Roadmap
-- [x] Loading fonts.toml from project root
-- [x] Generating what's specified in fonts.toml
-- [x] Saving the bitmaps somewhere
-- [x] Generating the file(s) that the library will use
-- [x] Main functionalities, like rasterization...
-- [x] Clear and useful APIs
-- [ ] General optimization and refactor (I already know I'll need it)
-
 ## How To Build
 
 In the project root, create a `fonts` folder, then inside create a `fonts.toml`. The library expect an array of fonts, with some parameters. Here is an example:
@@ -67,9 +58,6 @@ let mut glyphr_struct = Glyphr::new(
         px: 70,
         smoothing: 0.4,
         mid_value: 0.5,              // should always be 0.5 except for some edge cases
-        valign: VFontAlign::Center,  // Align the rendered string on y axis
-        halign: HFontAlign::Center,  // Align the rendered string on x axis
-        font: Font::default(),       // will pick the first one generated
     },
 );
 ```
