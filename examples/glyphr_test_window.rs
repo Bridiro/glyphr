@@ -1,4 +1,4 @@
-use glyphr::{Glyphr, SdfConfig, AlignH, AlignV, Glyph, Font};
+use glyphr::{Glyphr, SdfConfig, AlignH, AlignV};
 use minifb::{Window, WindowOptions};
 
 const WIDTH: usize = 800;
@@ -71,11 +71,11 @@ fn test_pixel_buffer_with_window() {
         spread: 20.0,
     }
 
-    current.render("test base left!", FONT_POPPINS, 0, 120, AlignV::Baseline, AlignH::Left);
+    current.render("test base left!", POPPINS, 0, 120, AlignV::Baseline, AlignH::Left);
 
-    current.render("test center center!", FONT_POPPINS, 400, 240, AlignV::Center, AlignH::Center);
+    current.render("test center center!", POPPINS, 400, 240, AlignV::Center, AlignH::Center);
 
-    current.render("test top right!", FONT_POPPINS, 800, 360, AlignV::Top, AlignH::Right);
+    current.render("test top right!", POPPINS, 800, 360, AlignV::Top, AlignH::Right);
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
