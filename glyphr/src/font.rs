@@ -1,3 +1,5 @@
+use crate::GlyphrError;
+
 pub struct Glyph<'a> {
     pub character: char,
     pub bitmap: &'a [u8],
@@ -24,20 +26,22 @@ pub struct Font<'a> {
 }
 
 impl<'a> Font<'a> {
-    pub fn find_glyph(&self, ch: char) -> Option<&Glyph<'a>> {
+    pub fn find_glyph(&self, ch: char) -> Result<&Glyph<'a>, GlyphrError> {
         self.glyphs
             .binary_search_by_key(&ch, |g| g.character)
-            .ok()
             .map(|idx| &self.glyphs[idx])
+            .map_err(|_| GlyphrError::InvalidGlyph(ch))
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum AlignH {
     Left,
     Center,
     Right,
 }
 
+#[derive(Clone, Copy)]
 pub enum AlignV {
     Top,
     Center,

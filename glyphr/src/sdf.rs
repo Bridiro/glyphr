@@ -5,92 +5,119 @@
 
 #[allow(unused_imports)]
 use crate::{
-    Glyphr,
-    glyph::{GlyphEntry, Metrics},
-    utils::{ExtFloor, mix, smoothstep},
+    BitmapFormat, Glyphr, GlyphrError, RenderTarget,
     font::{Font, Glyph},
+    utils::{ExtFloor, mix, smoothstep},
 };
 
 /// Renders a glyph at a given position.
-///
-/// # Panics
-/// Panics if the scaled glyph size is 0.
-///
-/// # Examples
-/// ```
-/// # use glyphr::{sdf::render_glyph, Glyphr, SdfConfig};
-/// # let mut buffer = [0u32; 100];
-/// # let mut state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
-/// render_glyph(0, 0, 'A', &mut state, 1.0);
-/// ```
-pub fn render_glyph(x: i32, y: i32, value: char, font: Font, state: &mut Glyphr, scale: f32) {
-    let sdf_opt = &font.find_glyph(value);
-    let sdf = match sdf_opt {
-        Some(sdf) => sdf,
-        None => return,
-    };
-    let width = (sdf.width as f32 * scale) as u32;
-    let height = (sdf.height as f32 * scale) as u32;
-    if width <= 0 || height <= 0 {
-        return;
+pub fn render_glyph<T: RenderTarget>(
+    x: i32,
+    y: i32,
+    value: char,
+    font: Font,
+    state: &Glyphr,
+    scale: f32,
+    target: &mut T,
+) -> Result<(), GlyphrError> {
+    let glyph = &font.find_glyph(value)?;
+
+    match font.format {
+        BitmapFormat::SDF => render_glyph_sdf(x, y, glyph, state, scale, target)?,
+        BitmapFormat::Bitmap => render_glyph_bitmap(x, y, glyph, state, target)?,
     }
+
+    Ok(())
+}
+
+fn render_glyph_sdf<T: RenderTarget>(
+    x: i32,
+    y: i32,
+    glyph: &Glyph,
+    state: &Glyphr,
+    scale: f32,
+    target: &mut T,
+) -> Result<(), GlyphrError> {
+    let width = (glyph.width as f32 * scale) as u32;
+    let height = (glyph.height as f32 * scale) as u32;
 
     let width_f = width as f32;
     let height_f = height as f32;
 
-    let distance_to_pixel = |distance: f32| match distance > state.sdf_config.mid_value {
+    let distance_to_pixel = |distance: f32| match distance > state.render_config.sdf.mid_value {
         true => {
             (smoothstep(
-                state.sdf_config.mid_value - state.sdf_config.smoothing,
-                state.sdf_config.mid_value + state.sdf_config.smoothing,
+                state.render_config.sdf.mid_value - state.render_config.sdf.smoothing,
+                state.render_config.sdf.mid_value + state.render_config.sdf.smoothing,
                 distance,
             ) * 255.0) as u8
         }
         false => 0,
     };
 
+    let (target_w, target_h) = target.dimensions();
+
     for x_1 in 0..width as i32 {
         for y_1 in 0..height as i32 {
             if x_1 + x >= 0
-                && x_1 + x < state.buffer.width as i32
+                && x_1 + x < target_w as i32
                 && y_1 + y >= 0
-                && y_1 + y < state.buffer.height as i32
+                && y_1 + y < target_h as i32
             {
                 let sample_x = ((x_1 as f32) + 0.5) / width_f;
                 let sample_y = ((y_1 as f32) + 0.5) / height_f;
 
-                let sampled_distance = sdf_sample(&sdf, sample_x, sample_y);
+                let sampled_distance = sdf_sample(&glyph, sample_x, sample_y);
                 let alpha = distance_to_pixel(sampled_distance) as u32;
                 if alpha > 0 {
-                    let blended_color = (alpha << 24) | (state.sdf_config.color & 0x00ffffff);
-                    (state.pixel_callback)(
-                        (x_1 + x) as u32,
-                        (y_1 + y) as u32,
-                        blended_color,
-                        state.buffer.buffer,
-                    );
+                    let blended_color = (alpha << 24) | (state.render_config.color & 0x00ffffff);
+                    if !target.write_pixel((x_1 + x) as u32, (y_1 + y) as u32, blended_color) {
+                        return Err(GlyphrError::InvalidTarget);
+                    }
                 }
             }
         }
     }
+
+    Ok(())
+}
+
+fn render_glyph_bitmap<T: RenderTarget>(
+    x: i32,
+    y: i32,
+    glyph: &Glyph,
+    state: &Glyphr,
+    target: &mut T,
+) -> Result<(), GlyphrError> {
+    let width = glyph.width;
+    let height = glyph.height;
+
+    let (target_w, target_h) = target.dimensions();
+
+    for x_1 in 0..width as i32 {
+        for y_1 in 0..height as i32 {
+            if x_1 + x >= 0
+                && x_1 + x < target_w as i32
+                && y_1 + y >= 0
+                && y_1 + y < target_h as i32
+            {
+                let alpha = (get_bitmap_value(glyph, x_1, y_1)?) as u32 * 255;
+                if alpha > 0 {
+                    let blended_color = (alpha << 24) | (state.render_config.color & 0x00ffffff);
+                    if !target.write_pixel((x_1 + x) as u32, (y_1 + y) as u32, blended_color) {
+                        return Err(GlyphrError::InvalidTarget);
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(())
 }
 
 /// Returns the advance width for a character.
-///
-/// # Examples
-/// ```
-/// # use glyphr::{sdf::advance, Glyphr, SdfConfig};
-/// # let mut buffer = [0u32; 100];
-/// # let state = Glyphr::new(|_, _, _, _| {}, &mut buffer, 10, 10, SdfConfig::default());
-/// let adv = advance(&state, 'A');
-/// assert!(adv > Some(0));
-/// ```
-pub fn advance(c: char, font: Font) -> Option<i32> {
-    if let Some(sdf) = &font.find_glyph(c) {
-        Some(sdf.advance_width)
-    } else {
-        None
-    }
+pub fn advance(c: char, font: Font) -> Result<i32, GlyphrError> {
+    Ok(font.find_glyph(c)?.advance_width)
 }
 
 /// Returns the value that would be found at a given index in a non-encoded array.
@@ -111,19 +138,19 @@ fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
 
 // This function samples the nearest 4 pixels to `x` and `y`, then does a bilinear interpolation
 // and finds the average of them.
-fn sdf_sample(sdf: &Glyph, x: f32, y: f32) -> f32 {
-    let gx = (x * (sdf.width as f32) - 0.5).max(0.0);
-    let gy = (y * (sdf.height as f32) - 0.5).max(0.0);
+fn sdf_sample(glyph: &Glyph, x: f32, y: f32) -> f32 {
+    let gx = (x * (glyph.width as f32) - 0.5).max(0.0);
+    let gy = (y * (glyph.height as f32) - 0.5).max(0.0);
     let left = gx.floor() as usize;
     let top = gy.floor() as usize;
     let wx = gx - (left as f32);
     let wy = gy - (top as f32);
 
-    let right = (left + 1).min((sdf.width - 1) as usize);
-    let bottom = (top + 1).min((sdf.height - 1) as usize);
+    let right = (left + 1).min((glyph.width - 1) as usize);
+    let bottom = (top + 1).min((glyph.height - 1) as usize);
 
-    let row_size = sdf.width as usize;
-    let get_pixel = |x_1, y_1| rle_decode_at(sdf.bitmap, (row_size * y_1) + x_1 as usize);
+    let row_size = glyph.width as usize;
+    let get_pixel = |x_1, y_1| rle_decode_at(glyph.bitmap, (row_size * y_1) + x_1 as usize);
 
     let p00 = get_pixel(left, top);
     let p10 = get_pixel(right, top);
@@ -137,66 +164,17 @@ fn sdf_sample(sdf: &Glyph, x: f32, y: f32) -> f32 {
     )
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::font::Font;
-    use crate::{Glyphr, SdfConfig};
+fn get_bitmap_value(glyph: &Glyph, x: i32, y: i32) -> Result<bool, GlyphrError> {
+    let bit_index = y * glyph.width + x;
+    let byte_index = (bit_index / 8) as usize;
+    let bit_offset = bit_index % 8;
 
-    fn dummy_pixel_callback(x: u32, y: u32, color: u32, buf: &mut [u32]) {
-        let idx = (y * 10 + x) as usize;
-        if idx < buf.len() {
-            buf[idx] = color;
-        }
+    if byte_index >= glyph.bitmap.len() {
+        return Err(GlyphrError::OutOfBounds);
     }
 
-    fn setup_dummy_state<'a>(buffer: &'a mut [u32]) -> Glyphr<'a> {
-        let config = SdfConfig {
-            px: 30,
-            color: 0x112233,
-            mid_value: 0.5,
-            smoothing: 0.5,
-        };
+    let byte = glyph.bitmap[byte_index];
+    let bit = (byte << bit_offset) & 1;
 
-        Glyphr::new(dummy_pixel_callback, buffer, 10, 10, config)
-    }
-
-    #[test]
-    fn test_ext_floor_behavior() {
-        assert_eq!(1.9f32.floor(), 1.0);
-        assert_eq!((-1.1f32).floor(), -2.0);
-        assert_eq!(0.0f32.floor(), 0.0);
-        assert_eq!((-0.999f32).floor(), -1.0);
-    }
-
-    #[test]
-    fn test_smoothstep_behavior() {
-        assert_eq!(super::smoothstep(0.0, 1.0, -1.0), 0.0);
-        assert_eq!(super::smoothstep(0.0, 1.0, 0.0), 0.0);
-        assert_eq!(super::smoothstep(0.0, 1.0, 0.5), 0.5);
-        assert_eq!(super::smoothstep(0.0, 1.0, 1.0), 1.0);
-        assert_eq!(super::smoothstep(0.0, 1.0, 2.0), 1.0);
-    }
-
-    #[test]
-    fn test_mix_behavior() {
-        assert_eq!(super::mix(0.0, 10.0, 0.0), 0.0);
-        assert_eq!(super::mix(0.0, 10.0, 0.5), 5.0);
-        assert_eq!(super::mix(0.0, 10.0, 1.0), 10.0);
-    }
-
-    #[test]
-    fn test_render_glyph_valid() {
-        let mut buffer = [0u32; 100];
-        let mut _state = setup_dummy_state(&mut buffer);
-        // we expect some pixels to be written, exact values depend on sdf decoding logic
-    }
-
-    #[test]
-    fn test_render_whole_string() {
-        let mut buffer = [0u32; 100];
-        let state = setup_dummy_state(&mut buffer);
-        // Check the buffer is not empty
-        let written = state.buffer.buffer.iter().any(|&x| x != 0);
-        assert!(written);
-    }
+    Ok(bit == 1)
 }

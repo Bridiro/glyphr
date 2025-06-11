@@ -32,7 +32,7 @@ It is kind of straightforward to use, but I'll exaplain it to you:
 - `name`: a user-defined name that will be used to choose at runtime which font to use (should be UpperCamelCase as it's used as enum entry)
 - `path`: the path of the ttf file (relative to `fonts.toml` folder)
 - `px`: size in pixel of the font
-- `padding`: space in pixel to leave between the glyph and the bitmap borders (0 creates a weird visual artifact, so 1 is better)
+- `padding`: space in pixel to leave between the glyph and the bitmap borders
 - `spread`: distance in pixel that the SDF extends from the edges of each glyph. Generally the lower the number, the higher space will be occupied, but the best upscaled resolution you will have.
 - `char_range`: a `String` regex-like used to define which characters to generate.
 
@@ -43,27 +43,27 @@ After creating this file, and placing the ttfs where you prefer, you can just bu
 
 ## How To Use
 
-Firstly you need to define the callback used to write a pixel. The signature must be `fn(u32, u32, u32, &[u32])`.
+To decide how to write pixels you can use `BufferTarget` (only if you're using a `[u32]` array). If you're using a custom target you need to implement the `RenderTarget` trait on it.
 Then you create the struct `Glyphr`:
 ```rust
-use glyphr::{ Glyphr, fonts::{ Font, FontAlign } };
+use glyphr::{ Glyphr, BufferTarget, RenderConfig, SdfConfig };
 
-let mut glyphr_struct = Glyphr::new(
-    pixel_callback,
-    &mut buffer,  // &[u32]
-    buffer_width,
-    buffer_height,
-    SdfConfig {
-        color: 0xffffff,
-        px: 70,
-        smoothing: 0.4,
-        mid_value: 0.5,              // should always be 0.5 except for some edge cases
-    },
-);
+let mut target = BufferTarget::new(&mut buffer, 800, 480);
+let conf = RenderConfig {
+    color: 0xffffff,
+    sdf: SdfConfig {
+        size: 64,
+        mid_value: 0.5,
+        smoothing: 0.5,
+    }
+};
+let renderer = Glyphr::with_config(conf);
 ```
 and to render anything you just call:
 ```rust
-glyphr_struct.render("Hello, World!", 100, 50);
+use glyphr::{ TextAlign, AlignV, AlignH };
+
+renderer.render(&mut target, "Hello World!", POPPINS, 100, 50, TextAlign { horizontal: AlignH::Left, vertical: AlignV::Baseline }).unwrap();
 ```
 
 > [!TIP]

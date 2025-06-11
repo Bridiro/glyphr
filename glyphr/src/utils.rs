@@ -52,3 +52,31 @@ pub fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
 pub fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
     v1 + (v2 - v1) * weight
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_ext_floor_behavior() {
+        assert_eq!(1.9f32.floor(), 1.0);
+        assert_eq!((-1.1f32).floor(), -2.0);
+        assert_eq!(0.0f32.floor(), 0.0);
+        assert_eq!((-0.999f32).floor(), -1.0);
+    }
+
+    #[test]
+    fn test_smoothstep_behavior() {
+        assert_eq!(super::smoothstep(0.0, 1.0, -1.0), 0.0);
+        assert_eq!(super::smoothstep(0.0, 1.0, 0.0), 0.0);
+        assert_eq!(super::smoothstep(0.0, 1.0, 0.5), 0.5);
+        assert_eq!(super::smoothstep(0.0, 1.0, 1.0), 1.0);
+        assert_eq!(super::smoothstep(0.0, 1.0, 2.0), 1.0);
+    }
+
+    #[test]
+    fn test_mix_behavior() {
+        assert_eq!(super::mix(0.0, 10.0, 0.0), 0.0);
+        assert_eq!(super::mix(0.0, 10.0, 0.5), 5.0);
+        assert_eq!(super::mix(0.0, 10.0, 1.0), 10.0);
+    }
+}
+

@@ -39,12 +39,12 @@
 #![no_std]
 
 pub mod font;
-pub mod glyph;
 pub mod renderer;
 pub mod sdf;
 pub mod utils;
 
+pub use font::{AlignH, AlignV, BitmapFormat, Font, Glyph};
 pub use glyphr_macros::generate_font;
-pub use font::{AlignH, AlignV, Font, Glyph, BitmapFormat};
-pub use glyph::{GlyphEntry, Metrics};
-pub use renderer::{Buffer, Glyphr, SdfConfig};
+pub use renderer::{
+    BufferTarget, Glyphr, GlyphrError, RenderConfig, RenderTarget, SdfConfig, TextAlign,
+};
