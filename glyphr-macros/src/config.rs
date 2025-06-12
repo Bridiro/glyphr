@@ -5,14 +5,20 @@ use crate::generator::font::Font;
 #[derive(PartialEq)]
 pub enum BitmapFormat {
     SDF { spread: f32, padding: i32 },
-    Bitmap,
+    Bitmap { spread: f32, padding: i32 },
 }
 
 impl fmt::Display for BitmapFormat {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            BitmapFormat::Bitmap => write!(f, "BitmapFormat::Bitmap"),
-            BitmapFormat::SDF { spread: _, padding: _ } => {
+            BitmapFormat::Bitmap {
+                spread: _,
+                padding: _,
+            } => write!(f, "BitmapFormat::Bitmap"),
+            BitmapFormat::SDF {
+                spread: _,
+                padding: _,
+            } => {
                 write!(f, "BitmapFormat::SDF")
             }
         }

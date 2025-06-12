@@ -38,7 +38,10 @@ fn test_pixel_buffer_with_window() {
         path: "fonts/Poppins-Regular.ttf",
         size: 64,
         characters: "A-Za-z! ",
-        format: Bitmap,
+        format: Bitmap {
+            spread: 10.0,
+            padding: 0,
+        },
     }
 
     glyphr::generate_font! {

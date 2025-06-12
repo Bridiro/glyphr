@@ -32,7 +32,7 @@ characters = "A-Za-z0-9 !$£%&"
 format = { type = "SDF", spread = 20.0, padding = 0 }
 ```
 
-format can either be `SDF` or `Bitmap`. If not present `Bitmap` is used.
+format can either be `SDF` or `Bitmap`.
 
 
 ## Differences between the 2 formats:

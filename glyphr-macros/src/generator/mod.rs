@@ -17,7 +17,7 @@ pub fn generate_font(loaded_font: &crate::config::FontLoaded) -> (Vec<Vec<u8>>, 
     let mut entries: Vec<GlyphEntry> = vec![];
 
     let (spread, padding) = match loaded_font.format {
-        BitmapFormat::Bitmap => (10.0, 0),
+        BitmapFormat::Bitmap { spread, padding } => (spread, padding),
         BitmapFormat::SDF { spread, padding } => (spread, padding),
     };
 
@@ -28,16 +28,19 @@ pub fn generate_font(loaded_font: &crate::config::FontLoaded) -> (Vec<Vec<u8>>, 
                 .sdf_generate(loaded_font.px as f32, padding, spread, *c)
         {
             let mut bitmap_sdf = sdf_generation::sdf_to_bitmap(&glyph_sdf);
-            if loaded_font.format == BitmapFormat::Bitmap {
-                bitmap_sdf = sdf_generation::sdf_bitmap_to_fixed_bitmap(
-                    &bitmap_sdf,
-                    metrics.width,
-                    metrics.height,
-                    |val| val > 128,
-                );
-                bitmaps.push(bitmap_sdf);
-            } else {
-                bitmaps.push(rle_encode(bitmap_sdf));
+            match loaded_font.format {
+                BitmapFormat::Bitmap { spread: _, padding: _ } => {
+                    bitmap_sdf = sdf_generation::sdf_bitmap_to_fixed_bitmap(
+                        &bitmap_sdf,
+                        metrics.width,
+                        metrics.height,
+                        |val| val > 128,
+                    );
+                    bitmaps.push(bitmap_sdf);
+                }
+                BitmapFormat::SDF { spread: _, padding: _ } => {
+                    bitmaps.push(rle_encode(bitmap_sdf));
+                }
             }
             entries.push(GlyphEntry {
                 name: format!("GLYPH_{}", *c as u32),
