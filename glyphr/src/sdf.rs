@@ -101,9 +101,8 @@ fn render_glyph_bitmap<T: RenderTarget>(
                 && y_1 + y >= 0
                 && y_1 + y < target_h as i32
             {
-                let alpha = (get_bitmap_value(glyph, x_1, y_1)?) as u32 * 255;
-                if alpha > 0 {
-                    let blended_color = (alpha << 24) | (state.render_config.color & 0x00ffffff);
+                if get_bitmap_value(glyph, x_1, y_1)? {
+                    let blended_color = (0xff << 24) | (state.render_config.color & 0x00ffffff);
                     if !target.write_pixel((x_1 + x) as u32, (y_1 + y) as u32, blended_color) {
                         return Err(GlyphrError::InvalidTarget);
                     }
@@ -165,16 +164,20 @@ fn sdf_sample(glyph: &Glyph, x: f32, y: f32) -> f32 {
 }
 
 fn get_bitmap_value(glyph: &Glyph, x: i32, y: i32) -> Result<bool, GlyphrError> {
+    if x < 0 || y < 0 || x >= glyph.width || y >= glyph.height {
+        return Err(GlyphrError::OutOfBounds);
+    }
+
     let bit_index = y * glyph.width + x;
     let byte_index = (bit_index / 8) as usize;
-    let bit_offset = bit_index % 8;
+    let bit_offset = (bit_index % 8) as u8;
 
     if byte_index >= glyph.bitmap.len() {
         return Err(GlyphrError::OutOfBounds);
     }
 
     let byte = glyph.bitmap[byte_index];
-    let bit = (byte << bit_offset) & 1;
+    let bit = (byte >> (7 - bit_offset)) & 1;
 
     Ok(bit == 1)
 }

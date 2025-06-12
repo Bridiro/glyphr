@@ -1,4 +1,4 @@
-use glyphr::{Glyphr, SdfConfig, RenderConfig, AlignH, AlignV, BufferTarget, TextAlign};
+use glyphr::{AlignH, AlignV, BufferTarget, Glyphr, RenderConfig, SdfConfig, TextAlign};
 use minifb::{Window, WindowOptions};
 
 const WIDTH: usize = 800;
@@ -29,27 +29,70 @@ fn test_pixel_buffer_with_window() {
             size: 64,
             mid_value: 0.5,
             smoothing: 0.5,
-        }
+        },
     };
     let renderer = Glyphr::with_config(conf);
 
     glyphr::generate_font! {
-        name: POPPINS,
+        name: POPPINS_BITMAP,
+        path: "fonts/Poppins-Regular.ttf",
+        size: 64,
+        characters: "A-Za-z! ",
+        format: Bitmap,
+    }
+
+    glyphr::generate_font! {
+        name: POPPINS_SDF,
         path: "fonts/Poppins-Regular.ttf",
         size: 64,
         characters: "A-Za-z! ",
         format: SDF {
             spread: 20.0,
             padding: 0,
-        }
+        },
     }
 
+    renderer
+        .render(
+            &mut target,
+            "TEST base left!",
+            POPPINS_SDF,
+            0,
+            120,
+            TextAlign {
+                horizontal: AlignH::Left,
+                vertical: AlignV::Baseline,
+            },
+        )
+        .unwrap();
 
-    renderer.render(&mut target, "TEST base left!", POPPINS, 0, 120, TextAlign { horizontal: AlignH::Left, vertical: AlignV::Baseline }).unwrap();
+    renderer
+        .render(
+            &mut target,
+            "TEST center center!",
+            POPPINS_BITMAP,
+            400,
+            240,
+            TextAlign {
+                horizontal: AlignH::Center,
+                vertical: AlignV::Center,
+            },
+        )
+        .unwrap();
 
-    renderer.render(&mut target, "TEST center center!", POPPINS, 400, 240, TextAlign { horizontal: AlignH::Center, vertical: AlignV::Center }).unwrap();
-
-    renderer.render(&mut target, "TEST top right!", POPPINS, 800, 360, TextAlign { horizontal: AlignH::Right, vertical: AlignV::Top }).unwrap();
+    renderer
+        .render(
+            &mut target,
+            "TEST top right!",
+            POPPINS_SDF,
+            800,
+            360,
+            TextAlign {
+                horizontal: AlignH::Right,
+                vertical: AlignV::Top,
+            },
+        )
+        .unwrap();
 
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
