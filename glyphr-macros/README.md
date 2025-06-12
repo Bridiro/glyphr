@@ -1,4 +1,4 @@
-# glyphr-macros
+# glyphr-macros
 
 This crate contains proc-macros used to generate code at compile time easily.
 
