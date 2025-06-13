@@ -60,3 +60,38 @@ impl TomlConfig {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn dummy_cfg() -> TomlConfig {
+        TomlConfig {
+            font: vec![TomlFont {
+                name: "lol".into(),
+                path: "a.ttf".into(),
+                size: 23,
+                characters: "A-Z".into(),
+                format: BitmapFormat::SDF {
+                    spread: 20.0,
+                    padding: 0,
+                },
+            }],
+        }
+    }
+
+    #[test]
+    fn test_relativize_paths() {
+        let mut cfg = dummy_cfg();
+        cfg.relativize_paths("fonts/fonts.toml");
+        assert_eq!("fonts/a.ttf", &cfg.font[0].path);
+    }
+
+    #[test]
+    fn test_relativize_paths_absolute() {
+        let mut cfg = dummy_cfg();
+        cfg.font[0].path = "/Users/fonts/a.ttf".into();
+        cfg.relativize_paths("fonts/fonts.toml");
+        assert_eq!("/Users/fonts/a.ttf", &cfg.font[0].path);
+    }
+}

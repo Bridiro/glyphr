@@ -1,5 +1,5 @@
-use std::fmt;
 use serde::Deserialize;
+use std::fmt;
 
 use crate::generator::font::Font;
 
@@ -72,4 +72,17 @@ pub fn parse_char_set(pattern: &str) -> Vec<char> {
     chars.sort_unstable();
     chars.dedup();
     chars
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_char_set() {
+        let input = "A-Da-d0-3";
+        let output = parse_char_set(input);
+        let predicted_output = ['0', '1', '2', '3', 'A', 'B', 'C', 'D', 'a', 'b', 'c', 'd'];
+        assert_eq!(output, predicted_output);
+    }
 }
