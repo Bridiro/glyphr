@@ -1,8 +1,13 @@
 use std::fmt;
+use serde::Deserialize;
 
 use crate::generator::font::Font;
 
-#[derive(PartialEq)]
+pub trait ToFontLoaded {
+    fn to_font_loaded(&self) -> Vec<FontLoaded>;
+}
+
+#[derive(PartialEq, Deserialize, Copy, Clone)]
 pub enum BitmapFormat {
     SDF { spread: f32, padding: i32 },
     Bitmap { spread: f32, padding: i32 },

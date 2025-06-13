@@ -29,7 +29,8 @@ name = "POPPINS"
 path = "Poppins-Regular.ttf"
 size = 64
 characters = "A-Za-z0-9 !$£%&"
-format = { type = "SDF", spread = 20.0, padding = 0 }
+format = { SDF = { spread = 20.0, padding = 0}}
+
 ```
 
 format can either be `SDF` or `Bitmap`.

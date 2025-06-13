@@ -55,11 +55,13 @@ fn test_pixel_buffer_with_window() {
         },
     }
 
+    glyphr::generate_fonts_from_toml!("fonts/fonts.toml");
+
     renderer
         .render(
             &mut target,
             "TEST base left!",
-            POPPINS_SDF,
+            POPPINS_TOML,
             0,
             120,
             TextAlign {
