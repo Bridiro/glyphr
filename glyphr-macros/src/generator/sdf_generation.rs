@@ -91,6 +91,25 @@ pub fn sdf_to_bitmap(sdf: &SdfRaster) -> Vec<u8> {
     buffer
 }
 
+pub fn sdf_bitmap_to_fixed_bitmap<F>(sdf_data: &[u8], width: i32, height: i32, predicate: F) -> Vec<u8> 
+where 
+    F: Fn(u8) -> bool,
+{
+    let total_pixels = (width * height) as usize;
+    let bitmap_size = (total_pixels + 7) / 8;
+    let mut bitmap = vec![0u8; bitmap_size];
+    
+    for i in 0..total_pixels {
+        if predicate(sdf_data[i]) {
+            let byte_index = i / 8;
+            let bit_index = i % 8;
+            bitmap[byte_index] |= 1 << (7 - bit_index);
+        }
+    }
+    
+    bitmap
+}
+
 struct Scanline {
     intersections: Vec<f32>,
 }

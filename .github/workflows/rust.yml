@@ -6,7 +6,6 @@ on:
       - master
 
 env: 
-  DOCS_RS: 1
   CARGO_TERM_COLOR: always
 
 jobs:
