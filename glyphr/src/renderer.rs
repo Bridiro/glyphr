@@ -103,7 +103,7 @@ fn render_glyph_bitmap<T: RenderTarget>(
                 && y_1 + y >= 0
                 && y_1 + y < target_h as i32
             {
-                if get_bitmap_value(glyph, x_1, y_1)? {
+                if bitmap_value_at(glyph, x_1, y_1)? {
                     let blended_color = (0xff << 24) | (state.config().color & 0x00ffffff);
                     if !target.write_pixel((x_1 + x) as u32, (y_1 + y) as u32, blended_color) {
                         return Err(GlyphrError::InvalidTarget);
@@ -119,22 +119,6 @@ fn render_glyph_bitmap<T: RenderTarget>(
 /// Returns the advance width for a character.
 pub fn advance(c: char, font: Font) -> Result<i32, GlyphrError> {
     Ok(font.find_glyph(c)?.advance_width)
-}
-
-/// Returns the value that would be found at a given index in a non-encoded array.
-fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
-    let mut i = 0;
-    let mut decoded_index = 0;
-    while i < buffer.len() {
-        let count = buffer[i] as usize;
-        let value = buffer[i + 1];
-        if decoded_index + count > index {
-            return value;
-        }
-        decoded_index += count;
-        i += 2;
-    }
-    0
 }
 
 // This function samples the nearest 4 pixels to `x` and `y`, then does a bilinear interpolation
@@ -165,9 +149,25 @@ fn sdf_sample(glyph: &Glyph, x: f32, y: f32) -> f32 {
     )
 }
 
+/// Returns the value that would be found at a given index in a non-encoded array.
+fn rle_decode_at(buffer: &[u8], index: usize) -> u8 {
+    let mut i = 0;
+    let mut decoded_index = 0;
+    while i < buffer.len() {
+        let count = buffer[i] as usize;
+        let value = buffer[i + 1];
+        if decoded_index + count > index {
+            return value;
+        }
+        decoded_index += count;
+        i += 2;
+    }
+    0
+}
+
 /// This function firstly finds the byte in which the bit we're searching for is stored, then
 /// extracts is and returns a boolean (for 1 or 0) (or error for invalid coordinates).
-fn get_bitmap_value(glyph: &Glyph, x: i32, y: i32) -> Result<bool, GlyphrError> {
+fn bitmap_value_at(glyph: &Glyph, x: i32, y: i32) -> Result<bool, GlyphrError> {
     if x < 0 || y < 0 || x >= glyph.width || y >= glyph.height {
         return Err(GlyphrError::OutOfBounds);
     }
@@ -184,4 +184,16 @@ fn get_bitmap_value(glyph: &Glyph, x: i32, y: i32) -> Result<bool, GlyphrError> 
     let bit = (byte >> (7 - bit_offset)) & 1;
 
     Ok(bit == 1)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_rle_decode_at() {
+        let buffer = [255, 255];
+        let val = rle_decode_at(&buffer, 128);
+        assert_eq!(val, 255);
+    }
 }

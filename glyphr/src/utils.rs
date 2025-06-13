@@ -7,6 +7,7 @@
 /// Trait extension for custom floor operation on `f32`.
 ///
 /// This version ensures correct flooring for negative values.
+#[allow(dead_code)]
 pub trait ExtFloor {
     /// Returns the largest integer less than or equal to the number.
     fn floor(self) -> f32;

@@ -3,9 +3,7 @@
 //! This module describes the public API to this library.
 //! Everything is done via the `Glyphr` struct.
 
-use crate::{
-    font::{AlignH, AlignV, BitmapFormat, Font},
-};
+use crate::font::{AlignH, AlignV, BitmapFormat, Font};
 use crate::renderer;
 
 /// Trait used to make a target writable by Glyphr.
@@ -13,7 +11,7 @@ pub trait RenderTarget {
     /// x and y are coordinates, while color contains an ARGB8888 encoded value. You should handle
     /// alpha blending on your own.
     fn write_pixel(&mut self, x: u32, y: u32, color: u32) -> bool;
-    
+
     /// This function return a touple of (width, height) of the target.
     fn dimensions(&self) -> (u32, u32);
 }
@@ -249,23 +247,21 @@ impl core::error::Error for GlyphrError {}
 mod tests {
     use super::*;
 
-    fn make_test_config() -> SdfConfig {
-        SdfConfig::default()
-    }
-
     #[test]
     fn test_sdf_config_default_values() {
         let cfg = SdfConfig::default();
-        assert!(cfg.mid_value > 0.0 && cfg.mid_value <= 1.0);
-        assert!(cfg.smoothing > 0.0 && cfg.smoothing <= 1.0);
-    }
-
-    #[test]
-    fn test_sdf_config_custom_values() {
-        let cfg = make_test_config();
         assert_eq!(cfg.size, 16);
         assert_eq!(cfg.mid_value, 0.5);
         assert_eq!(cfg.smoothing, 0.1);
+    }
+
+    #[test]
+    fn test_render_config_default_values() {
+        let cfg = RenderConfig::default();
+        assert_eq!(cfg.color, 0xffffff);
+        assert_eq!(cfg.sdf.size, 16);
+        assert_eq!(cfg.sdf.mid_value, 0.5);
+        assert_eq!(cfg.sdf.smoothing, 0.1);
     }
 
     #[test]
@@ -286,5 +282,13 @@ mod tests {
 
         let idx = 1 * 4 + 2;
         assert_eq!(buffer[idx], 0xff123456);
+    }
+
+    #[test]
+    fn test_buffer_target_dimentsions() {
+        let mut buffer = [0u32; 16];
+        let target = BufferTarget::new(&mut buffer, 4, 4);
+
+        assert_eq!(target.dimensions(), (4, 4));
     }
 }
