@@ -7,6 +7,7 @@ description = "A no_std, lightweight and simple font rasterizing library"
 license = "Apache-2.0"
 keywords = ["sdf", "font", "rasterizer"]
 categories = ["no-std", "no-std::no-alloc", "graphics", "embedded"]
+repository = "https://github.com/Bridiro/glyphr"
 
 [dependencies]
 minifb = { version = "0.28", optional = true }

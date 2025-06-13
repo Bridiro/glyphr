@@ -7,6 +7,7 @@ description = "Set of proc-macros used to generate fonts for glyphr"
 license = "Apache-2.0"
 keywords = ["sdf", "font", "proc-macro", "codegen"]
 categories = ["graphics", "embedded"]
+repository = "https://github.com/Bridiro/glyphr"
 
 [lib]
 proc-macro = true
