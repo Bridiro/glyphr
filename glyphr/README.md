@@ -36,6 +36,7 @@ let conf = RenderConfig {
 };
 let renderer = Glyphr::with_config(conf);
 ```
+
 and to render anything you just call:
 ```rust
 use glyphr::{ TextAlign, AlignV, AlignH };
@@ -48,8 +49,3 @@ renderer.render(&mut target, "Hello World!", POPPINS, 100, 50, TextAlign { horiz
 > ```rust
 > cargo run --example glyphr_test_window --features window
 > ```
-
-This will rasterize the font in the buffer, so you just need to display it.
-
-> [!WARNING]
-> Expect the APIs to change.

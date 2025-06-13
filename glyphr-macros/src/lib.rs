@@ -2,12 +2,12 @@ mod config;
 mod generator;
 mod macro_parser;
 mod renderer;
+
+#[cfg(feature = "toml")]
 mod toml_parser;
 
 use proc_macro::TokenStream;
-use std::fs;
-use syn::{LitStr, parse_macro_input};
-use toml;
+use syn::parse_macro_input;
 
 use macro_parser::FontConfig;
 
@@ -28,8 +28,13 @@ pub fn generate_font(input: TokenStream) -> TokenStream {
 
 /// The underlying process is the same as `generate_font!` macro, but can do more at the same time by
 /// specifing fonts in a `toml` file as specified in `README.md`
+#[cfg(feature = "toml")]
 #[proc_macro]
 pub fn generate_fonts_from_toml(input: TokenStream) -> TokenStream {
+    use std::fs;
+    use syn::LitStr;
+    use toml;
+
     let file_path = parse_macro_input!(input as LitStr);
     let path_str = file_path.value();
     let content = match fs::read_to_string(&path_str) {

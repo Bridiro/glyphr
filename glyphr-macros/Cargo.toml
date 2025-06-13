@@ -19,3 +19,6 @@ quote = "1.0"
 proc-macro2 = "1.0"
 ttf-parser = "0.25"
 minijinja = "2.10.2"
+
+[features]
+toml = []

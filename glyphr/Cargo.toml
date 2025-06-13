@@ -13,8 +13,10 @@ minifb = { version = "0.28", optional = true }
 glyphr-macros = { path = "../glyphr-macros", version = "0.1" }
 
 [features]
+default = ["toml"]
 window = ["dep:minifb"]
+toml = ["glyphr-macros/toml"]
 
 [[example]]
 name = "glyphr_test_window"
-required-features = ["window"]
+required-features = ["window", "toml"]

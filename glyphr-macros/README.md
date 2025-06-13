@@ -33,7 +33,9 @@ format = { SDF = { spread = 20.0, padding = 0}}
 
 ```
 
-format can either be `SDF` or `Bitmap`.
+The `TOML` functionality is behind a feature called `toml` that is enabled by default in `glyphr` itself.
+
+Format can either be `SDF` or `Bitmap`.
 
 
 ## Differences between the 2 formats:
