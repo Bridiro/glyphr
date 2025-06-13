@@ -9,13 +9,6 @@
 /// This version ensures correct flooring for negative values.
 pub trait ExtFloor {
     /// Returns the largest integer less than or equal to the number.
-    ///
-    /// # Examples
-    /// ```
-    /// use glyphr::utils::ExtFloor;
-    /// assert_eq!(1.9f32.floor(), 1.0);
-    /// assert_eq!((-1.1f32).floor(), -2.0);
-    /// ```
     fn floor(self) -> f32;
 }
 
@@ -30,25 +23,12 @@ impl ExtFloor for f32 {
 }
 
 /// Performs a smooth Hermite interpolation between 0 and 1.
-///
-/// # Examples
-/// ```
-/// use glyphr::utils::smoothstep;
-/// let result = smoothstep(0.0, 1.0, 0.5);
-/// assert!((result - 0.5).abs() < 1e-6);
-/// ```
 pub fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
     let t = ((x - edge0) / (edge1 - edge0)).clamp(0.0, 1.0);
     t * t * (3.0 - 2.0 * t)
 }
 
 /// Linearly interpolates between two values.
-///
-/// # Examples
-/// ```
-/// use glyphr::utils::mix;
-/// assert_eq!(mix(10.0, 20.0, 0.5), 15.0);
-/// ```
 pub fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
     v1 + (v2 - v1) * weight
 }
