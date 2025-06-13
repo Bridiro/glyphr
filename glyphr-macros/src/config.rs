@@ -3,10 +3,12 @@ use serde::Deserialize;
 
 use crate::generator::font::Font;
 
+/// Trait used internally to define which struct can define a font.
 pub trait ToFontLoaded {
     fn to_font_loaded(&self) -> Vec<FontLoaded>;
 }
 
+/// Defines with which method to generate the font bitmap.
 #[derive(PartialEq, Deserialize, Copy, Clone)]
 pub enum BitmapFormat {
     SDF { spread: f32, padding: i32 },
@@ -14,6 +16,7 @@ pub enum BitmapFormat {
 }
 
 impl fmt::Display for BitmapFormat {
+    /// used on output to print out the format in the format used by Glyphr internally
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             BitmapFormat::Bitmap {
@@ -30,6 +33,7 @@ impl fmt::Display for BitmapFormat {
     }
 }
 
+/// Last stage of font informations before generation.
 pub struct FontLoaded {
     pub name: String,
     pub font: Font,
@@ -38,6 +42,7 @@ pub struct FontLoaded {
     pub format: BitmapFormat,
 }
 
+/// The input is a regex-like string, and the output is the "regex" extended as an array
 pub fn parse_char_set(pattern: &str) -> Vec<char> {
     let mut chars = Vec::new();
     let mut chars_iter = pattern.chars().peekable();

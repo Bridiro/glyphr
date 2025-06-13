@@ -3,6 +3,7 @@ use minijinja::{Environment, context};
 use crate::config::ToFontLoaded;
 use crate::generator::generate_font;
 
+/// Generates a String containing all the code to write out the macro
 pub fn render<T: ToFontLoaded>(font_config: T) -> String {
     let loaded_fonts = font_config.to_font_loaded();
 
@@ -14,23 +15,22 @@ pub fn render<T: ToFontLoaded>(font_config: T) -> String {
     for loaded_font in &loaded_fonts {
         let mut glyphs = vec![];
 
-        let (bitmaps, entries) = generate_font(&loaded_font);
+        let entries = generate_font(&loaded_font);
 
-        for ((entry, bitmap), character) in entries
+        for (entry, character) in entries
             .iter()
-            .zip(bitmaps.iter())
             .zip(loaded_font.char_range.iter())
         {
             glyphs.push(context! {
                 character => character,
-                codepoint => entry.name.clone(),
-                bitmap_len => bitmap.len(),
-                bitmap => bitmap.clone(),
-                xmin => entry.metrics.xmin,
-                ymin => entry.metrics.ymin,
-                width => entry.metrics.width,
-                height => entry.metrics.height,
-                advance_width => entry.metrics.advance_width,
+                codepoint => entry.1.name.clone(),
+                bitmap_len => entry.0.len(),
+                bitmap => entry.0.clone(),
+                xmin => entry.1.xmin,
+                ymin => entry.1.ymin,
+                width => entry.1.width,
+                height => entry.1.height,
+                advance_width => entry.1.advance_width,
             });
         }
 

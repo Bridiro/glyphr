@@ -11,6 +11,7 @@ use toml;
 
 use macro_parser::FontConfig;
 
+/// Macro used to generate a font with data direcly in the code
 #[proc_macro]
 pub fn generate_font(input: TokenStream) -> TokenStream {
     let font_input: FontConfig = parse_macro_input!(input as FontConfig);
@@ -25,6 +26,8 @@ pub fn generate_font(input: TokenStream) -> TokenStream {
     }
 }
 
+/// The underlying process is the same as `generate_font!` macro, but can do more at the same time by
+/// specifing fonts in a `toml` file as specified in `README.md`
 #[proc_macro]
 pub fn generate_fonts_from_toml(input: TokenStream) -> TokenStream {
     let file_path = parse_macro_input!(input as LitStr);

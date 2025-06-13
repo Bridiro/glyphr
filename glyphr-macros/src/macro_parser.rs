@@ -5,6 +5,7 @@ use std::path::Path;
 use crate::config::{BitmapFormat, FontLoaded, ToFontLoaded, parse_char_set};
 use crate::generator::font::Font;
 
+/// Describes the content of the macro
 pub struct FontConfig {
     pub name: Ident,
     pub path: String,
@@ -37,6 +38,7 @@ impl ToFontLoaded for FontConfig {
     }
 }
 
+/// Custom parser for my macro
 impl Parse for FontConfig {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let mut name = None;
@@ -87,6 +89,7 @@ impl Parse for FontConfig {
     }
 }
 
+/// Parses the Bitmap/SDF format with parameters
 fn parse_format(input: syn::parse::ParseStream) -> syn::Result<BitmapFormat> {
     if input.peek(Ident) {
         let format_name: Ident = input.parse()?;

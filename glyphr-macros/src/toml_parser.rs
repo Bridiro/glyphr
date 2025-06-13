@@ -5,11 +5,13 @@ use std::path::Path;
 use crate::config::{BitmapFormat, FontLoaded, ToFontLoaded, parse_char_set};
 use crate::generator::font::Font;
 
+/// Contains all the fonts specified in the `toml`
 #[derive(Deserialize)]
 pub struct TomlConfig {
     pub font: Vec<TomlFont>,
 }
 
+/// Describes one font in the `toml`
 #[derive(Deserialize)]
 pub struct TomlFont {
     pub name: String,
@@ -42,6 +44,7 @@ impl ToFontLoaded for TomlConfig {
 }
 
 impl TomlConfig {
+    /// Used to relativize the paths of ttfs to the relative path of the `toml` file
     pub fn relativize_paths(&mut self, toml_path: &str) {
         let toml_path = Path::new(toml_path);
 
