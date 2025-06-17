@@ -9,7 +9,7 @@ static {{ glyph.codepoint }}_{{ font.name|upper }}: [u8; {{ glyph.bitmap_len }}]
 static GLYPHS_{{ font.name|upper }}: [::glyphr::Glyph; {{ font.glyphs|length }}] = [
     {%- for glyph in font.glyphs %}
     ::glyphr::Glyph {
-        character: '{{ glyph.character }}',
+        character: '{{ glyph.character|rust_char_escape }}',
         bitmap: &{{ glyph.codepoint }}_{{ font.name|upper }},
         xmin: {{ glyph.xmin }},
         ymin: {{ glyph.ymin }},
