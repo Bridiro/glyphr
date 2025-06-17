@@ -3,6 +3,8 @@ use minijinja::{Environment, context, Value};
 use crate::config::ToFontLoaded;
 use crate::generator::generate_font;
 
+/// Filter used by minijinja to escape characters that generates error if direcly placed inside
+/// apostrophes (e.g. `'`, `\`, `\n`...).
 fn rust_char_escape(value: Value) -> Result<String, minijinja::Error> {
     let s = value.as_str().ok_or_else(|| {
         minijinja::Error::new(minijinja::ErrorKind::InvalidOperation, "expected string")
@@ -30,7 +32,7 @@ fn rust_char_escape(value: Value) -> Result<String, minijinja::Error> {
     Ok(escaped)
 }
 
-/// Generates a String containing all the code to write out the macro
+/// Generates a String containing all the code to write out the macro.
 pub fn render<T: ToFontLoaded>(font_config: T) -> String {
     let loaded_fonts = font_config.to_font_loaded();
 
