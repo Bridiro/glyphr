@@ -10,7 +10,7 @@ fn rust_char_escape(value: Value) -> Result<String, minijinja::Error> {
         minijinja::Error::new(minijinja::ErrorKind::InvalidOperation, "expected string")
     })?;
     
-    if s.len() != 1 {
+    if s.chars().count() != 1 {
         return Err(minijinja::Error::new(
             minijinja::ErrorKind::InvalidOperation, 
             "expected single character"
@@ -81,4 +81,58 @@ pub fn render<T: ToFontLoaded>(font_config: T) -> String {
     }
 
     output
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use minijinja::value::Value;
+
+    fn val(s: &str) -> Value {
+        Value::from(s.to_string())
+    }
+
+    #[test]
+    fn test_normal_char() {
+        assert_eq!(rust_char_escape(val("a")).unwrap(), "a");
+        assert_eq!(rust_char_escape(val("Z")).unwrap(), "Z");
+        assert_eq!(rust_char_escape(val("7")).unwrap(), "7");
+    }
+
+    #[test]
+    fn test_escape_chars() {
+        assert_eq!(rust_char_escape(val("'")).unwrap(), "\\'");
+        assert_eq!(rust_char_escape(val("\\")).unwrap(), "\\\\");
+        assert_eq!(rust_char_escape(val("\n")).unwrap(), "\\n");
+        assert_eq!(rust_char_escape(val("\r")).unwrap(), "\\r");
+        assert_eq!(rust_char_escape(val("\t")).unwrap(), "\\t");
+        assert_eq!(rust_char_escape(val("\0")).unwrap(), "\\0");
+    }
+
+    #[test]
+    fn test_control_char() {
+        // ASCII 0x01 (Start of Header)
+        assert_eq!(rust_char_escape(Value::from("\u{01}")).unwrap(), "\\u{0001}");
+    }
+
+    #[test]
+    fn test_unicode_non_escape() {
+        assert_eq!(rust_char_escape(Value::from("λ")).unwrap(), "λ");
+        assert_eq!(rust_char_escape(Value::from("🦀")).unwrap(), "🦀");
+    }
+
+    #[test]
+    fn test_invalid_length() {
+        let err = rust_char_escape(val("")).unwrap_err();
+        assert!(format!("{}", err).contains("expected single character"));
+
+        let err = rust_char_escape(val("ab")).unwrap_err();
+        assert!(format!("{}", err).contains("expected single character"));
+    }
+
+    #[test]
+    fn test_non_string_input() {
+        let err = rust_char_escape(Value::from(42)).unwrap_err();
+        assert!(format!("{}", err).contains("expected string"));
+    }
 }
