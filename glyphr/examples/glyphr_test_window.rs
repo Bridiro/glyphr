@@ -4,7 +4,14 @@ use minifb::{Window, WindowOptions};
 const WIDTH: usize = 800;
 const HEIGHT: usize = 480;
 
-fn test_pixel_buffer_with_window() {
+#[cfg(feature = "dhat-heap")]
+#[global_allocator]
+static ALLOC: dhat::Alloc = dhat::Alloc;
+
+fn main() {
+    #[cfg(feature = "dhat-heap")]
+    let _profiler = dhat::Profiler::new_heap();
+
     let mut buffer: [u32; WIDTH * HEIGHT] = [0; WIDTH * HEIGHT];
 
     let mut window = Window::new(
@@ -102,8 +109,4 @@ fn test_pixel_buffer_with_window() {
     while window.is_open() && !window.is_key_down(minifb::Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }
-}
-
-fn main() {
-    test_pixel_buffer_with_window();
 }
