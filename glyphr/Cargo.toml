@@ -21,5 +21,5 @@ dhat-heap = ["dep:dhat"]
 toml = ["glyphr-macros/toml"]
 
 [[example]]
-name = "glyphr_test_window"
-required-features = ["window", "toml"]
+name = "glyphr_test"
+required-features = ["toml"]

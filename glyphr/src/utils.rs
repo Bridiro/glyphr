@@ -29,11 +29,6 @@ pub fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
     t * t * (3.0 - 2.0 * t)
 }
 
-/// Linearly interpolates between two values.
-pub fn mix(v1: f32, v2: f32, weight: f32) -> f32 {
-    v1 + (v2 - v1) * weight
-}
-
 #[cfg(test)]
 mod tests {
     #[test]
@@ -51,13 +46,6 @@ mod tests {
         assert_eq!(super::smoothstep(0.0, 1.0, 0.5), 0.5);
         assert_eq!(super::smoothstep(0.0, 1.0, 1.0), 1.0);
         assert_eq!(super::smoothstep(0.0, 1.0, 2.0), 1.0);
-    }
-
-    #[test]
-    fn test_mix_behavior() {
-        assert_eq!(super::mix(0.0, 10.0, 0.0), 0.0);
-        assert_eq!(super::mix(0.0, 10.0, 0.5), 5.0);
-        assert_eq!(super::mix(0.0, 10.0, 1.0), 10.0);
     }
 }
 

@@ -3,3 +3,4 @@ Cargo.lock
 fonts
 dhat-heap.json
 flamegraph.svg
+benchmarking
