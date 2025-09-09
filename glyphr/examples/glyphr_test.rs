@@ -5,14 +5,7 @@ use minifb::{Window, WindowOptions};
 const WIDTH: usize = 800;
 const HEIGHT: usize = 480;
 
-#[cfg(feature = "dhat-heap")]
-#[global_allocator]
-static ALLOC: dhat::Alloc = dhat::Alloc;
-
 fn main() {
-    #[cfg(feature = "dhat-heap")]
-    let _profiler = dhat::Profiler::new_heap();
-
     let mut buffer: [u32; WIDTH * HEIGHT] = [0; WIDTH * HEIGHT];
 
     #[cfg(feature = "window")]

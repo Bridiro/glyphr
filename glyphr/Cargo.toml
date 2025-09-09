@@ -10,14 +10,12 @@ categories = ["no-std", "no-std::no-alloc", "graphics", "embedded"]
 repository = "https://github.com/Bridiro/glyphr"
 
 [dependencies]
-dhat = { version = "0.3.3", optional = true }
 minifb = { version = "0.28", optional = true }
 glyphr-macros = { path = "../glyphr-macros", version = "0.1" }
 
 [features]
 default = ["toml"]
 window = ["dep:minifb"]
-dhat-heap = ["dep:dhat"]
 toml = ["glyphr-macros/toml"]
 
 [[example]]
