@@ -276,10 +276,10 @@ fn render_glyph_bitmap<T: RenderTarget>(
         let y_src = oy - dst_y;
         for ox in x0..x1 {
             let x_src = ox - dst_x;
-            if bitmap_value_at(glyph, x_src, y_src)? {
-                if !target.write_pixel(ox as u32, oy as u32, color) {
-                    return Err(GlyphrError::InvalidTarget);
-                }
+            if bitmap_value_at(glyph, x_src, y_src)?
+                && !target.write_pixel(ox as u32, oy as u32, color)
+            {
+                return Err(GlyphrError::InvalidTarget);
             }
         }
     }

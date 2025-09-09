@@ -21,7 +21,7 @@ pub fn generate_font(input: TokenStream) -> TokenStream {
     match rendered.parse() {
         Ok(parsed) => parsed,
         Err(e) => {
-            panic!("Failed to generate font: {}", e)
+            panic!("Failed to generate font: {e}")
         }
     }
 }
@@ -42,7 +42,7 @@ pub fn generate_fonts_from_toml(input: TokenStream) -> TokenStream {
         Err(err) => {
             return syn::Error::new_spanned(
                 file_path,
-                format!("Failed to read file '{}': {}", path_str, err),
+                format!("Failed to read file '{path_str}': {err}"),
             )
             .to_compile_error()
             .into();
@@ -57,7 +57,7 @@ pub fn generate_fonts_from_toml(input: TokenStream) -> TokenStream {
     match rendered.parse() {
         Ok(parsed) => parsed,
         Err(e) => {
-            panic!("Failed to generate font: {}", e)
+            panic!("Failed to generate font: {e}")
         }
     }
 }

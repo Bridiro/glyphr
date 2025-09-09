@@ -1,6 +1,6 @@
-use syn::{Error, Ident, LitFloat, LitInt, LitStr, Token, parse::Parse};
 use std::fs;
 use std::path::Path;
+use syn::{Error, Ident, LitFloat, LitInt, LitStr, Token, parse::Parse};
 
 use crate::config::{BitmapFormat, FontLoaded, ToFontLoaded, parse_char_set};
 use crate::generator::font::Font;
@@ -18,13 +18,11 @@ impl ToFontLoaded for FontConfig {
     fn to_font_loaded(&self) -> Vec<FontLoaded> {
         let mut fonts = Vec::new();
 
-        let ttf_file = fs::read(Path::new(&self.path)).expect(&format!(
-            "can't read ttf file at path: {}",
-            self.path
-        ));
+        let ttf_file = fs::read(Path::new(&self.path))
+            .unwrap_or_else(|_| panic!("can't read ttf file at path: {}", self.path));
         let font = Font::from_bytes(ttf_file.as_slice(), Default::default())
             .expect("failed to parse ttf file");
-        
+
         let font = FontLoaded {
             name: self.name.to_string(),
             font,

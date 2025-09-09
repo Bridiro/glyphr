@@ -44,21 +44,19 @@ impl Line {
                 let ky = kk * (2.0 * pa.dot(pa) + pd.dot(pb)) / 3.0;
                 let kz = kk * pd.dot(pa);
 
-                let res;
-
                 let p = ky - kx * kx;
                 let q = kx * (2.0 * kx * kx - 3.0 * ky) + kz;
                 let p3 = p * p * p;
                 let q2 = q * q;
                 let h = q2 + (4.0 * p3);
 
-                if h >= 0.0 {
+                let res = if h >= 0.0 {
                     let h = h.sqrt();
                     let x = (vec2(h, -h) - q) / 2.0;
                     let uv = x.sign() * x.abs().powf(vec2(1.0 / 3.0, 1.0 / 3.0));
                     let t = (uv[0] + uv[1] - kx).clamp(0.0, 1.0);
                     let q = pd + (pc + pb * t) * t;
-                    res = q.dot(q);
+                    q.dot(q)
                 } else {
                     let z = (-p).sqrt();
                     let v = (q / (p * z * 2.0)).acos() / 3.0;
@@ -69,8 +67,8 @@ impl Line {
                     let dx = qx.dot(qx);
                     let qy = pd + (pc + pb * t[1]) * t[1];
                     let dy = qy.dot(qy);
-                    res = dx.min(dy);
-                }
+                    dx.min(dy)
+                };
 
                 res.sqrt().abs()
             }
@@ -175,24 +173,24 @@ impl Line {
                     let r0 = -(m1 + m2) / d;
                     let r1 = -(-m1 + m2) / d;
 
-                    if 0.0 <= r0 && r0 <= 1.0 {
+                    if (0.0..=1.0).contains(&r0) {
                         out[count] = solve(r0);
                         count += 1;
                     }
 
-                    if r0 != r1 && 0.0 <= r1 && r1 <= 1.0 {
+                    if r0 != r1 && (0.0..=1.0).contains(&r1) {
                         out[count] = solve(r1);
                         count += 1;
                     }
                 } else if b != c && d == 0.0 {
                     let r0 = (2.0 * b - c) / (2.0 * b - 2.0 * c);
-                    if 0.0 <= r0 && r0 <= 1.0 {
+                    if (0.0..=1.0).contains(&r0) {
                         count = 1;
                         out[0] = solve(r0);
                     }
                 }
 
-                return count;
+                count
             }
             Self::Curve {
                 mut start,
@@ -249,7 +247,7 @@ impl Line {
                         }
 
                         let v = -c / b;
-                        if 0.0 <= v && v <= 1.0 {
+                        if (0.0..=1.0).contains(&v) {
                             out[count] = solve(v);
                             count += 1;
                         }
@@ -263,12 +261,12 @@ impl Line {
                     let v1 = (q - b) / a2;
                     let v2 = (-b - q) / a2;
 
-                    if 0.0 <= v1 && v1 <= 1.0 {
+                    if (0.0..=1.0).contains(&v1) {
                         out[count] = solve(v1);
                         count += 1;
                     }
 
-                    if v1 != v2 && 0.0 <= v2 && v2 <= 1.0 {
+                    if v1 != v2 && (0.0..=1.0).contains(&v2) {
                         out[count] = solve(v2);
                         count += 1;
                     }
@@ -301,17 +299,17 @@ impl Line {
                     let r1 = t1 * ((phi + tau) / 3.0).cos() - a / 3.0;
                     let r2 = t1 * ((phi + 2.0 * tau) / 3.0).cos() - a / 3.0;
 
-                    if 0.0 <= r0 && r0 <= 1.0 {
+                    if (0.0..=1.0).contains(&r0) {
                         out[count] = solve(r0);
                         count += 1;
                     }
 
-                    if 0.0 <= r1 && r1 <= 1.0 {
+                    if (0.0..=1.0).contains(&r1) {
                         out[count] = solve(r1);
                         count += 1;
                     }
 
-                    if 0.0 <= r2 && r2 <= 1.0 {
+                    if (0.0..=1.0).contains(&r2) {
                         out[count] = solve(r2);
                         count += 1;
                     }
@@ -323,12 +321,12 @@ impl Line {
 
                     let r0 = 2.0 * u1 - a / 3.0;
                     let r1 = -u1 - a / 3.0;
-                    if 0.0 <= r0 && r0 <= 1.0 {
+                    if (0.0..=1.0).contains(&r0) {
                         out[count] = solve(r0);
                         count += 1;
                     }
 
-                    if r0 != r1 && 0.0 <= r1 && r1 <= 1.0 {
+                    if r0 != r1 && (0.0..=1.0).contains(&r1) {
                         out[count] = solve(r1);
                         count += 1;
                     }
@@ -337,7 +335,7 @@ impl Line {
                     let u1 = crt(-q2 + sd);
                     let v1 = crt(q2 + sd);
                     let r = u1 - v1 - a / 3.0;
-                    if 0.0 <= r && r <= 1.0 {
+                    if (0.0..=1.0).contains(&r) {
                         out[count] = solve(r);
                         count += 1;
                     }

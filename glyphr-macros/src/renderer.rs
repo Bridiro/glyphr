@@ -1,4 +1,4 @@
-use minijinja::{Environment, context, Value};
+use minijinja::{Environment, Value, context};
 
 use crate::config::ToFontLoaded;
 use crate::generator::generate_font;
@@ -9,14 +9,14 @@ fn rust_char_escape(value: Value) -> Result<String, minijinja::Error> {
     let s = value.as_str().ok_or_else(|| {
         minijinja::Error::new(minijinja::ErrorKind::InvalidOperation, "expected string")
     })?;
-    
+
     if s.chars().count() != 1 {
         return Err(minijinja::Error::new(
-            minijinja::ErrorKind::InvalidOperation, 
-            "expected single character"
+            minijinja::ErrorKind::InvalidOperation,
+            "expected single character",
         ));
     }
-    
+
     let ch = s.chars().next().unwrap();
     let escaped = match ch {
         '\'' => "\\'".to_string(),
@@ -28,7 +28,7 @@ fn rust_char_escape(value: Value) -> Result<String, minijinja::Error> {
         c if c.is_control() => format!("\\u{{{:04x}}}", c as u32),
         c => c.to_string(),
     };
-    
+
     Ok(escaped)
 }
 
@@ -45,12 +45,9 @@ pub fn render<T: ToFontLoaded>(font_config: T) -> String {
     for loaded_font in &loaded_fonts {
         let mut glyphs = vec![];
 
-        let entries = generate_font(&loaded_font);
+        let entries = generate_font(loaded_font);
 
-        for (entry, character) in entries
-            .iter()
-            .zip(loaded_font.char_range.iter())
-        {
+        for (entry, character) in entries.iter().zip(loaded_font.char_range.iter()) {
             glyphs.push(context! {
                 character => character,
                 codepoint => entry.1.name.clone(),
@@ -65,19 +62,21 @@ pub fn render<T: ToFontLoaded>(font_config: T) -> String {
         }
 
         // Now render fonts.rs with everything
-        output.push_str(&env.get_template("fonts")
-            .unwrap()
-            .render(context! {
-                font => context! {
-                    name => loaded_font.name,
-                    size => loaded_font.px,
-                    ascent => loaded_font.font.get_ascent(loaded_font.px as f32),
-                    descent => loaded_font.font.get_descent(loaded_font.px as f32),
-                    format => loaded_font.format.to_string(),
-                    glyphs => glyphs,
-                },
-            })
-            .unwrap());
+        output.push_str(
+            &env.get_template("fonts")
+                .unwrap()
+                .render(context! {
+                    font => context! {
+                        name => loaded_font.name,
+                        size => loaded_font.px,
+                        ascent => loaded_font.font.get_ascent(loaded_font.px as f32),
+                        descent => loaded_font.font.get_descent(loaded_font.px as f32),
+                        format => loaded_font.format.to_string(),
+                        glyphs => glyphs,
+                    },
+                })
+                .unwrap(),
+        );
     }
 
     output
@@ -112,7 +111,10 @@ mod tests {
     #[test]
     fn test_control_char() {
         // ASCII 0x01 (Start of Header)
-        assert_eq!(rust_char_escape(Value::from("\u{01}")).unwrap(), "\\u{0001}");
+        assert_eq!(
+            rust_char_escape(Value::from("\u{01}")).unwrap(),
+            "\\u{0001}"
+        );
     }
 
     #[test]

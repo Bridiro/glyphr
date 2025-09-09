@@ -169,7 +169,7 @@ impl Index<usize> for Vec3 {
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         match index {
-            0 | 1 | 2 => &self.v[index],
+            0..=2 => &self.v[index],
             _ => panic!("Vec2 index value must be 0, 1, or 2"),
         }
     }

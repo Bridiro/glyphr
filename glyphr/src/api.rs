@@ -144,6 +144,13 @@ pub struct Glyphr {
     render_config: RenderConfig,
 }
 
+impl Default for Glyphr {
+    /// Create a new text renderer with default configuration.
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Glyphr {
     /// Create a new text renderer with default configuration.
     pub fn new() -> Self {
