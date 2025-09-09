@@ -1,6 +1,6 @@
 [package]
 name = "glyphr-macros"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
 description = "Set of proc-macros used to generate fonts for glyphr"

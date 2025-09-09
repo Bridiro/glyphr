@@ -1,6 +1,6 @@
 [package]
 name = "glyphr"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2024"
 authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
 description = "A no_std, lightweight and simple font rasterizing library"
@@ -11,7 +11,7 @@ repository = "https://github.com/Bridiro/glyphr"
 
 [dependencies]
 minifb = { version = "0.28", optional = true }
-glyphr-macros = { path = "../glyphr-macros", version = "0.1" }
+glyphr-macros = { path = "../glyphr-macros", version = "0.1.2" }
 
 [features]
 default = ["toml"]
