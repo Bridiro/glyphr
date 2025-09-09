@@ -27,9 +27,9 @@ impl ToFontLoaded for TomlConfig {
 
         for toml_font in &self.font {
             let ttf_file = fs::read(Path::new(&toml_font.path))
-                .expect(&format!("can't read ttf file at path: {}", toml_font.path));
+                .unwrap_or_else(|_| panic!("can't read ttf file at path: {}", toml_font.path));
             let font = Font::from_bytes(ttf_file.as_slice(), Default::default())
-                .expect("failed to parse ttf file");
+                .unwrap_or_else(|_| panic!("failed to parse ttf file"));
             fonts.push(FontLoaded {
                 name: toml_font.name.to_string(),
                 font,

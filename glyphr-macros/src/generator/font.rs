@@ -7,17 +7,9 @@ use crate::generator::{
     sdf_generation::{SdfRaster, sdf_generate},
 };
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct FontSettings {
     pub collection_index: u32,
-}
-
-impl Default for FontSettings {
-    fn default() -> Self {
-        FontSettings {
-            collection_index: 0,
-        }
-    }
 }
 
 #[derive(Copy, Clone, PartialEq)]
@@ -125,7 +117,7 @@ impl Font {
             ymin: bounds.ymin as i32,
             width: bounds.width as i32,
             height: bounds.height as i32,
-            advance_width: (glyph.advance_width as f32 * scale) as i32,
+            advance_width: (glyph.advance_width * scale) as i32,
         };
 
         Some(metrics)
@@ -139,7 +131,7 @@ impl Font {
         c: char,
     ) -> Option<(Metrics, SdfRaster)> {
         if px < 1.0 {
-            panic!("Sdf render size cannot be smaller than 1.0 (got {:?})", px);
+            panic!("Sdf render size cannot be smaller than 1.0 (got {px:?})");
         }
 
         let glyph = match self.glyphs.get(&c) {

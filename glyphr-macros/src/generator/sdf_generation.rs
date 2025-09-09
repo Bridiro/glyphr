@@ -22,8 +22,8 @@ pub fn sdf_generate(
             padded_lines.push(line.normalize_to_with_offset(
                 -padding_width_normalized,
                 -padding_height_normalized,
-                1.0 as f32 + (padding_width_normalized * 2.0),
-                1.0 as f32 + (padding_height_normalized * 2.0),
+                1.0_f32 + (padding_width_normalized * 2.0),
+                1.0_f32 + (padding_height_normalized * 2.0),
             ));
         }
 
@@ -91,22 +91,27 @@ pub fn sdf_to_bitmap(sdf: &SdfRaster) -> Vec<u8> {
     buffer
 }
 
-pub fn sdf_bitmap_to_fixed_bitmap<F>(sdf_data: &[u8], width: i32, height: i32, predicate: F) -> Vec<u8> 
-where 
+pub fn sdf_bitmap_to_fixed_bitmap<F>(
+    sdf_data: &[u8],
+    width: i32,
+    height: i32,
+    predicate: F,
+) -> Vec<u8>
+where
     F: Fn(u8) -> bool,
 {
     let total_pixels = (width * height) as usize;
-    let bitmap_size = (total_pixels + 7) / 8;
+    let bitmap_size = total_pixels.div_ceil(8);
     let mut bitmap = vec![0u8; bitmap_size];
-    
-    for i in 0..total_pixels {
-        if predicate(sdf_data[i]) {
+
+    for (i, sdf_i) in sdf_data.iter().enumerate().take(total_pixels) {
+        if predicate(*sdf_i) {
             let byte_index = i / 8;
             let bit_index = i % 8;
             bitmap[byte_index] |= 1 << (7 - bit_index);
         }
     }
-    
+
     bitmap
 }
 
@@ -122,12 +127,12 @@ fn scanline(y: f32, lines: &[line::Line]) -> Scanline {
 
     for line in lines {
         let count = line.intersections(y, &mut x);
-        for i in 0..count {
-            scanline.intersections.push(x[i]);
+        for i in x.iter().take(count) {
+            scanline.intersections.push(*i);
         }
     }
 
-    if scanline.intersections.len() > 0 {
+    if !scanline.intersections.is_empty() {
         scanline
             .intersections
             .sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));

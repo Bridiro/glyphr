@@ -48,34 +48,37 @@ pub fn generate_font(loaded_font: &crate::config::FontLoaded) -> Vec<(Vec<u8>, G
                 BitmapFormat::SDF {
                     spread: _,
                     padding: _,
-                } => {
-                    rle_encode(bitmap_sdf)
-                }
+                } => rle_encode(bitmap_sdf),
             };
-            entries.push((bitmap, GlyphEntry {
-                name: format!("GLYPH_{}", *c as u32),
-                xmin: metrics.xmin,
-                ymin: metrics.ymin,
-                width: metrics.width,
-                height: metrics.height,
-                advance_width: metrics.advance_width,
-            }));
+            entries.push((
+                bitmap,
+                GlyphEntry {
+                    name: format!("GLYPH_{}", *c as u32),
+                    xmin: metrics.xmin,
+                    ymin: metrics.ymin,
+                    width: metrics.width,
+                    height: metrics.height,
+                    advance_width: metrics.advance_width,
+                },
+            ));
         } else {
             let metrics = loaded_font.font.metrics(*c, loaded_font.px as f32);
-            if c.is_whitespace() || metrics.map_or(false, |m| m.advance_width > 0) {
+            if c.is_whitespace() || metrics.is_some_and(|m| m.advance_width > 0) {
                 eprintln!(
-                    "Info: Glyph '{}' is empty or not renderable, but has metrics. Inserting dummy entry.",
-                    c
+                    "Info: Glyph '{c}' is empty or not renderable, but has metrics. Inserting dummy entry.",
                 );
                 let met = metrics.unwrap_or_default();
-                entries.push((Vec::new(), GlyphEntry {
-                    name: format!("GLYPH_{}", *c as u32),
-                    xmin: met.xmin,
-                    ymin: met.ymin,
-                    width: met.width,
-                    height: met.height,
-                    advance_width: met.advance_width,
-                }));
+                entries.push((
+                    Vec::new(),
+                    GlyphEntry {
+                        name: format!("GLYPH_{}", *c as u32),
+                        xmin: met.xmin,
+                        ymin: met.ymin,
+                        width: met.width,
+                        height: met.height,
+                        advance_width: met.advance_width,
+                    },
+                ));
                 continue;
             }
 

@@ -10,3 +10,6 @@ authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
 license = "Apache-2.0"
 edition = "2024"
 repository = "https://github.com/Bridiro/glyphr"
+
+[profile.release]
+debug = true

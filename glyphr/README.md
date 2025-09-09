@@ -47,5 +47,5 @@ renderer.render(&mut target, "Hello World!", POPPINS, 100, 50, TextAlign { horiz
 > [!TIP]
 > If you want to run an example on your machine you can just do:
 > ```rust
-> cargo run --example glyphr_test_window --features window
+> cargo run --example glyphr_test --features "toml window"
 > ```
