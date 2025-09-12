@@ -8,6 +8,7 @@ mod api;
 mod font;
 mod renderer;
 mod utils;
+mod rle;
 
 pub use api::{
     BufferTarget, Glyphr, GlyphrError, RenderConfig, RenderTarget, SdfConfig, TextAlign,

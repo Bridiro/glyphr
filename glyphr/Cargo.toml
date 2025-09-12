@@ -21,3 +21,6 @@ toml = ["glyphr-macros/toml"]
 [[example]]
 name = "glyphr_test"
 required-features = ["toml"]
+
+[[example]]
+name = "font_cover"
