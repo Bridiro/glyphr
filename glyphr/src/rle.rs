@@ -1,6 +1,6 @@
 /// A forward-only cursor to read values from an RLE [count, value] stream
 /// in *decoded index* order. Works in O(1) amortized for monotonically
-/// increasing target indices (our case).
+/// increasing target indices.
 #[derive(Clone, Copy)]
 pub struct RleCursor<'a> {
     buf: &'a [u8],

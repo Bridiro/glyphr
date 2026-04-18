@@ -93,14 +93,14 @@ pub fn sdf_to_bitmap(sdf: &SdfRaster) -> Vec<u8> {
 
 pub fn sdf_bitmap_to_fixed_bitmap<F>(
     sdf_data: &[u8],
-    width: i32,
-    height: i32,
+    width: u16,
+    height: u16,
     predicate: F,
 ) -> Vec<u8>
 where
     F: Fn(u8) -> bool,
 {
-    let total_pixels = (width * height) as usize;
+    let total_pixels = usize::from(width) * usize::from(height);
     let bitmap_size = total_pixels.div_ceil(8);
     let mut bitmap = vec![0u8; bitmap_size];
 

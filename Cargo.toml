@@ -1,8 +1,5 @@
 [workspace]
-members = [
-    "glyphr",
-    "glyphr-macros",
-]
+members = ["glyphr", "glyphr-macros", "glyphr-types"]
 resolver = "2"
 
 [workspace.package]

@@ -34,11 +34,11 @@ impl LineMetrics {
 
 #[derive(Copy, Clone, Default)]
 pub struct Metrics {
-    pub xmin: i32,
-    pub ymin: i32,
-    pub width: i32,
-    pub height: i32,
-    pub advance_width: i32,
+    pub xmin: i16,
+    pub ymin: i16,
+    pub width: u16,
+    pub height: u16,
+    pub advance_width: i16,
 }
 
 #[derive(Default)]
@@ -113,11 +113,21 @@ impl Font {
 
         let bounds = glyph.bounds.scale(scale);
         let metrics = Metrics {
-            xmin: bounds.xmin as i32,
-            ymin: bounds.ymin as i32,
-            width: bounds.width as i32,
-            height: bounds.height as i32,
-            advance_width: (glyph.advance_width * scale) as i32,
+            xmin: (bounds.xmin as i32)
+                .try_into()
+                .expect("glyph xmin does not fit into i16"),
+            ymin: (bounds.ymin as i32)
+                .try_into()
+                .expect("glyph ymin does not fit into i16"),
+            width: (bounds.width as i32)
+                .try_into()
+                .expect("glyph width does not fit into u16"),
+            height: (bounds.height as i32)
+                .try_into()
+                .expect("glyph height does not fit into u16"),
+            advance_width: ((glyph.advance_width * scale) as i32)
+                .try_into()
+                .expect("glyph advance_width does not fit into i16"),
         };
 
         Some(metrics)
@@ -144,8 +154,8 @@ impl Font {
         let metrics = self.metrics(c, px).unwrap(); // Cannot return `None` if glyph is some
 
         let sdf = sdf_generate(
-            metrics.width as u32,
-            metrics.height as u32,
+            u32::from(metrics.width),
+            u32::from(metrics.height),
             padding,
             spread,
             &glyph.lines,
@@ -158,11 +168,21 @@ impl Font {
         px / self.units_per_em
     }
 
-    pub fn get_ascent(&self, px: f32) -> i32 {
-        (self.horizontal_line_metrics.ascent * self.scale_factor(px)) as i32
+    pub fn get_ascent(&self, px: f32) -> i16 {
+        ((self.horizontal_line_metrics.ascent * self.scale_factor(px)) as i32)
+            .try_into()
+            .expect("font ascent does not fit into i16")
     }
 
-    pub fn get_descent(&self, px: f32) -> i32 {
-        (self.horizontal_line_metrics.descent * self.scale_factor(px)) as i32
+    pub fn get_descent(&self, px: f32) -> i16 {
+        ((self.horizontal_line_metrics.descent * self.scale_factor(px)) as i32)
+            .try_into()
+            .expect("font descent does not fit into i16")
+    }
+
+    pub fn get_line_gap(&self, px: f32) -> i16 {
+        ((self.horizontal_line_metrics.line_gap * self.scale_factor(px)) as i32)
+            .try_into()
+            .expect("font line_gap does not fit into i16")
     }
 }

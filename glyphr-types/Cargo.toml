@@ -1,0 +1,13 @@
+[package]
+name = "glyphr-types"
+version = "0.1.0"
+edition = "2024"
+authors = ["Alessandro Bridi <ale.bridi15@gmail.com>"]
+description = "Shared public types for glyphr and glyphr-macros"
+license = "Apache-2.0"
+keywords = ["font", "graphics", "embedded"]
+categories = ["graphics", "embedded", "no-std"]
+repository = "https://github.com/Bridiro/glyphr"
+
+[lib]
+path = "src/lib.rs"
