@@ -27,3 +27,7 @@ required-features = ["toml", "window"]
 [[example]]
 name = "font_cover"
 required-features = ["window"]
+
+[[example]]
+name = "glyphr_bulk"
+required-features = ["window"]

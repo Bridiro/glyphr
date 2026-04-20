@@ -451,77 +451,142 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::RleCursor;
+    use super::{bit_is_set, render_glyph, render_glyph_bulk};
+    use crate::{BulkCallbacks, Callbacks, Glyphr, GlyphrError, RenderConfig};
+    use glyphr_types::{BitmapFormat, Font, Glyph};
 
-    #[test]
-    fn single_run() {
-        // Stream encodes: 3 x 42
-        let buf = [3u8, 42];
-        let mut cur = RleCursor::new(&buf);
-
-        assert_eq!(cur.get(0), 42);
-        assert_eq!(cur.get(1), 42);
-        assert_eq!(cur.get(2), 42);
-    }
-
-    #[test]
-    fn multiple_runs() {
-        // Stream encodes: [2 x 10, 3 x 20]
-        let buf = [2, 10, 3, 20];
-        let mut cur = RleCursor::new(&buf);
-
-        assert_eq!(cur.get(0), 10);
-        assert_eq!(cur.get(1), 10);
-        assert_eq!(cur.get(2), 20);
-        assert_eq!(cur.get(3), 20);
-        assert_eq!(cur.get(4), 20);
-    }
-
-    #[test]
-    fn monotonic_advance() {
-        // Stream encodes: [1 x 1, 1 x 2, 1 x 3, 1 x 4]
-        let buf = [1, 1, 1, 2, 1, 3, 1, 4];
-        let mut cur = RleCursor::new(&buf);
-
-        // Forward only
-        for i in 0..4 {
-            assert_eq!(cur.get(i), (i + 1) as u8);
+    fn make_bitmap_font<'a>(glyphs: &'a [Glyph<'a>]) -> Font<'a> {
+        Font {
+            glyphs,
+            size: 16,
+            ascent: 2,
+            descent: 0,
+            line_gap: 0,
+            format: BitmapFormat::Bitmap,
         }
     }
 
     #[test]
-    fn non_monotonic_access_forces_rescan() {
-        // Stream encodes: [3 x 7, 2 x 9]
-        let buf = [3, 7, 2, 9];
-        let mut cur = RleCursor::new(&buf);
-
-        // Forward is fine
-        assert_eq!(cur.get(0), 7);
-        assert_eq!(cur.get(3), 9);
-
-        // Now request earlier index (non-monotonic)
-        assert_eq!(cur.get(1), 7);
+    fn bit_is_set_reads_expected_msb_order() {
+        let bitmap = [0b1011_0000u8];
+        assert!(bit_is_set(&bitmap, 0));
+        assert!(!bit_is_set(&bitmap, 1));
+        assert!(bit_is_set(&bitmap, 2));
+        assert!(bit_is_set(&bitmap, 3));
     }
 
     #[test]
-    fn end_of_stream_behavior() {
-        // Stream encodes: [2 x 5]
-        let buf = [2, 5];
-        let mut cur = RleCursor::new(&buf);
+    fn render_glyph_bitmap_applies_clipping() {
+        let glyph_bitmap = [0b1001_0000u8];
+        let glyphs = [Glyph {
+            character: 'A',
+            bitmap: &glyph_bitmap,
+            width: 2,
+            height: 2,
+            xmin: 0,
+            ymin: 0,
+            advance_width: 2,
+        }];
+        let font = make_bitmap_font(&glyphs);
+        let renderer = Glyphr::new();
 
-        assert_eq!(cur.get(0), 5);
-        assert_eq!(cur.get(1), 5);
-        // Out of bounds -> stays at last run value
-        assert_eq!(cur.get(2), 0);
+        let mut calls = [(u16::MAX, u16::MAX, 0u32); 4];
+        let mut count = 0usize;
+        let mut target = Callbacks::new(2, 2, |x, y, color| {
+            calls[count] = (x, y, color);
+            count += 1;
+            true
+        });
+
+        render_glyph(-1, 0, 'A', font, &renderer, 1.0, &mut target).unwrap();
+
+        assert_eq!(count, 1);
+        assert_eq!(calls[0].0, 0);
+        assert_eq!(calls[0].1, 1);
     }
 
     #[test]
-    fn empty_stream() {
-        let buf: [u8; 0] = [];
-        let mut cur = RleCursor::new(&buf);
+    fn render_glyph_bulk_bitmap_emits_one_tile() {
+        let glyph_bitmap = [0b1111_0000u8];
+        let glyphs = [Glyph {
+            character: 'B',
+            bitmap: &glyph_bitmap,
+            width: 2,
+            height: 2,
+            xmin: 0,
+            ymin: 0,
+            advance_width: 2,
+        }];
+        let font = make_bitmap_font(&glyphs);
+        let renderer = Glyphr::with_config(RenderConfig::default().with_color(0x0011_2233));
 
-        // Any access should return 0
-        assert_eq!(cur.get(0), 0);
-        assert_eq!(cur.get(10), 0);
+        let mut scratch = [0u32; 16];
+        let mut calls = 0usize;
+        let mut last_x = 0i32;
+        let mut last_y = 0i32;
+        let mut last_w = 0u16;
+        let mut last_h = 0u16;
+        let mut last_pixels = [0u32; 4];
+
+        let mut target = BulkCallbacks::new(32, 32, &mut scratch, |x, y, w, h, pixels| {
+            calls += 1;
+            last_x = x;
+            last_y = y;
+            last_w = w;
+            last_h = h;
+            last_pixels.copy_from_slice(pixels);
+            true
+        });
+
+        render_glyph_bulk(5, 7, 'B', font, &renderer, 1.0, &mut target).unwrap();
+
+        assert_eq!(calls, 1);
+        assert_eq!(last_x, 5);
+        assert_eq!(last_y, 7);
+        assert_eq!(last_w, 2);
+        assert_eq!(last_h, 2);
+        assert_eq!(last_pixels, [0xff11_2233; 4]);
+    }
+
+    #[test]
+    fn render_glyph_bulk_propagates_invalid_target() {
+        let glyph_bitmap = [0b1000_0000u8];
+        let glyphs = [Glyph {
+            character: 'C',
+            bitmap: &glyph_bitmap,
+            width: 1,
+            height: 1,
+            xmin: 0,
+            ymin: 0,
+            advance_width: 1,
+        }];
+        let font = make_bitmap_font(&glyphs);
+        let renderer = Glyphr::new();
+        let mut scratch = [0u32; 4];
+        let mut target = BulkCallbacks::new(4, 4, &mut scratch, |_x, _y, _w, _h, _pixels| false);
+
+        let result = render_glyph_bulk(0, 0, 'C', font, &renderer, 1.0, &mut target);
+        assert!(matches!(result, Err(GlyphrError::InvalidTarget)));
+    }
+
+    #[test]
+    fn render_glyph_returns_invalid_glyph_for_missing_char() {
+        let glyph_bitmap = [0b1000_0000u8];
+        let glyphs = [Glyph {
+            character: 'A',
+            bitmap: &glyph_bitmap,
+            width: 1,
+            height: 1,
+            xmin: 0,
+            ymin: 0,
+            advance_width: 1,
+        }];
+        let font = make_bitmap_font(&glyphs);
+        let renderer = Glyphr::new();
+
+        let mut target = Callbacks::new(4, 4, |_x, _y, _color| true);
+        let result = render_glyph(0, 0, 'Z', font, &renderer, 1.0, &mut target);
+
+        assert!(matches!(result, Err(GlyphrError::InvalidGlyph('Z'))));
     }
 }

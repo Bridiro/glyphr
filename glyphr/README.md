@@ -83,3 +83,8 @@ renderer
 > ```rust
 > cargo run --example glyphr_test --features "toml window"
 > ```
+>
+> Bulk callback example:
+> ```rust
+> cargo run --example glyphr_bulk --features "window"
+> ```

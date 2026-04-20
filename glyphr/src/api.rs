@@ -388,8 +388,19 @@ mod tests {
     use super::*;
     use glyphr_types::Glyph;
 
+    fn bitmap_font<'a>(glyphs: &'a [Glyph<'a>]) -> Font<'a> {
+        Font {
+            glyphs,
+            size: 16,
+            ascent: 2,
+            descent: 0,
+            line_gap: 0,
+            format: BitmapFormat::Bitmap,
+        }
+    }
+
     #[test]
-    fn test_sdf_config_default_values() {
+    fn sdf_config_default_values() {
         let cfg = SdfConfig::default();
         assert_eq!(cfg.size, 16);
         assert_eq!(cfg.mid_value, 0.5);
@@ -397,7 +408,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_config_default_values() {
+    fn render_config_default_values() {
         let cfg = RenderConfig::default();
         assert_eq!(cfg.color, 0xffffff);
         assert_eq!(cfg.sdf.size, 16);
@@ -406,7 +417,7 @@ mod tests {
     }
 
     #[test]
-    fn test_glyphr_new_initializes_correctly() {
+    fn glyphr_new_initializes_correctly() {
         let glyphr = Glyphr::new();
 
         assert_eq!(glyphr.render_config.color, 0xffffff);
@@ -416,7 +427,7 @@ mod tests {
     }
 
     #[test]
-    fn test_callbacks_sink_works() {
+    fn callbacks_sink_works() {
         let mut writes = 0u32;
         let mut target = Callbacks::new(8, 8, |_x, _y, _color| {
             writes += 1;
@@ -428,7 +439,7 @@ mod tests {
     }
 
     #[test]
-    fn test_bulk_callbacks_sink_works() {
+    fn bulk_callbacks_sink_works() {
         let mut writes = 0u32;
         let mut scratch = [0u32; 16];
         let mut target = BulkCallbacks::new(8, 8, &mut scratch, |_x, _y, w, h, pixels| {
@@ -445,7 +456,7 @@ mod tests {
     }
 
     #[test]
-    fn test_draw_text_bulk_errors_when_scratch_too_small() {
+    fn draw_text_bulk_errors_when_scratch_too_small() {
         let glyph_bitmap = [0b1111_0000u8];
         let glyphs = [Glyph {
             character: 'A',
@@ -486,5 +497,105 @@ mod tests {
                 available: 3
             })
         ));
+    }
+
+    #[test]
+    fn draw_text_returns_invalid_glyph_for_missing_character() {
+        let glyph_bitmap = [0b1000_0000u8];
+        let glyphs = [Glyph {
+            character: 'A',
+            bitmap: &glyph_bitmap,
+            width: 1,
+            height: 1,
+            xmin: 0,
+            ymin: 0,
+            advance_width: 1,
+        }];
+        let font = bitmap_font(&glyphs);
+
+        let glyphr = Glyphr::new();
+        let mut target = Callbacks::new(8, 8, |_x, _y, _color| true);
+        let result = glyphr.draw_text(
+            &mut target,
+            "AZ",
+            font,
+            0,
+            0,
+            TextAlign::new(AlignH::Left, AlignV::Top),
+        );
+
+        assert!(matches!(result, Err(GlyphrError::InvalidGlyph('Z'))));
+    }
+
+    #[test]
+    fn draw_text_bulk_emits_once_per_glyph() {
+        let glyph_bitmap = [0b1000_0000u8, 0b1000_0000u8];
+        let glyphs = [
+            Glyph {
+                character: 'A',
+                bitmap: &glyph_bitmap[0..1],
+                width: 1,
+                height: 1,
+                xmin: 0,
+                ymin: 0,
+                advance_width: 2,
+            },
+            Glyph {
+                character: 'B',
+                bitmap: &glyph_bitmap[1..2],
+                width: 1,
+                height: 1,
+                xmin: 0,
+                ymin: 0,
+                advance_width: 3,
+            },
+        ];
+        let font = bitmap_font(&glyphs);
+
+        let glyphr = Glyphr::new();
+        let mut scratch = [0u32; 8];
+        let mut calls = 0usize;
+        let mut x_positions = [0i32; 2];
+        let mut target = BulkCallbacks::new(32, 32, &mut scratch, |x, _y, w, h, pixels| {
+            x_positions[calls] = x;
+            assert_eq!(w, 1);
+            assert_eq!(h, 1);
+            assert_eq!(pixels.len(), 1);
+            calls += 1;
+            true
+        });
+
+        glyphr
+            .draw_text_bulk(
+                &mut target,
+                "AB",
+                font,
+                5,
+                0,
+                TextAlign::new(AlignH::Left, AlignV::Top),
+            )
+            .unwrap();
+
+        assert_eq!(calls, 2);
+        assert_eq!(x_positions[0], 5);
+        assert_eq!(x_positions[1], 7);
+    }
+
+    #[test]
+    fn measure_text_ignores_missing_glyphs() {
+        let glyph_bitmap = [0b1000_0000u8];
+        let glyphs = [Glyph {
+            character: 'A',
+            bitmap: &glyph_bitmap,
+            width: 1,
+            height: 1,
+            xmin: 0,
+            ymin: 0,
+            advance_width: 4,
+        }];
+        let font = bitmap_font(&glyphs);
+
+        let glyphr = Glyphr::new();
+        assert_eq!(glyphr.measure_text("AZA", font), 8);
     }
 }
