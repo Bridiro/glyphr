@@ -55,6 +55,29 @@ renderer
     .unwrap();
 ```
 
+For DMA-style pipelines, use `draw_text_bulk` to get one ARGB tile per glyph:
+```rust
+use glyphr::{AlignH, AlignV, BulkCallbacks, TextAlign};
+
+let mut scratch = [0u32; 4096];
+let mut bulk = BulkCallbacks::new(800, 480, &mut scratch, |x, y, w, h, pixels| {
+    // Example: queue one DMA2D blit for this glyph tile.
+    let _ = (x, y, w, h, pixels);
+    true
+});
+
+renderer
+    .draw_text_bulk(
+        &mut bulk,
+        "Hello DMA2D!",
+        POPPINS,
+        100,
+        50,
+        TextAlign::new(AlignH::Left, AlignV::Baseline),
+    )
+    .unwrap();
+```
+
 > [!TIP]
 > If you want to run an example on your machine you can just do:
 > ```rust

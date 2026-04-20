@@ -9,7 +9,7 @@ mod renderer;
 mod rle;
 mod utils;
 
-pub use api::{Callbacks, Glyphr, GlyphrError, RenderConfig, SdfConfig, TextAlign};
+pub use api::{BulkCallbacks, Callbacks, Glyphr, GlyphrError, RenderConfig, SdfConfig, TextAlign};
 pub use glyphr_types::{AlignH, AlignV, BitmapFormat, Font, Glyph};
 
 pub use glyphr_macros::generate_font;
