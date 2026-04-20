@@ -1,6 +1,9 @@
 # glyphr-macros
 
-This crate contains proc-macros used to generate code at compile time easily. `glyphr` is an indirect dependency of this crate, as it generates types that are present only there.
+This crate contains proc-macros used to generate code at compile time.
+Generated symbols are typed as `glyphr_types::Font` and `glyphr_types::Glyph`.
+
+If you use this crate directly, add `glyphr-types` to your dependencies.
 
 ## generate_font!
 

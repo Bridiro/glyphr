@@ -6,9 +6,9 @@ static {{ glyph.codepoint }}_{{ font.name|upper }}: [u8; {{ glyph.bitmap_len }}]
 ];
 {%- endfor %}
 
-static GLYPHS_{{ font.name|upper }}: [::glyphr::Glyph; {{ font.glyphs|length }}] = [
+static GLYPHS_{{ font.name|upper }}: [::glyphr_types::Glyph; {{ font.glyphs|length }}] = [
     {%- for glyph in font.glyphs %}
-    ::glyphr::Glyph {
+    ::glyphr_types::Glyph {
         character: '{{ glyph.character|rust_char_escape }}',
         bitmap: &{{ glyph.codepoint }}_{{ font.name|upper }},
         xmin: {{ glyph.xmin }},
@@ -20,10 +20,11 @@ static GLYPHS_{{ font.name|upper }}: [::glyphr::Glyph; {{ font.glyphs|length }}]
     {%- endfor %}
 ];
 
-pub static {{ font.name|upper }}: ::glyphr::Font = ::glyphr::Font {
+pub static {{ font.name|upper }}: ::glyphr_types::Font = ::glyphr_types::Font {
     glyphs: &GLYPHS_{{ font.name|upper }},
     size: {{ font.size }},
     ascent: {{ font.ascent }},
     descent: {{ font.descent }},
-    format: ::glyphr::{{ font.format }},
+    line_gap: {{ font.line_gap }},
+    format: ::glyphr_types::{{ font.format }},
 };

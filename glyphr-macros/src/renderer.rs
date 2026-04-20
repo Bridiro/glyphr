@@ -43,6 +43,15 @@ pub fn render<T: ToFontLoaded>(font_config: T) -> String {
 
     let mut output = String::new();
     for loaded_font in &loaded_fonts {
+        let size = u16::try_from(loaded_font.px).unwrap_or_else(|_| {
+            panic!(
+                "font size out of range for '{}': {}",
+                loaded_font.name, loaded_font.px
+            )
+        });
+        let ascent = loaded_font.font.get_ascent(loaded_font.px as f32);
+        let descent = loaded_font.font.get_descent(loaded_font.px as f32);
+        let line_gap = loaded_font.font.get_line_gap(loaded_font.px as f32);
         let mut glyphs = vec![];
 
         let entries = generate_font(loaded_font);
@@ -68,9 +77,10 @@ pub fn render<T: ToFontLoaded>(font_config: T) -> String {
                 .render(context! {
                     font => context! {
                         name => loaded_font.name,
-                        size => loaded_font.px,
-                        ascent => loaded_font.font.get_ascent(loaded_font.px as f32),
-                        descent => loaded_font.font.get_descent(loaded_font.px as f32),
+                        size => size,
+                        ascent => ascent,
+                        descent => descent,
+                        line_gap => line_gap,
                         format => loaded_font.format.to_string(),
                         glyphs => glyphs,
                     },

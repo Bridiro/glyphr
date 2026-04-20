@@ -1,0 +1,1 @@
+# Glyphr shared types

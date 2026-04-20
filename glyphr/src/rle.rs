@@ -1,6 +1,6 @@
 /// A forward-only cursor to read values from an RLE [count, value] stream
 /// in *decoded index* order. Works in O(1) amortized for monotonically
-/// increasing target indices (our case).
+/// increasing target indices.
 #[derive(Clone, Copy)]
 pub struct RleCursor<'a> {
     buf: &'a [u8],
@@ -68,5 +68,71 @@ impl<'a> RleCursor<'a> {
     pub fn get(&mut self, target_dec_idx: usize) -> u8 {
         self.advance_to(target_dec_idx);
         self.val
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::RleCursor;
+
+    #[test]
+    fn single_run_returns_same_value() {
+        let buf = [3u8, 42];
+        let mut cur = RleCursor::new(&buf);
+
+        assert_eq!(cur.get(0), 42);
+        assert_eq!(cur.get(1), 42);
+        assert_eq!(cur.get(2), 42);
+    }
+
+    #[test]
+    fn multiple_runs_decode_correctly() {
+        let buf = [2, 10, 3, 20];
+        let mut cur = RleCursor::new(&buf);
+
+        assert_eq!(cur.get(0), 10);
+        assert_eq!(cur.get(1), 10);
+        assert_eq!(cur.get(2), 20);
+        assert_eq!(cur.get(3), 20);
+        assert_eq!(cur.get(4), 20);
+    }
+
+    #[test]
+    fn monotonic_access_advances_cursor_once() {
+        let buf = [1, 1, 1, 2, 1, 3, 1, 4];
+        let mut cur = RleCursor::new(&buf);
+
+        for i in 0..4 {
+            assert_eq!(cur.get(i), (i + 1) as u8);
+        }
+    }
+
+    #[test]
+    fn non_monotonic_access_rescans_safely() {
+        let buf = [3, 7, 2, 9];
+        let mut cur = RleCursor::new(&buf);
+
+        assert_eq!(cur.get(0), 7);
+        assert_eq!(cur.get(3), 9);
+        assert_eq!(cur.get(1), 7);
+    }
+
+    #[test]
+    fn end_of_stream_returns_zero() {
+        let buf = [2, 5];
+        let mut cur = RleCursor::new(&buf);
+
+        assert_eq!(cur.get(0), 5);
+        assert_eq!(cur.get(1), 5);
+        assert_eq!(cur.get(2), 0);
+    }
+
+    #[test]
+    fn empty_stream_always_returns_zero() {
+        let buf: [u8; 0] = [];
+        let mut cur = RleCursor::new(&buf);
+
+        assert_eq!(cur.get(0), 0);
+        assert_eq!(cur.get(10), 0);
     }
 }

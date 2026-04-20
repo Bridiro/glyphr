@@ -9,11 +9,11 @@ use crate::config::BitmapFormat;
 /// Contains the info of the font to write out (one per glyph)
 pub struct GlyphEntry {
     pub name: String,
-    pub xmin: i32,
-    pub ymin: i32,
-    pub width: i32,
-    pub height: i32,
-    pub advance_width: i32,
+    pub xmin: i16,
+    pub ymin: i16,
+    pub width: u16,
+    pub height: u16,
+    pub advance_width: i16,
 }
 
 /// Based on the input, generates a font and return Vec<(bitmaps, entries)> paired
